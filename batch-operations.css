@@ -6,3 +6,24 @@ body .modal.batch-modal{width:min(1120px,calc(100vw - 32px));max-width:calc(100v
 .batch-candidate:has(label[hidden]){display:none}.batch-candidate [hidden]{display:none!important}.batch-shortcut{display:flex;justify-content:flex-end;margin-bottom:12px}
 
 .batch-page .toolbar>.input{flex:1;min-width:160px}.batch-page .toolbar{flex-wrap:wrap}.batch-page #batch-candidates{max-height:56vh}
+
+/* Keep the correction table readable: narrow windows scroll instead of crushing fields. */
+.batch-enrollment-preview{min-width:0;max-width:100%;overflow-x:auto}
+body .content .batch-page .batch-enrollment-preview table.table{min-width:1110px;width:100%;table-layout:fixed!important}
+.batch-enrollment-preview th:nth-child(1){width:250px}.batch-enrollment-preview th:nth-child(2){width:360px}.batch-enrollment-preview th:nth-child(3){width:290px}.batch-enrollment-preview th:nth-child(4){width:150px}
+.batch-enrollment-row td{vertical-align:top;padding-top:16px;padding-bottom:16px}
+.batch-enrollment-row.has-errors td{background:#fffdf9}
+.batch-page .batch-enrollment-row .input,.batch-page .batch-enrollment-row .select{display:block;width:100%;max-width:100%;min-width:0;height:38px;box-sizing:border-box}
+.batch-row-label{display:block;margin:0 0 6px;font-size:12px;font-weight:600;color:#71839e}
+.batch-row-label:not(:first-child){margin-top:12px}
+.batch-row-quote,.batch-row-errors,.batch-suggestions,.batch-staged-note{white-space:normal;overflow-wrap:anywhere;line-height:1.55}
+.batch-row-quote{margin-top:10px;font-size:13px;color:#34465f}
+.batch-row-errors{padding-left:18px;margin:0;font-size:13px;color:#b64a35}
+.batch-row-errors li+li{margin-top:6px}
+.batch-staged-note{display:block;margin-top:6px;font-size:12px;color:#456dc3}
+.batch-row-actions{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.batch-suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.batch-suggestions>span{width:100%;font-size:12px;color:#71839e}
+.batch-page .batch-suggestions .btn{max-width:100%;height:auto;min-height:32px;white-space:normal;text-align:left;font-size:12px}
+.batch-removed{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid #e7edf5}
+.batch-removed>span{font-size:13px;color:#71839e}

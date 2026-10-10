@@ -20,7 +20,7 @@ function commandChoose(kind,action,index){
 }
 const commandWorkflows=[
  ['为学生报名','报名 报课 新生报名 缴费报名 办理报名','enroll','enroll',commandEnroll],
- ['临时调课／调班','临时调课 临时调班 调课 调班 换班 单次调班','schedule','academic',()=>commandPick('session','move'),'选择课次，再调整该节学生的班级'],
+ ['临时调课／调班','临时调课 临时调班 调课 调班 换班 单次调班','tempMove','academic',()=>commandFlow('tempMove'),'选择学生与原课次，再选择符合条件的目标课次'],
  ['转课／转班','转课 转班 长期调班 正式调班','transfer','transfer',()=>commandFlow('transfer')],
  ['安排代课老师','代课 换老师 替课 老师请假','schedule','academic',()=>commandPick('session','substitute')],
  ['为学生退课','退课 退班 退费 退款','withdraw','withdraw',()=>commandFlow('withdraw')],
@@ -37,7 +37,7 @@ const commandWorkflows=[
  ['录入新学生','新生录入 添加学生 新建学生','students','academic',()=>{a.modal='newStudent';nav('students')}],
  ['创建优惠策略','创建优惠 优惠策略 营销策略 优惠券','mallCoupon','mallCoupon',()=>nav('mallCoupon')],
  ['创建员工','创建员工 新增员工 添加员工','staff','staff',()=>{nav('staff');state.mode='form';state.staffEdit=null;render()}]
-].map(([label,words,page,guard,run,hint])=>({label,words:words.split(' '),page,guard,run,hint}));
+].map(([label,words,page,guard,run,hint])=>({...(label==='临时调课／调班'?{id:'action.schedule.39f66947'}:{}),label,words:words.split(' '),page,guard,run,hint}));
 function commandScore(q,label,words){const terms=[label,...words].map(x=>x.toLowerCase());if(terms.includes(q))return 100;if(terms.some(x=>x.startsWith(q)))return 80;if(terms.some(x=>x.includes(q)))return 60;if(terms.some(x=>x.length>=2&&q.includes(x)))return 40;return 0}
 workflowSearchEntries=function(query){const q=String(query||'').trim().toLowerCase().replace(/\s+/g,'');if(!q)return [];
  const registry=[...commandWorkflows,...permissionGroups.flatMap(group=>group.items.map(([page,label])=>({label:`打开${label}`,words:[label],page,run:()=>nav(page),hint:group.name})))];

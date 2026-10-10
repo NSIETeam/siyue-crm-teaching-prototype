@@ -123,9 +123,9 @@
         "换班",
         "单次调班"
       ],
-      "page": "schedule",
+      "page": "tempMove",
       "permission": {
-        "page": "schedule",
+        "page": "tempMove",
         "action": "academic"
       },
       "mode": "open-form",
@@ -1296,6 +1296,29 @@
       "page": "staffArchives",
       "permission": {
         "page": "staffArchives",
+        "action": null
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "demo.lesson-consumption",
+      "label": "导入 CLI 课消演示",
+      "aliases": [
+        "模拟课消",
+        "课消测试",
+        "siyue-cli",
+        "课消演示"
+      ],
+      "page": "learningData",
+      "permission": {
+        "page": "learningData",
         "action": null
       },
       "mode": "open-form",

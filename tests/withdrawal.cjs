@@ -31,7 +31,7 @@ test('paid 1010 without lesson configuration can withdraw using a reviewed amoun
 });
 
 test('automatic refund counts only this student and deduplicates original and makeup consumption',()=>{
- const b=fixture();b.run(`a.attendance=[{classIndex:0,studentIndex:0,studentId:'s1',date:past,orderId:'order1',sessionId:'original',status:'已考勤',consumptionConfirmed:true},{classIndex:1,studentIndex:0,studentId:'s1',date:past,orderId:'order1',sessionId:'makeup',consumptionSourceSessionId:'original',makeupAppointmentId:'mu-old',status:'已考勤',consumptionConfirmed:true},{classIndex:0,studentIndex:1,studentId:'s2',date:past,sessionId:'unrelated',status:'已考勤',consumptionConfirmed:true}];`);
+ const b=fixture();b.run(`a.attendance=[{classIndex:0,studentIndex:0,studentId:'s1',date:past,orderId:'order1',lessonId:'l1',sessionId:'original',status:'已考勤',consumptionConfirmed:true},{classIndex:1,studentIndex:0,studentId:'s1',date:past,orderId:'order1',lessonId:'l1',sessionId:'makeup',consumptionSourceSessionId:'original',makeupAppointmentId:'mu-old',status:'已考勤',consumptionConfirmed:true},{classIndex:0,studentIndex:1,studentId:'s2',date:past,sessionId:'unrelated',status:'已考勤',consumptionConfirmed:true}];`);
  const history=data(b,'a.attendance');b.run("finishFlow('withdraw')");
  assert.equal(b.run('a.refunds[0].amount'),500);assert.equal(b.run('a.refunds[0].consumed'),1);assert.equal(b.run('a.refunds[0].calculation'),'自动计算');assert.deepEqual(data(b,'a.attendance'),history);
 });
@@ -67,10 +67,17 @@ test('withdrawing one class preserves other active memberships and does not admi
 });
 
 test('withdrawal cancels future temporary-move and makeup attendance while preserving history and other students',()=>{
- const b=fixture();b.run(`a.sessionAdjustments=[{id:'move',studentId:'s1',sourceClassId:'c1',targetClassId:'c2',date:future,status:'已确认'},{id:'makeup',type:'补课',studentId:'s1',sourceClassId:'c1',targetClassId:'c2',date:future,orderId:'order1',status:'已确认'},{id:'other-move',studentId:'s2',sourceClassId:'c1',targetClassId:'c2',date:future,status:'已确认'}];a.attendance=[{classIndex:1,studentIndex:0,studentId:'s1',date:future,sourceOrderId:'order1',consumptionConfirmed:false,status:'未考勤',attendance:'未考勤'},{classIndex:0,studentIndex:0,studentId:'s1',date:past,consumptionConfirmed:false,status:'已考勤',attendance:'请假',makeup:'已安排',makeupAppointmentId:'makeup'},{classIndex:0,studentIndex:0,studentId:'s1',date:past,orderId:'order1',sessionId:'history',consumptionConfirmed:true,status:'已考勤',attendance:'到课'},{classIndex:1,studentIndex:1,studentId:'s2',date:future,consumptionConfirmed:false,status:'未考勤',attendance:'未考勤'}]`);
+ const b=fixture();b.run(`a.sessionAdjustments=[{id:'move',studentId:'s1',sourceClassId:'c1',targetClassId:'c2',date:future,status:'已确认'},{id:'makeup',type:'补课',studentId:'s1',sourceClassId:'c1',targetClassId:'c2',date:future,orderId:'order1',status:'已确认'},{id:'other-move',studentId:'s2',sourceClassId:'c1',targetClassId:'c2',date:future,status:'已确认'}];a.attendance=[{classIndex:1,studentIndex:0,studentId:'s1',date:future,sourceOrderId:'order1',consumptionConfirmed:false,status:'未考勤',attendance:'未考勤'},{classIndex:0,studentIndex:0,studentId:'s1',date:past,consumptionConfirmed:false,status:'已考勤',attendance:'请假',makeup:'已安排',makeupAppointmentId:'makeup'},{classIndex:0,studentIndex:0,studentId:'s1',date:past,orderId:'order1',lessonId:'l1',sessionId:'history',consumptionConfirmed:true,status:'已考勤',attendance:'到课'},{classIndex:1,studentIndex:1,studentId:'s2',date:future,consumptionConfirmed:false,status:'未考勤',attendance:'未考勤'}]`);
+ assert.equal(b.run('withdrawalEstimate(0,0).automatic'),true);assert.equal(b.run('withdrawalEstimate(0,0).consumed'),1);
  const historical=data(b,'a.attendance[2]'),other=data(b,'a.attendance[3]'),otherStudent=data(b,'a.students[1]');b.run("finishFlow('withdraw')");
  assert.equal(b.run('a.sessionAdjustments[0].status'),'已撤销');assert.equal(b.run('a.sessionAdjustments[1].status'),'已撤销');assert.equal(b.run('a.sessionAdjustments[2].status'),'已确认');assert.equal(b.run('a.attendance[0].status'),'已撤销');assert.notEqual(b.run('a.attendance[1].makeup'),'已安排');assert.deepEqual(data(b,'a.attendance[2]'),historical);assert.deepEqual(data(b,'a.attendance[3]'),other);assert.deepEqual(data(b,'a.students[1]'),otherStudent);
  assert.equal(b.run("workflowSessionRoster(a.classes[1]).some(s=>s.id==='s1')"),false);
+});
+
+test('ambiguous historical consumption requires reviewed refund evidence instead of inventing a lesson',()=>{
+ const b=fixture();b.run("a.attendance=[{classIndex:0,studentIndex:0,studentId:'s1',date:past,orderId:'order1',sessionId:'legacy-unknown-session',consumptionConfirmed:true,status:'已考勤',attendance:'到课'}]");
+ assert.equal(b.run('withdrawalEstimate(0,0).automatic'),false);const before=snapshot(b);b.run("finishFlow('withdraw')");assert.equal(snapshot(b),before);
+ const history=data(b,'a.attendance');manual(b,500);b.run("finishFlow('withdraw')");assert.equal(b.run('a.refunds[0].amount'),500);assert.equal(b.run('a.refunds[0].calculation'),'人工核定');assert.deepEqual(data(b,'a.attendance'),history);assert.equal(b.run('a.attendance[0].lessonId'),undefined);
 });
 
 test('multiple orders close together and allocate only remaining recorded receipts on financial confirmation',()=>{

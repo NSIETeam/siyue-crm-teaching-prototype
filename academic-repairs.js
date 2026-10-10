@@ -41,21 +41,87 @@ workflowConfirmSubstitute=function(){
  academicRepairConfirmSubstitute();
 };
 
-const academicRepairCommitMove=workflowCommitMove;
+// A matching label or a guessed "第1讲" never establishes compatible course content.
+function academicRepairCourseFor(c){const matches=a.courses.filter(x=>x.id&&x.id===c?.courseId);return matches.length===1?matches[0]:null}
+function academicRepairGrade(value){const text=String(value||'').trim().replace(/\s/g,'');const numbers={'一':'1','二':'2','三':'3','四':'4','五':'5','六':'6'};return text.replace(/^(?:小学|小)?([一二三四五六1-6])(?:年级)?$/,(_,n)=>`${numbers[n]||n}年级`)}
+function academicRepairCourseMatch(source,target){const from=academicRepairCourseFor(source),to=academicRepairCourseFor(target);return !!(from&&to&&academicRepairGrade(from.grade)&&academicRepairGrade(to.grade)&&String(from.subject||'').trim()&&String(to.subject||'').trim()&&academicRepairGrade(from.grade)===academicRepairGrade(to.grade)&&String(from.subject).trim()===String(to.subject).trim())}
+function academicRepairMoveAllowed(){return permissionCanVisit('tempMove')&&workflowMay('academic')}
+function academicRepairMoveConflict(source,target,studentId){return a.classes.find(c=>c!==source&&c!==target&&academicRepairOverlap(target,c)&&workflowSessionRoster(c).some(s=>s.id===studentId))}
+function academicRepairTempMoveErrors(source,target,studentId){
+ const errors=[],student=a.students.filter(s=>s.id===studentId),course=academicRepairCourseFor(source),targetCourse=academicRepairCourseFor(target);
+ if(!academicRepairMoveAllowed())return ['当前身份没有临时转班权限'];
+ if(!source||!target||source===target||source.id===target.id)return ['请选择不同的原课次和目标课次'];
+ if(a.classes.filter(c=>c.id===source.id).length!==1||a.classes.filter(c=>c.id===target.id).length!==1)return ['课次标识重复，请先修正班级资料'];
+ if(student.length!==1||!workflowSessionRoster(source).some(s=>s.id===studentId))errors.push('该学生不在原课次名单中，请重新选择');
+ if(!course||!targetCourse||!academicRepairGrade(course.grade)||!academicRepairGrade(targetCourse.grade)||!String(course.subject||'').trim()||!String(targetCourse.subject||'').trim())errors.push('原课程或目标课程的年级、学科资料不完整，请先补全');
+ else if(!academicRepairCourseMatch(source,target))errors.push('目标班级必须与原课程为相同年级、相同学科');
+ if(course?.active===false||targetCourse?.active===false)errors.push('原课程或目标课程已停用');
+ if(!source.courseId||source.courseId!==target.courseId)errors.push('临时转班只支持同一课程的对应课次，不能跨课程变更权益');
+ const sourceLessons=(course?.lessons||[]).filter(x=>x.id===source.lessonId),targetLessons=(targetCourse?.lessons||[]).filter(x=>x.id===target.lessonId);
+ if(!source.lessonId||sourceLessons.length!==1||targetLessons.length!==1)errors.push('原课次或目标课次尚未配置有效授课章节');
+ else if(source.lessonId!==target.lessonId)errors.push('目标课次必须与原课次为同一授课章节');
+ if(!String(source.lessonVersion??'').trim()||!String(target.lessonVersion??'').trim()||String(source.lessonVersion)!==String(target.lessonVersion))errors.push('原课次与目标课次的授课内容版本不一致');
+ if(source.date!==target.date)errors.push('临时转班只支持同一天已排出的对应课次');
+ if(!batchValidTime(source)||!batchValidTime(target))errors.push('原课次或目标课次的日期、时间无效');
+ else if(scTimeParts(source).start<=Date.now()||scTimeParts(target).start<=Date.now())errors.push('已开始或已结束的课次不能临时转班');
+ if([source,target].some(c=>['已结课','已取消','已停用'].includes(c.status)||c.active===false))errors.push('原班级或目标班级当前不可调课');
+ const ruleError=sysMoveError(source,target);if(ruleError)errors.push(ruleError);
+ if(workflowSessionRoster(target).some(s=>s.id===studentId))errors.push('该学生已在目标课次名单中');
+ const occupied=Math.max(Number(target.students)||0,workflowSessionRoster(target).length),capacity=Number(target.capacity);
+ if(!Number.isInteger(capacity)||capacity<1||occupied>=capacity)errors.push('目标班本节名额不足或未配置容量');
+ if((a.sessionAdjustments||[]).some(m=>m.studentId===studentId&&m.sourceClassId===source.id&&m.date===source.date&&m.status==='已确认'))errors.push('该学生本节已有调班安排');
+ const sourceIndex=a.classes.indexOf(source),studentIndex=a.students.findIndex(s=>s.id===studentId);
+ if(a.attendance.some(r=>(r.sessionId===workflowSessionKey(source)||r.classIndex===sourceIndex&&r.date===source.date)&&(r.studentId===studentId||r.studentId==null&&r.studentIndex===studentIndex)&&(r.consumptionConfirmed===true||r.status==='已考勤'||r.attendance&&!['未考勤','本节调出'].includes(r.attendance))))errors.push('原课次已有考勤或课消记录，不能临时转班');
+ const conflict=academicRepairMoveConflict(source,target,studentId);if(conflict)errors.push(`该学生在 ${conflict.name} 的 ${conflict.time} 已有重叠课次，未调班`);
+ return [...new Set(errors)];
+}
+function academicRepairTempMoveTargets(source,studentId){return source&&studentId?a.classes.filter(c=>!academicRepairTempMoveErrors(source,c,studentId).length):[]}
+function academicRepairMoveContext(){
+ if(state.page==='tempMove'){const draft=workflowState.tempMoveDraft||{};return {source:a.classes.find(c=>c.id===($('#flow-from')?.value||draft.sourceId)),target:a.classes.find(c=>c.id===$('#flow-to')?.value),studentId:$('#temp-move-student')?.value||draft.studentId}}
+ const selected=workflowState.selectedSession,stableId=state.page==='sessionFlow'&&typeof workspaceUI!=='undefined'?workspaceUI.sessionClassId:null;
+ return {source:stableId?a.classes.find(c=>c.id===stableId):a.classes[selected?.classIndex],target:a.classes.find(c=>c.id===$('#workflow-move-target')?.value),studentId:$('#workflow-move-student')?.value||a.students[selected?.studentIndex]?.id};
+}
 workflowCommitMove=function(){
- const selected=workflowState.selectedSession,source=a.classes[selected?.classIndex],studentId=$('#workflow-move-student')?.value||a.students[selected?.studentIndex]?.id,target=a.classes.find(c=>c.id===$('#workflow-move-target')?.value);
- if(!source||!target||!studentId){academicRepairCommitMove();return}
- if(target.date!==source.date){academicRepairCommitMove();return}
- if(workflowSessionRoster(target).some(s=>s.id===studentId)){toast('该学生已在目标课次名单中');return}
- const movedSession={...target,date:source.date};
- const conflict=a.classes.find(c=>c!==source&&c!==target&&c.date===source.date&&academicRepairOverlap(movedSession,c)&&workflowSessionRoster(c).some(s=>s.id===studentId));
+ const {source,target,studentId}=academicRepairMoveContext();
+ if(!academicRepairMoveAllowed()){toast('当前身份没有临时转班权限');return}
+ // Report a real timetable collision first, even for incomplete historical course metadata.
+ const conflict=source&&target&&studentId&&academicRepairMoveConflict(source,target,studentId);
  if(conflict){toast(`该学生在 ${conflict.name} 的 ${conflict.time} 已有重叠课次，未调班`);return}
- academicRepairCommitMove();
+ const errors=academicRepairTempMoveErrors(source,target,studentId);if(errors.length){toast(errors[0]);return}
+ const sourceIndex=a.classes.indexOf(source),studentIndex=a.students.findIndex(s=>s.id===studentId);
+ a.sessionAdjustments=a.sessionAdjustments||[];
+ a.sessionAdjustments.push({id:`MV-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,studentId,sourceClassId:source.id,targetClassId:target.id,date:source.date,courseId:source.courseId,lessonId:source.lessonId,lessonVersion:source.lessonVersion,sourceSessionId:workflowSessionKey(source),status:'已确认'});
+ a.attendance.forEach(x=>{if(x.classIndex===sourceIndex&&(x.studentId===studentId||x.studentId==null&&x.studentIndex===studentIndex)&&x.date===source.date&&x.status==='未考勤'){x.status='已撤销';x.attendance='本节调出'}});
+ workflowPersist();workflowState.tempMoveDraft=null;if(permissionCanVisit('schedule'))workflowOpenSession(sourceIndex,studentIndex);else render();toast('本节名单已调整，班级长期归属保留');
 };
+
+function academicRepairLessonLabel(c){const course=academicRepairCourseFor(c),lesson=course?.lessons?.find(x=>x.id===c?.lessonId);return lesson?`${lesson.title||lesson.name||c.lessonId} · 版本 ${c.lessonVersion??'待配置'}`:'授课章节待配置'}
+function academicRepairMoveOption(c){return `${c.name} · ${c.date} ${c.time} · ${c.campus||''} · ${academicRepairLessonLabel(c)}`}
+function academicRepairRenderSessionMove(studentId){
+ const selected=workflowState.selectedSession,c=a.classes[selected?.classIndex],box=$('#workflow-session-action');if(!c||!box)return;
+ if(!academicRepairMoveAllowed()){box.innerHTML='<p class="notice">当前身份没有临时转班权限。</p>';return}
+ const roster=workflowSessionRoster(c),chosen=roster.find(s=>s.id===studentId)||roster.find(s=>s.id===a.students[selected?.studentIndex]?.id)||roster[0],targets=academicRepairTempMoveTargets(c,chosen?.id);
+ if(studentId&&chosen){workflowState.selectedSession.studentIndex=a.students.indexOf(chosen);if(state.page==='sessionFlow'&&typeof workspaceUI!=='undefined')workspaceUI.sessionStudentId=chosen.id}
+ box.innerHTML=`<div class="form-grid">${aField('学生',`<select id="workflow-move-student" class="select" onchange="academicRepairRenderSessionMove(this.value)">${roster.map(s=>`<option value="${esc(s.id)}" ${chosen?.id===s.id?'selected':''}>${esc(s.name)}</option>`).join('')}</select>`,true)}${aField('目标课次',`<select id="workflow-move-target" class="select"><option value="">${targets.length?'请选择对应课次':'暂无可调入的对应课次'}</option>${targets.map(x=>`<option value="${esc(x.id)}">${esc(academicRepairMoveOption(x))}</option>`).join('')}</select>`,true)}</div><p class="help">${esc(academicRepairLessonLabel(c))} · 同年级、同学科、同课程章节</p>${targets.length?'':academicRepairMoveEmpty(c,chosen?.id)}<div class="form-actions"><button class="btn primary" ${targets.length?'':'disabled'} onclick="workflowCommitMove()">确认本节调班</button></div>`;
+}
+function academicRepairMoveEmpty(source,studentId){const course=academicRepairCourseFor(source);let message=!source?'该学生暂无可调出的课次。':!course?.grade||!course?.subject?'请先补全原课程的年级和学科资料。':!(course.lessons||[]).some(x=>x.id===source.lessonId)?'请先为原课次配置授课章节。':'没有符合本节内容、时间和名额要求的目标班级。';return `<p class="notice">${esc(message)}</p>`}
+const academicRepairSessionAction=workflowSessionAction;
+workflowSessionAction=function(action){if(action==='move')return academicRepairRenderSessionMove();return academicRepairSessionAction(action)};
+
+function academicRepairTempMoveStudent(id){if(!academicRepairMoveAllowed())return;const index=a.students.findIndex(s=>s.id===id);a.selectedStudent=index<0?null:index;workflowState.tempMoveDraft={studentId:id,sourceId:'',targetId:''};render()}
+function academicRepairTempMoveSource(id){if(!academicRepairMoveAllowed())return;workflowState.tempMoveDraft={...(workflowState.tempMoveDraft||{}),sourceId:id,targetId:''};render()}
+function academicRepairTempMoveTarget(id){if(!academicRepairMoveAllowed())return;workflowState.tempMoveDraft={...(workflowState.tempMoveDraft||{}),targetId:id}}
+function academicRepairTempMovePage(){
+ if(!academicRepairMoveAllowed())return '<div class="card pad">当前身份没有临时转班权限。</div>';
+ const student=a.students[a.selectedStudent],prior=workflowState.tempMoveDraft||{},sources=student?a.classes.filter(c=>workflowSessionRoster(c).some(s=>s.id===student.id)):[],source=sources.find(c=>c.id===(prior.studentId===student?.id?prior.sourceId:''))||sources[0],targets=academicRepairTempMoveTargets(source,student?.id),target=targets.find(c=>c.id===prior.targetId);
+ workflowState.tempMoveDraft={studentId:student?.id||'',sourceId:source?.id||'',targetId:target?.id||''};
+ return `<section class="card pad"><div class="form-grid">${aField('学生',`<select id="temp-move-student" class="select" onchange="academicRepairTempMoveStudent(this.value)"><option value="">请选择学生</option>${a.students.map(s=>`<option value="${esc(s.id)}" ${student?.id===s.id?'selected':''}>${esc(s.name)} · ${esc(s.id)}</option>`).join('')}</select>`,true)}${aField('原课次',`<select id="flow-from" class="select" onchange="academicRepairTempMoveSource(this.value)">${sources.length?sources.map(c=>`<option value="${esc(c.id)}" ${source?.id===c.id?'selected':''}>${esc(academicRepairMoveOption(c))}</option>`).join(''):'<option value="">请先选择有在读课次的学生</option>'}</select>`,true)}${aField('目标课次',`<select id="flow-to" class="select" onchange="academicRepairTempMoveTarget(this.value)"><option value="">${targets.length?'请选择对应课次':'暂无可调入的对应课次'}</option>${targets.map(c=>`<option value="${esc(c.id)}" ${target?.id===c.id?'selected':''}>${esc(academicRepairMoveOption(c))}</option>`).join('')}</select>`,true)}${source?aField('授课章节',`<span>${esc(academicRepairLessonLabel(source))}</span>`):''}</div>${source?'<p class="help">目标课次保持相同年级、学科、课程章节和内容版本，仅调整本节名单。</p>':''}${student&&!targets.length?academicRepairMoveEmpty(source,student.id):''}<div class="form-actions"><button class="btn primary" ${student&&targets.length?'':'disabled'} onclick="finishFlow('tempMove')">确认本节调班</button></div></section>`;
+}
 
 function academicRepairResolveClass(value){return a.classes.find(c=>c.id===value||c.name===value)}
 const academicRepairFlowPage=flowPage;
 flowPage=function(type){
+ if(type==='tempMove')return academicRepairTempMovePage();
  const html=academicRepairFlowPage(type);
  if(type==='supplement')return html.replace('<hr class="divider">','<div class="notice">补费订单、应收金额与到账核验尚未接入；此页面不会保存业务记录。</div><hr class="divider">').replace(`<button class="btn primary" onclick="finishFlow('supplement')">确定</button>`,`<button class="btn primary" disabled>待接入</button>`);
  if(type==='transfer')return html.replace('<p class="academic-note">参考图标注：直播与录播课程暂不支持转课／班。</p>','<p class="academic-note">同课程、同版本、同讲次的学生转班将进入批量预览；跨课程价差规则待接入。</p>');
@@ -63,6 +129,7 @@ flowPage=function(type){
 };
 const academicRepairFinishFlow=finishFlow;
 finishFlow=function(type){
+ if(type==='tempMove')return workflowCommitMove();
  if(type==='supplement'){toast('补费订单、应收金额和收款确认流程尚未接入；未创建订单或登记收款');return}
  if(type==='transfer'){
   if(a.selectedStudent===null){toast('请先选择学生');return}
