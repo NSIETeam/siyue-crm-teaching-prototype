@@ -4,4 +4,3 @@ for(const file of fs.readdirSync(root).filter(f=>f.endsWith('.js')))execFileSync
 for(const file of ['audit.cjs','crm.cjs','academic.cjs','full-smoke.cjs','mall.cjs','withdrawal.cjs','finance-quick-actions.cjs','profile-quick-actions.cjs','operation-journal.cjs','workspace-navigation.cjs','temp-transfer-eligibility.cjs','lesson-consumption.cjs','batch-enrollment-corrections.cjs','sales-metrics.cjs','employee-auth.cjs'])execFileSync(process.execPath,[path.join(__dirname,file)],{cwd:root,stdio:'inherit'});
 
 execFileSync(process.execPath,['--test','cli/simulation.test.cjs','cli/auth.test.cjs'],{cwd:root,stdio:'inherit'});
-

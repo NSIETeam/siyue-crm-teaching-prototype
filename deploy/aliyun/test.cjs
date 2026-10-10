@@ -29,3 +29,5 @@ test('nginx candidate requires explicit isolated path and preserves server setti
 test('activation script parses as POSIX shell without changing any server',()=>{
  execFileSync('sh',['-n',path.join(__dirname,'activate-release.sh')]);
 });
+
+test('authentication release excludes private stores and macOS metadata',t=>{const parent=fs.mkdtempSync(path.join(os.tmpdir(),'siyue-auth-release-test-'));t.after(()=>fs.rmSync(parent,{recursive:true,force:true}));const result=JSON.parse(execFileSync(process.execPath,[path.join(__dirname,'build-auth-release.cjs'),'--out',parent],{encoding:'utf8'}));const archive=execFileSync('tar',['-tzf',result.archive],{encoding:'utf8'}).trim().split('\n');assert.equal(archive.length,12);assert.ok(archive.every(p=>!p.includes('._')&&!p.includes('initial-admin')&&!p.includes('auth.json')&&!p.includes('session.json')));assert.equal(result.files.length,11);for(const file of result.files){const bytes=fs.readFileSync(path.join(parent,result.releaseId,file.path));assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),file.sha256)}});

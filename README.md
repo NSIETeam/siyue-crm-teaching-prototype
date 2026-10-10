@@ -1,6 +1,6 @@
 # 思跃 CRM 与教务综合系统
 
-[阿里云在线原型](https://www.siyuejn.com/crm/) · [GitHub Pages 镜像](https://nsieteam.github.io/siyue-crm-teaching-prototype/) · [改造计划与原始逻辑图](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-project-plan.html) · [2026-10-10 日报](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-daily-2026-10-10.html) · [进度与问题验收](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-audit-2026-10-10.html)
+[阿里云在线原型](https://www.siyuejn.com/crm/) · [GitHub Pages 镜像](https://nsieteam.github.io/siyue-crm-teaching-prototype/) · [改造计划与原始逻辑图](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-project-plan.html) · [账号与销售统计增补](docs/siyue-auth-2026-10-10.html) · [2026-10-10 日报](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-daily-2026-10-10.html) · [进度与问题验收](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-audit-2026-10-10.html)
 
 前端交互原型。当前快照：2026-10-10。下载后可直接打开 index.html，无需安装依赖。
 
@@ -10,7 +10,7 @@
 
 阿里云访问地址：**https://www.siyuejn.com/crm/**。2026-10-10 的基础静态发布已完成公网访问及逐文件校验；HTTPS 证书、自动续期模拟和定时器已验证，原站点仍可访问。部署与回滚方法见 [阿里云维护说明](deploy/aliyun/README.md)。
 
-本轮临时转班、批量报名纠错及课消模拟的实现和测试见 [独立增补记录](docs/siyue-update-2026-10-10.html)。本轮前端版本 `34031f277105` 已发布到阿里云与 GitHub Pages，49 个公开文件逐项校验一致；Safari 已实际验证线上演示导入后为 2 次课消、¥600。
+本轮临时转班、批量报名纠错及课消模拟的实现和测试见 [独立增补记录](docs/siyue-update-2026-10-10.html)。随后已发布员工认证、可修改授权、销售转化率与白色品牌标志；54 个公开文件逐项校验一致，线上 CLI 的初始登录/强制改密限制/退出已验证，原有服务保持运行。课消模拟导入此前在 Safari 验证为 2 次课消、¥600。
 
 ## 使用边界
 
