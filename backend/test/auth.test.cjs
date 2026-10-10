@@ -55,3 +55,22 @@ test('audit rejects reversed date ranges instead of returning a misleading empty
 test('authenticated CLI includes settings and browser commands only under their declared grants',async t=>{const f=await fixture(t),admin=await adminReady(f),created=await employee(f,admin),token=await activate(f,created);const sales=await f.call(token,'/v1/catalog');assert.equal(sales.status,200);assert.ok(sales.body.frontendOperations.some(x=>x.label==='办理补费'));assert.ok(!sales.body.frontendOperations.some(x=>x.label==='收款渠道设置'));assert.ok(!sales.body.frontendOperations.some(x=>x.label==='创建校区'));const all=await f.call(admin,'/v1/catalog');assert.ok(all.body.frontendOperations.some(x=>x.label==='收款渠道设置'));assert.ok(all.body.frontendOperations.some(x=>x.label==='创建校区'))});
 
 test('publish-only marketing permission includes page discovery without creating activities',async t=>{const f=await fixture(t),admin=await adminReady(f),created=await employee(f,admin,{additionalPermissions:['promotion.publish'],deniedPermissions:['promotion.create']}),token=await activate(f,created);const response=await f.call(token,'/v1/catalog');assert.equal(response.status,200);for(const page of ['mallGroup','mallJoint','mallCoupon'])assert.ok(response.body.frontendOperations.some(x=>x.id==='page.'+page));assert.ok(!response.body.frontendOperations.some(x=>x.label==='创建拼团'));});
+
+
+test('password minimum accepts ten characters while preserving complexity and username checks',()=>{
+ const {strongPassword}=require('../src/auth-credentials.cjs');
+ const accepted='Abcdef12!3';assert.equal(accepted.length,10);assert.equal(strongPassword(accepted,'employee01'),true);
+ for(const rejected of ['Abcde12!3','abcdef12!3','ABCDEF12!3','Abcdefgh!?','Abcdef1234'])assert.equal(strongPassword(rejected,'employee01'),false,rejected);
+ assert.equal(strongPassword(accepted,'ABC'),false);
+});
+test('nine-character password is rejected, ten-character password can be saved and used to log in',async t=>{
+ const f=await fixture(t),password='Abcdef12!3';
+ const short=await f.call(f.initial.body.token,'/v1/auth/password','POST',{currentPassword:f.credentials.initialPassword,newPassword:'Abcde12!3'});
+ assert.equal(short.status,400);assert.equal(short.body.code,'WEAK_PASSWORD');assert.match(short.body.message,/至少 10 位/);
+ const changed=await f.call(f.initial.body.token,'/v1/auth/password','POST',{currentPassword:f.credentials.initialPassword,newPassword:password});
+ assert.equal(changed.status,200);assert.equal(changed.body.reauthenticate,true);
+ assert.equal((await f.call(f.initial.body.token,'/v1/auth/me')).status,401);
+ const login=await f.login(f.credentials.username,password);assert.equal(login.status,200);assert.equal(login.body.user.mustChangePassword,false);
+ const same=await f.call(login.body.token,'/v1/auth/password','POST',{currentPassword:password,newPassword:password});assert.equal(same.status,400);assert.equal(same.body.code,'PASSWORD_UNCHANGED');
+ const wrongCurrent=await f.call(login.body.token,'/v1/auth/password','POST',{currentPassword:'Wrong123!X',newPassword:'Newpass34!'});assert.equal(wrongCurrent.status,403);assert.equal(wrongCurrent.body.code,'CURRENT_PASSWORD_INVALID');
+});

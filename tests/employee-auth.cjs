@@ -23,3 +23,21 @@ test('audit paging ignores duplicate clicks and only commits its cursor after a 
 
 test('lead reactivation follows assignment grant and bulk import follows creation grant',async()=>{const b=await create(user(['lead.read','lead.assign'],{scope:{type:'all'}}));b.run("leadState.leads[0].status='cold'");assert.equal(b.run('reactivateLead(0)'),true);assert.equal(b.run('crmImportCommit()'),false);const follower=await create(user(['lead.read','lead.follow'],{scope:{type:'all'}}));follower.run("leadState.leads[0].status='cold'");assert.equal(follower.run('reactivateLead(0)'),false)});
 test('read grants expose corresponding archive pages without edit grants',async()=>{for(const [permission,pages] of [['student.read',['studentDetail','studentArchives']],['teacher.read',['teacherArchives']],['staff.read',['staffArchives']]]){const b=await create(user([permission]));for(const page of pages)assert.equal(b.run(`permissionCanVisit('${page}')`),true);assert.equal(b.run("permissionCanVisit('staff')"),false)}});
+
+
+test('password change rejects nine characters and permits ten across the first-login form',async()=>{
+ for(const [password,accepted]of [['Abc!23456',false],['Abcd!23456',true]]){
+  const b=await create(user(['dashboard.read'],{mustChangePassword:true}));
+  const html=b.elements.get('#employee-auth-gate').innerHTML;
+  assert.equal((html.match(/minlength="10"/g)||[]).length,2);
+  assert.match(html,/至少 10 位/);assert.doesNotMatch(html,/至少 14 位|minlength="14"/);
+  b.ctx.document.querySelector('#ea-current').value='Existing-Test!23456';
+  b.ctx.document.querySelector('#ea-new').value=password;
+  b.ctx.document.querySelector('#ea-repeat').value=password;
+  await b.run('employeeAuth.password()');
+  const changed=b.requests.filter(r=>r.url.endsWith('/v1/auth/password'));
+  assert.equal(changed.length,accepted?1:0);
+  if(accepted){assert.equal(JSON.parse(changed[0].options.body).newPassword,password);assert.match(b.elements.get('#employee-auth-gate').innerHTML,/密码已修改/)}
+  else assert.match(b.elements.get('#employee-auth-gate').innerHTML,/密码至少 10 位/);
+ }
+});
