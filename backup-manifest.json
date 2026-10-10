@@ -1,0 +1,33 @@
+{
+  "snapshot_date": "2026-10-10",
+  "files_sha256": {
+    "academic.css": "bbc5ed4d1766b7a4dbe0547df65ffa0a19dbe229a4536bb2fcf9dc9e89894c88",
+    "academic.js": "7dfb737b5be7502e8530b81bd2c6805ab29b49db86aae58987f6104333280bb9",
+    "batch-operations.css": "b29ba771e79b5351fc8cf1ab2b914a31ed113ca08259835d27624cdd59db22d5",
+    "batch-operations.js": "c078687f0c201dab832ed930cd7a01ef8417210f152bfe05b2a4832dd4e1ec8b",
+    "command-search.js": "e7dbaaa3213a0d8335323d89ef1f0d9ac2b0c01d661de7ffe3d4d504e92b8208",
+    "enhancements.js": "82d373e65a6651856a3a44e298cdf741e229c51dbef04d7978557d429d597a5a",
+    "index.html": "95de9ca67205606bb39a76b2f689123b442e4e232f209966c149d7a3195cb47b",
+    "interface-polish.css": "b7e964d1f85b9b4fc9abf68565e922376897304900464ce3595ef4b08750d25d",
+    "interface-polish.js": "d20be80cb95d04c3e19b818392c5e5f34eb4e446b64c3a7507743d69e1edbf83",
+    "leads.css": "75be16b6a1de5d8b5d5bd040261db6d08b8d35189aeb5c7c07ffd3faf2ec2166",
+    "leads.js": "a61b80e464805ffce2cb51edf4957248e137f11a2385d52a5de15a7306652313",
+    "mall.css": "94ae2b82efb3639b82e9932dc7d910f17d886194b75f5d5c23d3b5cc1154a66d",
+    "mall.js": "bfaae8c317f3f039dde64f84fd6dd8910b3fa0cd03d2ccc871716a7d4c7fd8f0",
+    "marketing-forms.css": "56bd8d7dd0fb4fdd460f383f9c7c347afbe539998da450d2703ddcca2bd0a075",
+    "marketing-forms.js": "2f810c1ebb0a53b1120bbb10823bffae9d5cfe19a63729510124f79d27abec49",
+    "navigation.css": "4cdba56b2e64a99894e5190b991e843fcd231a28aafb22326027e6c1904ba845",
+    "permissions.css": "3b3eaaaae9ade8645d6120a6af1140d78d7ad65baf26a470671547c53b8bfb2a",
+    "permissions.js": "38cb5121a83af841fb70b8310d0d3d78d6f55d2a5e44e3e869369e08a9f88422",
+    "schedule-caterpillar.css": "542c07a61712d939c65978c02f61f9a4e0cde4920e14a1320fe8d44328b6641d",
+    "schedule-caterpillar.js": "f7e858715108dd66958275700cf70668f5a42aeb89b339d910977e0bd0dbb927",
+    "shortcuts.css": "84e9396dafeffe2e639894b9f76efd29284b02eca9b38f156fcd5604e1bef242",
+    "shortcuts.js": "e1ac4eaed3fbf4685fb4f7776b5c66ba11dd7778a3c0fd3fd7fbd8df269c928e",
+    "structure.css": "d69a6a3942226f2714c6b3677816dc5487da23e04e6c07498a9a7e8bd4d5ad14",
+    "structure.js": "f1b9044509618fc38cff412c32fe724f573da318f23d853f3e20bf1491f1dbfa",
+    "system-settings.css": "a53108bcbee3a87751060c9a3e5ce414064494a2d96700049e143834d2dab193",
+    "system-settings.js": "ce60759731ccf6401a78bb2fd0491b4a854899cb22c9c4df0070ff83b6d3de3b",
+    "使用说明.txt": "16460c99ed30e73b213146e71ff7d0dd038e3aa93867b4e82912d3495a153963",
+    "打开原型.cmd": "0edbd8f5b22789c3f11971244871f1b36e23f9e710fdc8b25ca6429165ec81be"
+  }
+}

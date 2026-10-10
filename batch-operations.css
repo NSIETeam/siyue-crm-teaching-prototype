@@ -1,0 +1,6 @@
+body .modal.batch-modal{width:min(1120px,calc(100vw - 32px));max-width:calc(100vw - 32px)}
+.batch-modal .form-grid{max-width:none}.batch-modal .table{min-width:820px}.batch-modal .table .input{min-width:110px}.batch-modal .table td:first-child .input{min-width:200px}
+#batch-candidates{max-height:42vh;overflow:auto;border:1px solid #e7edf5;border-radius:8px}
+.batch-candidate{display:flex;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid #edf1f6}.batch-candidate:last-child{border-bottom:0}
+.batch-candidate label{display:flex;gap:12px;align-items:center;flex:1;min-width:0;cursor:pointer}.batch-candidate small{display:block;color:#8291a6;margin-top:3px}.batch-candidate>.input{width:150px;flex:0 1 150px}
+.batch-candidate:has(label[hidden]){display:none}.batch-candidate [hidden]{display:none!important}.batch-shortcut{display:flex;justify-content:flex-end;margin-bottom:12px}

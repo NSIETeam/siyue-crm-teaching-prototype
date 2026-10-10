@@ -1,0 +1,61 @@
+/* Shared sizing and alignment for controls across every module. */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:0 16px;line-height:20px;white-space:nowrap;vertical-align:middle}
+.btn.small{min-height:32px;padding:0 11px;font-size:12px}
+.actions{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.toolbar,.toolbar-left,.toolbar-right,.form-actions,.modal-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.toolbar{justify-content:space-between}
+.filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.filters>.input,.filters>.select{min-height:40px}
+.form-actions,.modal-actions{margin-top:24px}
+.table td .btn{margin:1px 0}
+.data-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 16px}
+.data-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0 0 18px}
+.data-summary .card{padding:16px 18px}
+.data-summary strong{display:block;font-size:21px;margin-bottom:4px}
+.data-summary span{color:#8190a3;font-size:12px}
+.profile-tabs{overflow:auto;white-space:nowrap}
+.profile-empty{padding:22px 18px;border:1px dashed #dce4ef;border-radius:8px;background:#fbfcfe;color:#718198}
+.profile-empty strong{display:block;color:#33445e;margin-bottom:6px}
+.setting-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.setting-card{border:1px solid #e7edf5;border-radius:10px;padding:18px}
+.setting-card h3{margin:0 0 8px;font-size:15px}
+.setting-card p{margin:0;color:#8190a3;line-height:1.65}
+.setting-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid #edf1f6}
+.setting-row:last-child{border-bottom:0}
+@media(max-width:760px){.setting-grid{grid-template-columns:1fr}.toolbar{align-items:flex-start}.toolbar-left,.toolbar-right{width:100%}.filters>.input,.filters>.select{width:100%;max-width:none}}
+/* Keep the application shell and controls stable under browser zoom. */
+body .app{width:100%;align-items:flex-start}
+body .main{min-width:0;width:0;flex:1}
+body .content{width:100%;max-width:none;padding:clamp(16px,2.3vw,32px)}
+body .sidebar{position:sticky;top:0;height:100dvh;overflow-y:auto;width:220px;flex:0 0 220px}
+body .topbar{height:auto;min-height:72px;display:flex;flex-wrap:wrap;gap:12px 20px;padding:14px clamp(16px,2.3vw,32px)}
+body .topbar>.crumb{flex:0 1 auto;min-width:0;white-space:normal;overflow-wrap:anywhere}
+body .topbar>.global-action{flex:1 1 300px;min-width:180px;max-width:none}
+body .topbar>.user{flex:0 1 auto;flex-wrap:wrap;min-width:0;gap:8px}
+body .topbar .user .select{width:auto;max-width:220px}
+.content .card,.content .pad,.content .form-grid,.content .field,.content .toolbar>*,.content .home-columns>*{min-width:0}
+.content .table-wrap{width:100%;max-width:100%;overflow-x:auto}
+.content .tabs{flex-wrap:nowrap;overflow-x:auto;gap:24px}.content .tab{flex-shrink:0;white-space:nowrap}
+.content .heading,.content .home-greeting{flex-wrap:wrap;gap:14px}
+.content .filters{align-items:center;gap:12px}
+.content .filters>.input,.content .filters>.select{flex:1 1 170px;width:auto;max-width:300px;min-width:0;height:40px}
+.content .filters>label{display:flex;flex-direction:column;gap:6px;min-width:0}
+.content .filters:has(>label){align-items:flex-end}
+.content .btn{flex-shrink:0;white-space:nowrap;line-height:20px}
+.content .toolbar-left,.content .toolbar-right{min-width:0;flex-wrap:wrap}
+.content .toolbar-left>.input,.content .toolbar-left>.select{width:auto;min-width:0;max-width:100%}
+.content .workflow-metrics{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
+.content .inline{flex-wrap:wrap}.content .inline>*{flex:1 1 140px;min-width:0}
+.content .global-result{flex-wrap:wrap}.global-result strong,.global-result small{overflow-wrap:anywhere}
+body .modal{max-width:calc(100vw - 24px);width:min(780px,100%)}
+@media(max-width:1100px){body .sidebar{width:190px;flex-basis:190px}.content .home-columns{grid-template-columns:1fr}body .topbar>.crumb{flex-basis:100%}}
+@media(max-width:760px){body .app{display:flex}body .main{width:0;min-width:0;flex:1}body .sidebar{position:sticky;top:0;display:block;align-self:flex-start;flex:0 0 164px;width:164px;height:100vh;height:100dvh;max-height:none;overflow-y:auto;overflow-x:hidden;padding:16px 8px}body .topbar>.global-action{flex-basis:100%;min-width:0;order:3}.content .form-grid,.content .setting-grid{grid-template-columns:1fr}.content .pad{padding:16px}.content .toolbar-left,.content .toolbar-right{width:auto;max-width:100%}.content .filters>.input,.content .filters>.select{max-width:none}.content .btn{max-width:100%}}
+
+/* Navigation stays a full-height left rail at every zoom breakpoint. */
+body .sidebar{display:block;max-height:none;height:100vh;height:100dvh;overflow-x:hidden;scrollbar-gutter:stable}
+body .sidebar .menu-item,body .sidebar .nav-toggle{width:100%;white-space:normal;text-align:left}
+body .sidebar .brand{white-space:normal}
+body .sidebar [hidden]{display:none!important}
+@media(max-width:760px){body .sidebar .nav-level-1{padding:10px 8px}body .sidebar .nav-level-2{padding:9px 8px 9px 16px}body .sidebar .nav-level-3{padding:8px 6px 8px 26px}body .sidebar .brand{padding:4px 8px 14px;font-size:16px}body .sidebar .brand small{display:block;font-size:10px}}
+
+.command-options{margin-top:12px;max-height:50vh;overflow:auto}.command-options [hidden]{display:none!important}.command-options .global-result{border-bottom:1px solid #edf1f6;flex-wrap:wrap}.command-options .global-result strong{text-align:left}
