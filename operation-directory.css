@@ -3,3 +3,5 @@
 .operation-icon:focus-visible{outline:2px solid #315deb;outline-offset:2px}
 .workflow-policy-settings>summary svg{display:inline-block;vertical-align:middle;margin-right:8px}
 .workflow-policy-settings>summary span{vertical-align:middle}
+.lead-operation .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.lead-operation .btn svg{display:block;flex:0 0 18px;width:18px;height:18px}

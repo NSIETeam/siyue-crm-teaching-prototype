@@ -1180,7 +1180,7 @@
       "page": "students",
       "permission": {
         "page": "students",
-        "action": "students"
+        "action": null
       },
       "mode": "open-form",
       "inputSchema": {

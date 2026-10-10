@@ -1,6 +1,13 @@
 // Teacher and student schedules are shown as a chronological caterpillar;
 // campus and room views remain tables for operational scanning.
-function scTimeParts(c){const date=String(c.date||''),m=String(c.time||'').match(/(\d{1,2}):(\d{2})\s*[–—-]\s*(\d{1,2}):(\d{2})/);if(!m||!/^\d{4}-\d{2}-\d{2}$/.test(date))return {start:0,end:0};const day=Date.parse(`${date}T00:00:00`);return {start:day+Number(m[1])*3600000+Number(m[2])*60000,end:day+Number(m[3])*3600000+Number(m[4])*60000}}
+function scTimeParts(c){
+ const date=String(c.date||''),m=String(c.time||'').match(/^\s*(\d{1,2}):(\d{2})\s*[–—-]\s*(\d{1,2}):(\d{2})\s*$/);
+ if(!m||!/^\d{4}-\d{2}-\d{2}$/.test(date))return {start:0,end:0};
+ const [,sh,sm,eh,em]=m.map(Number),day=Date.parse(`${date}T00:00:00`),check=new Date(`${date}T12:00:00`);
+ if(!Number.isFinite(day)||check.getFullYear()!==Number(date.slice(0,4))||check.getMonth()+1!==Number(date.slice(5,7))||check.getDate()!==Number(date.slice(8,10))||sh>23||eh>23||sm>59||em>59)return {start:0,end:0};
+ const start=day+sh*3600000+sm*60000,end=day+eh*3600000+em*60000;
+ return end>start?{start,end}:{start:0,end:0};
+}
 function scDateLabel(date){const d=new Date(`${date}T00:00:00`);return `${date} 周${'日一二三四五六'[d.getDay()]}`}
 function scEventStatus(c){const key=workflowSessionKey(c),record=(c.sessions||[]).find(s=>s.sessionId===key&&s.record),att=a.attendance.filter(x=>(x.sessionId===key||x.classIndex===a.classes.indexOf(c)&&x.date===c.date));if(record)return {label:'已录授课记录',kind:'done'};if(att.length&&att.every(x=>['已考勤','已消课'].includes(x.status)))return {label:'考勤已完成',kind:'done'};if(c.status==='已结课')return {label:'已结课',kind:'done'};return {label:'待上课 / 待确认',kind:'planned'}}
 function scCourseLesson(c){const course=a.courses.find(x=>x.id===c.courseId||x.name===c.course),lesson=(course?.lessons||[]).find(x=>x.id===c.lessonId)||(course?.lessons||[])[0];return {course,lesson}}
