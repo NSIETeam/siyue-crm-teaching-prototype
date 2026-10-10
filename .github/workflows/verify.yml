@@ -14,3 +14,4 @@ jobs:
         with:
           node-version: '22'
       - run: node tests/run.cjs
+      - run: node --test backend/test/*.test.cjs

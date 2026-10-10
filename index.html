@@ -26,6 +26,7 @@
 <link rel="stylesheet" href="finance-quick-actions.css">
 <link rel="stylesheet" href="profile-quick-actions.css">
 <link rel="stylesheet" href="operation-journal.css">
+<link rel="stylesheet" href="workspace-navigation.css">
 </head>
 <body>
 <svg class="ui-icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" width="0" height="0"><defs><symbol id="ui-back-arrow" viewBox="0 0 24 24"><path d="M21 12H3M12 3l-9 9 9 9"/></symbol></defs></svg>
@@ -103,7 +104,7 @@
       </div>
     </div>
   </aside>
-  <main class="main"><header class="topbar"><div class="crumb"><span id="crumb">基础设置</span></div><div class="user"><button type="button" class="avatar account-trigger" onclick="accountOpen()" aria-label="设置和账号管理" aria-haspopup="dialog" title="设置和账号管理"><span class="avatar-letter">管</span><svg class="avatar-gear" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3-.5 2-2 1L4.5 6 3 9l1.5 1.5v3L3 15l1.5 3 2-.1 2 1L9 21h6l.5-2 2-1 2 .1 1.5-3-1.5-1.5v-3L21 9l-1.5-3-2 .1-2-1L15 3Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></header><div id="view" class="content"></div></main>
+  <main class="main"><header class="topbar"><div class="crumb"><button id="workspace-back" type="button" onclick="workspaceBack()" aria-label="返回上一页" title="返回上一页" disabled><svg class="back-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#ui-back-arrow"></use></svg></button><span id="crumb">基础设置</span></div><div class="user"><button type="button" class="avatar account-trigger" onclick="accountOpen()" aria-label="设置和账号管理" aria-haspopup="dialog" title="设置和账号管理"><span class="avatar-letter">管</span><svg class="avatar-gear" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3-.5 2-2 1L4.5 6 3 9l1.5 1.5v3L3 15l1.5 3 2-.1 2 1L9 21h6l.5-2 2-1 2 .1 1.5-3-1.5-1.5v-3L21 9l-1.5-3-2 .1-2-1L15 3Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></header><div id="view" class="content"></div></main>
 </div>
 <div class="toast" id="toast"></div>
 <script>
@@ -146,6 +147,7 @@ document.querySelectorAll('.menu-item').forEach(e=>e.addEventListener('click',()
 <script src="audit-repairs.js"></script>
 <script src="finance-quick-actions.js"></script>
 <script src="profile-quick-actions.js"></script>
+<script src="workspace-navigation.js"></script>
 <script src="operation-journal.js"></script>
 </body>
 </html>
