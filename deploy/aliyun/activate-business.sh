@@ -67,7 +67,7 @@ systemctl reload nginx
 systemctl start siyue-crm-backup.service
 systemctl enable siyue-crm-auth.service siyue-crm-backup.timer
 systemctl start siyue-crm-backup.timer
-for unit in siyue-crm-auth.service siyue-crm-backup.timer nginx siyue-question-bank.service postgresql; do systemctl is-active --quiet "$unit"; done
+for unit in siyue-crm-auth.service siyue-crm-backup.timer nginx; do systemctl is-active --quiet "$unit"; done
 curl --connect-timeout 5 --max-time 15 -fsS https://www.siyuejn.com/crm-api/healthz | python3 -I -c 'import sys,json;r=json.load(sys.stdin);assert r["authenticationReady"] and r["businessReady"] and not r["paymentProviderReady"];print("Public API health verified.")' 
 trap - EXIT HUP INT TERM
 printf '\nBusiness deployment complete; existing account data preserved.\n'

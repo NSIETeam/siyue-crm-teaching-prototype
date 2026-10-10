@@ -116,11 +116,21 @@ node deploy/aliyun/verify-http.cjs \
 
 ## 共享业务服务（2026-10-11）
 
+当前 CRM 使用 SQLite 和独立账号 JSON，不依赖原题库服务或 PostgreSQL。两项旧服务不再作为 CRM 发布与验收的前置条件。前文保留各阶段的原始验收记录，其中旧服务运行正常的描述仅代表当时状态，不是当前部署要求。
+
 - 业务库：`/var/lib/siyue-crm-auth/business.sqlite`，与账号库在同一私有目录但独立保存；WAL、完整同步、版本冲突和幂等提交。
 - 设置 `SIYUE_BUSINESS_STORE` 与 `SIYUE_POLICY_WORKER=1`。只有已发布的线索策略会参与定时回收。
 - 构建器同时打包三个领域处理器、运行接口契约、备份工具和 service/timer，绝不打包数据文件。
 - 压缩包校验并安全解压后，运行新版本内 `sh deploy/aliyun/activate-business.sh <auth-release-id>`。脚本使用本项目已盘点的服务器路径，仅适用于该主机；会停止本服务、备份已有账号和业务库，切换代码、检查本地及公网健康、检查 Nginx 并启动定时备份。账号存在是硬性前提，不会重新初始化。
 - 错误仅回退代码及部署配置，保留当前数据；禁止用旧账号库覆盖已修改的密码、授权或会话。
 - 备份：`/var/backups/siyue-crm`，每日北京时间03:20（最多延迟两分钟），目录0700、文件0600。首次部署立即运行一次；恢复步骤和一致性边界见 [后端说明](../../backend/README.md)。当前未配置异机副本或自动清理。
-- 验收须逐一检查 API、备份定时器、Nginx、原题库服务及 PostgreSQL；`systemctl is-active` 多个参数仅能证明至少一个运行，不能替代逐个检查。
+- 验收须逐一检查 `siyue-crm-auth.service`、`siyue-crm-backup.timer` 和 Nginx，并校验公开 HTTPS 健康接口、未登录访问拒绝和私有备份完整性；`systemctl is-active` 多个参数仅能证明至少一个运行，不能替代逐个检查。
+- 旧服务退役与 CRM 发布分开处理。原题库名称的 Nginx 站点配置可能同时包含 CRM 路由、证书和 ACME 验证路径，必须按实际配置保留这些内容；不得因文件名含旧服务名称而整份删除，也不得删除 CRM 数据、备份或证书。
 - 正式库不写入验收学生；服务器上的办理全链路测试使用临时独立账号与数据库，结束后只清理本次自建临时目录。
+
+
+## 旧题库已退役（2026-10-11）
+
+按用户授权，已在私有恢复备份完成且校验通过后移除旧题库 service、程序/业务目录及专用 PostgreSQL 16/main 集群。现有站点配置为 `/etc/nginx/sites-available/siyue-crm.conf`，保留 CRM、HTTPS、IPv6、ACME；根路径转向 `/crm/`，旧题库路由返回 410。旧 8180、5432 监听已关闭，PostgreSQL 已禁用；软件包和历史访问日志保留。
+
+恢复档案留在 `/var/backups/siyue-retired-question-bank/20261011-retirement`，不在公开目录、不上传 GitHub。禁止将旧题库整体 Nginx 备份直接覆盖新站点；如需恢复旧业务，单独规划隔离入口。上述早期安装脚本及历史记录中的旧题库路径不再是当前站点路径。
