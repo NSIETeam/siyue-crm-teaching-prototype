@@ -51,7 +51,7 @@ op('staff.archive','查看职工档案','archives',obj({employeeId:id}),['查看
 op('course.create','创建课程与商品草稿','academic',ref('CourseInput'),['创建课程']);
 op('course.update','更新课程草稿','academic',obj({courseId:id,draft:ref('CourseInput')}),['编辑课程']);
 op('course.publish','发布课程版本','academic',obj({courseVersionId:id}));
-op('class.create','创建班级','academic',ref('ClassInput'),['创建班级']);
+op('class.create','创建班级','academic',ref('ClassInput'),['创建班级','班级排课']);
 op('class.batchCreate','批量创建班级','academic',obj({classes:arr(ref('ClassInput'))}),['批量创建班级']);
 op('class.relocate','批量班级转校区','academic',obj({classIds:ids,targetCampusId:id,effectiveAt:time,reason:str(1000)}),['批量班级转校区']);
 op('enrollment.create','单个学生报名','academic',ref('EnrollmentInput'),['为学生报名']);

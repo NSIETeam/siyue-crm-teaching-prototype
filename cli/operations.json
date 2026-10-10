@@ -2,6 +2,30 @@
   "version": "0.1.0",
   "operations": [
     {
+      "id": "action.classes.schedule",
+      "label": "班级排课",
+      "aliases": [
+        "排课",
+        "课程排期",
+        "批量排课",
+        "每周排课",
+        "调整上课日期"
+      ],
+      "page": "classes",
+      "permission": {
+        "page": "classes",
+        "action": "classes"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
       "id": "action.classes.3d6367f0",
       "label": "批量班级转校区",
       "aliases": [

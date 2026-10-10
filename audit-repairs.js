@@ -13,7 +13,7 @@ function auditAtomic(fn){return function(...args){
  auditTransactionDepth++;toast=(...message)=>messages.push(message);
  let result,failure;
  try{result=fn.apply(this,args);const after=JSON.stringify(auditBusinessSnapshot());if(after!==before)localStorage.setItem(auditBusinessKey,after)}catch(error){failure=error;const snapshot=JSON.parse(before);Object.assign(a,ui.academic);Object.assign(leadState,ui.lead);Object.assign(workflowState,ui.workflow);mallState.shelved=snapshot.shelved;mallState.hiddenShelved=snapshot.hiddenShelved;mallState.activities.coupon=snapshot.offers;mallState.activities.group=snapshot.groups;mallState.activities.joint=snapshot.joints;state.page=ui.page;state.mode=ui.mode}finally{auditTransactionDepth--;toast=notify}
- if(failure){render();notify('本次操作未保存，数据已还原。请检查浏览器存储空间后重试。');console.error('Prototype operation rolled back',failure);return false}
+ if(failure){render();notify('本次操作未保存，数据已还原，请重试或联系管理员。');console.error('Prototype operation rolled back',failure);return false}
  messages.forEach(message=>notify(...message));return result;
 }}
 const auditMayBase=workflowMay;

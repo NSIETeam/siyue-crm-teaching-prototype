@@ -1,6 +1,6 @@
 # 思跃 CRM 与教务综合系统
 
-[阿里云在线原型](https://www.siyuejn.com/crm/) · [GitHub Pages 镜像](https://nsieteam.github.io/siyue-crm-teaching-prototype/) · [改造计划与原始逻辑图](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-project-plan.html) · [账号与销售统计增补](docs/siyue-auth-2026-10-10.html) · [2026-10-10 日报](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-daily-2026-10-10.html) · [进度与问题验收](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-audit-2026-10-10.html)
+[阿里云在线原型](https://www.siyuejn.com/crm/) · [GitHub Pages 镜像](https://nsieteam.github.io/siyue-crm-teaching-prototype/) · [改造计划与原始逻辑图](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-project-plan.html) · [账号与销售统计增补](docs/siyue-auth-2026-10-10.html) · [课程、建班与排课验收](docs/academic-audit-2026-10-10.html) · [2026-10-10 日报](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-daily-2026-10-10.html) · [进度与问题验收](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-audit-2026-10-10.html)
 
 前端交互原型。当前快照：2026-10-10。下载后可直接打开 index.html，无需安装依赖。
 
@@ -53,3 +53,9 @@ backup-manifest.json 记录同步时的原型源码 SHA-256。docs/ 保留早期
 销售统计默认按近90天登记的线索：只有关联已付款订单才计转化，同一线索只计一次，首次成交保留销售归属。样本少于10条显示“样本不足”和人数，不显示百分比或参与排名；达到10条后显示百分比及分子分母。历史成交缺少可靠归属时不猜测归入个人业绩。当前统计仍计算本机原型数据。
 
 `node cli/siyue-cli.cjs login --username <账号>` 登录；`passwd` 改密；`whoami` 查看身份；`logout` 退出。密码不接受命令行参数，终端隐藏输入；`list/describe/plan` 必须经过认证且以服务器授权为准。`simulate` 明确为无需联网的隔离模拟，不是生产写入。
+
+## 课程、班级与逐讲排课
+
+课程先设置逐讲内容，再创建班级并选择真实启用校区、教室和在职老师。班级列表的“排课”或搜索“班级排课”可按每周上课日生成未排讲次，逐行调整日期时段，检查实际授课老师、教室及学生冲突后整批保存。每讲保留稳定标识，点名、代课、临转、补课和课消分别关联对应课次。
+
+取消课次不会因重开排期恢复；已有记录不会被重新排课改写。转校区只更新未来未授课课次，历史地点保留。课程、班级、批量办理及相关权限回归和 Safari 实际验收见[专项报告](docs/academic-audit-2026-10-10.html)。新排课入口已同步 siyue-cli 操作目录，业务接口仍属预留契约，不提供真实业务写入。

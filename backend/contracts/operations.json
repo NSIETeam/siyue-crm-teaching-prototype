@@ -195,6 +195,7 @@
         "$ref": "#/components/schemas/ClassCreateInput"
       },
       "frontendAliases": [
+        "action.classes.schedule",
         "action.classes.7a1e490"
       ]
     },

@@ -32,6 +32,8 @@ test('business IDs are stable, unique and frontend aliases refer to existing com
  assert.equal(catalog.authorizationFiltered,false);
  for(const operation of catalog.operations){assert.equal(operation.execution,'planned');assert.match(operation.id,/^[a-zA-Z]+\.[a-zA-Z]+$/);for(const alias of operation.frontendAliases)assert.ok(existing.has(alias),alias);}
  for(const id of ['enrollment.batchCreate','class.batchCreate','class.relocate','enrollment.batchTransfer','teacher.archive','staff.archive','audit.query'])assert.ok(catalog.operations.some(x=>x.id===id));
+ const scheduling=frontend.operations.find(x=>x.id==='action.classes.schedule');assert.equal(scheduling?.label,'班级排课');assert.equal(scheduling.execution,'browser-only');
+ const owners=catalog.operations.filter(x=>x.frontendAliases.includes(scheduling.id));assert.deepEqual(owners.map(x=>x.permission),['class.create']);
 });
 test('every planned operation is accepted by preview and execute contract with matching input schema',()=>{
  for(const mode of ['preview','execute']) {

@@ -1,5 +1,9 @@
 [
+  "academic-class-audit.css",
+  "academic-class-audit.js",
   "academic-repairs.js",
+  "academic-scheduling.js",
+  "academic-session-audit.js",
   "academic.css",
   "academic.js",
   "account-settings.css",

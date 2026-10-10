@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>教务功能逐项验收｜2026-10-10</title>
+<style>
+body{font:16px/1.85 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;color:#243149;background:#f4f7fb;margin:0}main{max-width:1040px;margin:36px auto;padding:36px;background:#fff;border:1px solid #e1e8f2;border-radius:16px}h1{font-size:30px;line-height:1.35}h2{font-size:22px;margin-top:32px;border-bottom:1px solid #e7edf4;padding-bottom:10px}a{color:#315deb}nav{display:flex;flex-wrap:wrap;gap:16px}.meta{color:#74859b}.note{background:#f1f5fd;border-left:4px solid #315deb;padding:14px 18px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px}td,th{border:1px solid #e3eaf2;text-align:left;vertical-align:top;padding:11px 12px}th{background:#f6f8fc;white-space:nowrap}.status{color:#148554;white-space:nowrap;font-weight:600}ol,ul{padding-left:24px}li{margin:7px 0}code{font:13px/1.5 ui-monospace,SFMono-Regular,monospace;overflow-wrap:anywhere;background:#f3f5f9;padding:2px 5px}.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.flow span{padding:7px 12px;background:#f2f5fb;border:1px solid #e2e9f3;border-radius:5px}@media(max-width:700px){main{margin:0;padding:20px;border:0;border-radius:0}h1{font-size:26px}table{min-width:660px}}@media print{body{background:#fff}main{margin:0;padding:0;border:0}h2{break-after:avoid}tr{break-inside:avoid}a{color:inherit}.table-wrap{overflow:visible}}
+</style>
+</head>
+<body><main>
+<p class="meta">思跃 CRM 与教务系统 · 2026-10-10 · 本轮专项验收</p>
+<h1>课程、建班与多讲排课逐项验收</h1>
+<nav><a href="siyue-project-plan.html">原始计划与逻辑图</a><a href="siyue-daily-2026-10-10.html">当天总日报</a><a href="siyue-auth-2026-10-10.html">账号与权限记录</a><a href="https://www.siyuejn.com/crm/">员工入口</a></nav>
+<p class="note">本轮已打通“设置课程讲次 → 创建班级 → 生成并检查排期 → 课表查看 → 指定课次办理”。重点修复多讲次关联、资源冲突、旧记录迁移和历史地点保护。以下分别记录自动化检查与 Safari 实际操作，不将专项通过扩大为全平台验收完成。</p>
+<p class="meta" id="academic-audit-release-status">本页随本轮源码提交归档。GitHub Pages 从 main 发布；员工入口单独构建并逐文件核对。具体发布标识记录在部署交付结果中。</p>
+
+<h2>本轮办理逻辑</h2>
+<div class="flow" aria-label="教务办理顺序"><span>课程与逐讲内容</span><span>班级、老师、校区、教室</span><span>按星期生成排期</span><span>检查资源与学生冲突</span><span>保存全部课次</span><span>课表与课次操作同步</span></div>
+<p>班级保存长期名单；每一讲保存独立日期、时段和稳定课次标识。点名、授课记录、代课、临时转班及补课关联到具体课次。同一天有多讲时分别处理，不再只靠班级和日期判断。</p>
+
+<h2>修复与验收清单</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>项目</th><th>本轮行为</th><th>验证依据</th></tr></thead><tbody>
+<tr><td>课程资料与讲次</td><td>校验课程必填项、价格、讲次时长、重复名称和讲次标识。课程与商城商品草稿同步；教学版本独立于商品版本。已有排课或订单引用的教学内容受到保护。</td><td>课程与班级专项；Safari 编辑数学课程为 3 讲。</td></tr>
+<tr><td>单个与批量建班</td><td>选择有效课程、启用校区、在职老师及所属教室；容量须为正整数且不超过教室容量，检查同名班级和时间冲突。批量预览与提交重新校验。</td><td>课程与班级、批量与课表专项；Safari 搜索创建班级并建立验收班。</td></tr>
+<tr><td>多讲排课</td><td>按课程讲次生成日期，保留已有排期；逐讲可调整时段，再统一检查、保存。一个班级可包含多个课次，无需复制成多个班级。</td><td>排课流程专项；Safari 生成并保存连续 3 个周日的课次。</td></tr>
+<tr><td>选班与返回草稿</td><td>选择班级后，星期勾选跟随首讲日期；周日值不会被误当作未选择。返回页面保留手动星期勾选与尚未保存的行内输入。</td><td>Safari 发现默认周六残留问题；修复后新增自动化回归，排课流程 20 项通过。</td></tr>
+<tr><td>未来资源冲突</td><td>检查每一讲及跨班后续排期的老师、教室与学生占用；候选双方均使用实际代课老师。部分时间重叠也会阻止保存。</td><td>排课、课表及课次专项覆盖后续课次、同班重叠、实际代课冲突与被释放的原授课老师。</td></tr>
+<tr><td>课表与课次选择</td><td>老师、学生使用时间轴；教室、校区使用表格。点击第二讲进入第二讲的日期和内容；返回课表保留原课程筛选。</td><td>Safari 逐项操作验证；导航与课表专项验证稳定课次标识。</td></tr>
+<tr><td>取消、结束与无效时间</td><td>取消或结束课次不占用正常排课资源；重新打开排课保存不会恢复已取消课次。时间无效时明确提示无法完整判断冲突。</td><td>批量与课表、排课及课次专项；包含取消状态保存和重载回归。</td></tr>
+<tr><td>点名、授课记录与代课</td><td>同一天的不同讲次分别保存，不覆盖上一讲；重复保存不增加重复考勤。教学记录和代课只作用于选中课次；取消课次、未知课次及无权限操作被拒绝。</td><td>课次操作专项，包含同日两讲、记录重开、实际代课、规则校验及失败回滚。</td></tr>
+<tr><td>临时转班与补课</td><td>临时转班只变更指定课次名单；补课按原课次与目标课次唯一标识关联。同一学生可在同一天预约目标班的不同讲次，课消分别关联原订单和原讲次。</td><td>临转资格、排课和课次专项；覆盖同日两讲分别预约、分别课消及重复扣课拦截。</td></tr>
+<tr><td>首讲旧数据迁移</td><td>首次建立排期前识别可唯一对应的旧待考勤记录，绑定稳定课次标识并同步新日期。旧记录无法区分同日多讲时，不擅自归到第一讲。</td><td>排课专项：旧键保留、改期同步、稳定班级编号、重载恢复及歧义拒绝。</td></tr>
+<tr><td>班级转校区</td><td>过去、已记录及取消课次保留原校区和教室；未来未授课排期与待考勤地点同步到目标。再次迁移仍保留历史地点，冲突按每节课的实际地点检查。</td><td>排课、批量与课表专项：后续教室冲突、连续迁移、旧班兼容与整批回滚。</td></tr>
+<tr><td>搜索、权限与保存</td><td>已登记课程、建班和排课入口进入对应办理页；操作按当前权限检查。保存失败不留下部分业务修改，重试和重新加载保持记录一致。</td><td>搜索与完整业务回归、网页认证、操作日志、CLI 和后端契约检查。</td></tr>
+</tbody></table></div>
+
+<h2>Safari 实际验收记录</h2>
+<p>以下为本轮在真实 Safari 页面内完成的操作；使用示例课程与专用验收班。</p>
+<div class="table-wrap"><table>
+<thead><tr><th>顺序</th><th>实际操作</th><th>页面结果</th></tr></thead><tbody>
+<tr><td>1</td><td>编辑数学课程，将授课内容配置为 3 讲。</td><td class="status">课程保存并显示 3 讲</td></tr>
+<tr><td>2</td><td>使用万能搜索查找“创建班级”，建立排课验收班；再搜索“班级排课”。</td><td class="status">进入对应建班与排课流程</td></tr>
+<tr><td>3</td><td>选定验收班，按周日排课。</td><td>发现首讲为周日但仍勾周六的问题；已修复选择班级时的星期同步；重新加载后 Safari 确认默认勾选周日，并加入回归。</td></tr>
+<tr><td>4</td><td>生成 2026 年 11 月 1 日、8 日、15 日的 3 节课。</td><td class="status">3 个周日课次与讲次对应</td></tr>
+<tr><td>5</td><td>检查排课冲突，再保存排期。</td><td class="status">校验通过并保存</td></tr>
+<tr><td>6</td><td>进入课表查看验收班。</td><td class="status">显示已保存的 3 讲</td></tr>
+<tr><td>7</td><td>点击第二讲。</td><td class="status">进入 11 月 8 日、第 2 讲</td></tr>
+<tr><td>8</td><td>使用顶栏返回课表。</td><td class="status">原课程筛选保留</td></tr>
+<tr><td>9</td><td>切换为教室表格视角。</td><td class="status">显示相同的 3 条课次</td></tr>
+<tr><td>10</td><td>重新加载页面并选验收班，检查排课表单和控制台。</td><td class="status">3讲保存状态保留、默认周日、控件等高，控制台无错误</td></tr></tbody></table></div>
+<p>上述浏览器验收确认了课程、建班、排期、课表和返回的具体路径。取消课次、双补课、课消金额、权限拒绝、存储异常和历史迁移等边界主要通过隔离自动化验证，未将这些自动化结果写成 Safari 已逐项点击完成。</p>
+
+<h2>自动化检查清单</h2>
+<p id="academic-audit-test-status">最终全量检查 274 项通过，后端认证与契约 23 项通过，共 297 项、0 失败。新增教务专项共 73 项（课程/单班 21、批量/课表 14、多讲排课 20、课次操作 18），已包含在全量统计中。测试按页面实际脚本顺序加载，在隔离存储中执行真实业务处理函数。</p>
+<div class="table-wrap"><table>
+<thead><tr><th>测试套件</th><th>重点检查</th><th>结果</th></tr></thead><tbody>
+<tr><td><code>academic-class-audit.cjs</code></td><td>课程资料、教学版本、单班校验、校区教室、容量、引用保护、权限及保存失败。</td><td class="status">通过</td></tr>
+<tr><td><code>academic-schedule-audit.cjs</code></td><td>批量建班、转校区、资源占用、取消状态、课表筛选、无效时间及部分考勤状态。</td><td class="status">通过</td></tr>
+<tr><td><code>academic-scheduling-flow.cjs</code></td><td>生成与保存多讲排期、后续资源冲突、旧记录迁移、双补课课消、返回草稿、历史地点及选班星期。</td><td class="status">20 项通过</td></tr>
+<tr><td><code>academic-session-audit.cjs</code></td><td>同日多讲点名、记录与代课独立；按讲课消、订单关联、重复扣课拦截、取消与权限防护。</td><td class="status">通过</td></tr>
+<tr><td><code>academic.cjs</code>、<code>full-smoke.cjs</code>、<code>workspace-navigation.cjs</code></td><td>最终脚本层的教务办理、跨模块入口、搜索、筛选、返回及批量业务完整路径。</td><td class="status">通过</td></tr>
+<tr><td>临转资格、课消、批量报名与 CLI 模拟套件</td><td>已有相关流程与新课次结构的兼容；无权限拒绝、重复提交、存储回滚和隔离课消执行。</td><td class="status">通过</td></tr>
+<tr><td>网页认证、CLI 认证、后端认证与契约套件</td><td>账号授权和操作契约回归；不把认证服务通过等同于教学业务后端已接通。</td><td class="status">通过</td></tr>
+<tr><td>脚本语法与差异格式检查</td><td>新增脚本可解析；修改无差异格式错误。</td><td class="status">通过</td></tr>
+</tbody></table></div>
+
+<h2>数据与验收边界</h2>
+<ul>
+<li><strong>线上账号认证为真实服务。</strong>员工登录、权限读取与认证审计已有服务端；本轮教学验收不替代其独立认证报告。</li>
+<li><strong>教学业务仍保存在当前浏览器。</strong>课程、班级、排期、学生名单、模拟订单和考勤使用浏览器存储，尚未成为跨员工、跨设备共享的生产业务数据库。</li>
+<li>本轮使用示例课程、验收班与隔离测试资料；没有修改真实学生、真实支付或生产教学业务数据。测试中的付款、退款和课消金额为演示数据。</li>
+<li>本报告只覆盖本轮课程、建班、排课和直接相关的教务流程，未宣称所有营销、商城、财务、身份组合、设备尺寸及全平台功能全部通过。</li>
+<li>后续接通教学业务后端时，仍需独立验证服务端数据范围、并发占位、幂等提交、交易事务、跨账号同步以及真实支付对账。</li>
+</ul>
+<p class="meta">原有业务逻辑图和修改建议继续复用项目计划；本页作为本轮专项验收记录，不覆盖早期报告的历史结论。</p>
+</main></body></html>
