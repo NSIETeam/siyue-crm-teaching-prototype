@@ -35,8 +35,8 @@ finishEnroll=function(){
 };
 workflowSimulatePayment=function(id){
  if(!workflowGuard('payment'))return;const o=a.orders.find(x=>x.id===id),c=a.classes.find(x=>x.id===o?.classId),s=a.students.find(x=>x.id===o?.studentId);
- if(!o||!c||!s||workflowOrderClosed(o)){toast('订单或关联档案无效');return}if(o.paymentState==='已支付'){toast('该订单已确认到账，请勿重复操作');return}
- const amount=money(o.amount);if(!Number.isFinite(amount)||amount<0){toast('订单金额无效');return}if(!batchRoster(c,s)&&batchOccupied(c)>=Number(c.capacity)){toast('班级已满，请先处理名额');return}
+ if(!o||!c||!s||workflowOrderClosed(o)){toast('订单或关联档案无效');return}
+ const amount=withdrawalMoney(o.amount),received=withdrawalMoney(o.paid);if(amount===null||received===null||received>amount){toast('订单金额无效');return}if(o.paymentState==='已支付'&&received===amount){toast('该订单已确认到账，请勿重复操作');return}if(!batchRoster(c,s)&&batchOccupied(c)>=Number(c.capacity)){toast('班级已满，请先处理名额');return}
  o.paid=o.amount;o.status='交易成功';o.paymentState='已支付';o.entitlementState='已生效';s.status='在读';s.enrollmentStatus='已生效';const count=batchOccupied(c);if(!batchRoster(c,s))c.students=count+1;c.studentIds=[...new Set([...(c.studentIds||[]),s.id])];s.classIds=[...new Set([...(s.classIds||[]),c.id])];s.className=c.name;
  const lead=leadState.leads.find(l=>l.leadId===o.originLeadId);if(lead){lead.stage='已报名';lead.history=lead.history||[];lead.history.push(['支付确认','今天',`订单 ${o.id} 到账，课程权益已生效。`])}workflowPersist();render();toast('模拟到账成功，课程权益已生效');
 };

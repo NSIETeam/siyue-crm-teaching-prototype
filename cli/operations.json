@@ -1038,11 +1038,16 @@
       "execution": "browser-only"
     },
     {
-      "id": "action.permissionLogs.a6551a22",
-      "label": "查看权限变更日志",
+      "id": "action.permissionLogs.6fdcc7d0",
+      "label": "查看操作日志",
       "aliases": [
-        "授权记录",
-        "权限日志"
+        "操作记录",
+        "分类检索",
+        "操作回溯",
+        "审计日志",
+        "权限日志",
+        "操作人",
+        "业务日志"
       ],
       "page": "permissionLogs",
       "permission": {
@@ -1171,15 +1176,15 @@
       "execution": "browser-only"
     },
     {
-      "id": "action.students.464c401d",
+      "id": "action.studentArchives.464c401d",
       "label": "查看学生档案",
       "aliases": [
         "学生档案",
         "学员详情"
       ],
-      "page": "students",
+      "page": "studentArchives",
       "permission": {
-        "page": "students",
+        "page": "studentArchives",
         "action": null
       },
       "mode": "open-form",
@@ -1248,6 +1253,50 @@
       "permission": {
         "page": "positions",
         "action": "positions"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.teacherArchives.142b533b",
+      "label": "查看老师档案",
+      "aliases": [
+        "教师档案",
+        "老师资料",
+        "授课老师档案"
+      ],
+      "page": "teacherArchives",
+      "permission": {
+        "page": "teacherArchives",
+        "action": null
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.staffArchives.cd79c6d5",
+      "label": "查看职工档案",
+      "aliases": [
+        "员工档案",
+        "员工资料",
+        "职工资料"
+      ],
+      "page": "staffArchives",
+      "permission": {
+        "page": "staffArchives",
+        "action": null
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1980,13 +2029,73 @@
     },
     {
       "id": "page.permissionLogs",
-      "label": "打开权限变更日志",
+      "label": "打开操作日志",
       "aliases": [
-        "权限变更日志"
+        "操作日志"
       ],
       "page": "permissionLogs",
       "permission": {
         "page": "permissionLogs",
+        "action": null
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.studentArchives",
+      "label": "打开查看学生档案",
+      "aliases": [
+        "查看学生档案"
+      ],
+      "page": "studentArchives",
+      "permission": {
+        "page": "studentArchives",
+        "action": null
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.teacherArchives",
+      "label": "打开查看老师档案",
+      "aliases": [
+        "查看老师档案"
+      ],
+      "page": "teacherArchives",
+      "permission": {
+        "page": "teacherArchives",
+        "action": null
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.staffArchives",
+      "label": "打开查看职工档案",
+      "aliases": [
+        "查看职工档案"
+      ],
+      "page": "staffArchives",
+      "permission": {
+        "page": "staffArchives",
         "action": null
       },
       "mode": "open-form",
