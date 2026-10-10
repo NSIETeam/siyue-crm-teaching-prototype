@@ -124,6 +124,6 @@ function createAuthService(options){
    return respond(status,{requestId:req.requestId,code,message:status>=500?'认证服务暂不可用，请稍后重试':error.message});
   }
  }
- return {handle,close:()=>store.close(),store};
+ return {handle,close:()=>store.close(),store,authorize:req=>publicUser(reauthenticate(req).user),directory:()=>store.state.users.map(publicUser)};
 }
 module.exports={createAuthService,makeUser};

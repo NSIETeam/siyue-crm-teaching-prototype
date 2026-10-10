@@ -21,6 +21,6 @@ test('real command writes readable result and report without overwriting an earl
  const before=fs.readFileSync(printed.payloadPath,'utf8');const repeated=spawnSync(process.execPath,[cli,'simulate','lesson-consumption','--out',temp],{encoding:'utf8'});assert.notEqual(repeated.status,0);assert.equal(fs.readFileSync(printed.payloadPath,'utf8'),before);
 });
 test('unsupported writes and malformed simulation arguments fail explicitly; help identifies isolated simulation',()=>{
- for(const args of [['execute','session.attendance'],['simulate','unknown','--out','/tmp/unused'],['simulate','lesson-consumption'],['simulate','lesson-consumption','--out']]){const result=spawnSync(process.execPath,[cli,...args],{encoding:'utf8'});assert.notEqual(result.status,0);assert.match(result.stderr,/NOT_IMPLEMENTED|SIMULATION_FAILED/);}
+ for(const args of [['execute','session.attendance'],['simulate','unknown','--out','/tmp/unused'],['simulate','lesson-consumption'],['simulate','lesson-consumption','--out']]){const result=spawnSync(process.execPath,[cli,...args],{encoding:'utf8'});assert.notEqual(result.status,0);assert.match(result.stderr,/NOT_IMPLEMENTED|SIMULATION_FAILED|INVALID_ARGUMENT/);}
  const result=spawnSync(process.execPath,[cli,'help'],{encoding:'utf8'});assert.equal(result.status,0);assert.match(result.stdout,/离线演示/);
 });

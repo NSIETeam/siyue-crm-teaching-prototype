@@ -1,10 +1,10 @@
 # 员工账号、认证与权限
 
-本目录已实现可独立部署的账号认证服务。**报名、线索、课消、支付等业务接口仍返回 501；真实业务数据的逐条权限校验与跨账号同步尚未接通。** 不能用浏览器原型中的演示身份或本地数据作为服务器授权依据。
+本目录已实现独立员工认证，并可连接 [SQLite 共享业务服务](README.md)。同时设置认证与业务存储时，已登记处理器执行真实业务事务和范围校验；仅启用认证时未接通业务仍返回501。不能用演示身份或本地原型数据作为服务器授权依据。支付渠道仍未接通。
 
 ## 初始化与运行
 
-Node.js 20 或更新版本，无第三方依赖。认证数据使用独立非登录系统用户持有的目录；目录权限必须为 `0700`，文件为 `0600`。本服务只支持单进程写入。
+本仓库统一使用 Node.js ≥24.20，无第三方运行依赖。认证数据使用独立非登录系统用户持有的目录；目录权限必须为 `0700`，文件为 `0600`。本服务只支持单进程写入。
 
 ```sh
 node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --out /var/lib/siyue-crm-auth/initial-admin.json
@@ -28,7 +28,7 @@ node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --
 
 ## 接口约定
 
-所有响应禁止缓存。错误为 `{code,message,requestId}`，不输出请求密码、会话令牌或内部异常。JSON 请求上限 16 KiB。
+所有响应禁止缓存。错误为 `{code,message,requestId}`，不输出请求密码、会话令牌或内部异常。认证 JSON 请求上限16 KiB；独立业务请求上限1 MB。
 
 | 方法与地址 | 输入 / 行为 |
 | --- | --- |
@@ -37,12 +37,12 @@ node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --
 | `POST /v1/auth/password` | `{currentPassword,newPassword}`；成功返回 `{changed:true,reauthenticate:true}`，撤销该用户全部会话 |
 | `POST /v1/auth/logout` | 撤销当前会话；浏览器同时清除 Cookie |
 | `GET /v1/roles` | 返回 `roles` 与全部可配置 `permissions` |
-| `GET /v1/catalog` | 仅返回当前账号有权使用的业务 `operations` 及其 `frontendOperations`；业务执行依然未实现 |
+| `GET /v1/catalog` | 仅返回当前账号有权使用的业务 `operations` 及其 `frontendOperations`；启用共享业务时返回当前运行输入模型；未启用时仍为设计目录 |
 | `GET /v1/admin/users` | 超级管理员获取账号列表，无密码或密码哈希 |
 | `POST /v1/admin/users` | 超级管理员创建账号；字段见下；仅此次返回 `initialPassword` |
 | `PATCH /v1/admin/users/:id` | 超级管理员修改姓名、角色、权限、数据范围或停用状态；即时撤销目标账号全部会话 |
 | `POST /v1/admin/users/:id/reset-password` | 超级管理员生成新的随机初始密码，立即撤销目标全部会话并要求再次改密 |
-| `GET /v1/admin/audit` | 超级管理员或明确拥有 `audit.read` 的账号可分类检索认证和账号操作日志 |
+| `GET /v1/admin/audit` | 超级管理员或明确拥有 `audit.read` 的账号可分类检索认证和账号操作日志；共享业务启用后合并业务审计 |
 
 浏览器使用 `HttpOnly; Secure; SameSite=Strict` Cookie，JavaScript 无法读取会话令牌。所有浏览器写请求还需正确 `Origin` 及 `X-CSRF-Token`。登录请求需要正确 `Origin`，尚未有会话时不要求 CSRF。CLI 使用 `Authorization: Bearer <token>`，不接受角色请求头，不可将浏览器 Cookie 当成 CLI 令牌。
 
@@ -78,11 +78,11 @@ node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --
 | `operations` 运营 | 指定校区 | 活动线索、营销策略与商城内容；不默认统一分配线索或处理到账 |
 | `auditor` 只读审计员 | 指定校区 | 只读业务资料与报表；平台操作日志须另行明确授予 `audit.read` |
 
-超级管理员可在创建后逐项增减权限、修改角色和数据范围。范围类型为 `all / campus / own / assigned`；`campus` 必須提供非空 `campusIds`，其余类型不接受校区列表。超管始终为全部范围。跨角色组合和额外授权需要超级管理员明确设置，前端不能自行扩大范围。后续实现业务接口时必须在服务端将此范围应用到逐条数据查询与写入；当前未接通的接口维持 501，不能据此宣称业务数据隔离已完成。
+超级管理员可在创建后逐项增减权限、修改角色和数据范围。范围类型为 `all / campus / own / assigned`；`campus` 必須提供非空 `campusIds`，其余类型不接受校区列表。超管始终为全部范围。跨角色组合和额外授权需要超级管理员明确设置，前端不能自行扩大范围。当前共享业务处理器已将此范围应用于资料投影和读写校验；仅启用认证的部署不因此获得业务接口。更细的业务规则、备份与实现边界见 [后端说明](README.md)。
 
 ## 审计与验证
 
-审计记录：初始化、成功/失败登录、账号列表读取、创建、重置密码、改密、改权限、停用、退出、日志查询，以及已授权但尚未实现的业务操作尝试。拒绝操作记录已确认的操作者。审计不包含明文密码、Bearer 令牌或业务请求体。
+审计记录：初始化、成功/失败登录、账号列表读取、创建、重置密码、改密、改权限、停用、退出、日志查询，以及未接通接口的操作尝试。启用共享业务后，业务预览、成功/失败执行和变更另记于 SQLite，并统一检索。拒绝操作记录已确认的操作者。审计不包含明文密码、Bearer 令牌或业务请求体。
 
 检索参数：`actor` 或 `actorId`、`action`、`outcome`、`from`、`to`、`limit`（1–500），`before` 使用上一页返回的 `nextBefore` 事件 ID。以事件 ID 分页避免同一毫秒的多条记录丢失。单文件达到 32 MiB 时停止继续写入并报错；需先将审计归档到受控存储，不自动删除历史记录。
 
@@ -90,4 +90,4 @@ node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --
 node --test backend/test/*.test.cjs
 ```
 
-测试覆盖初始化与文件权限、密码哈希和令牌不落明文、首次改密限制、Cookie/Origin/CSRF、销售越权、授权修改撤销会话、密码重置与停用、最后超管保护、写失败回滚、无账号枚举、登录速率限制、符号链接拒绝及原有业务 501 边界。
+测试覆盖初始化与文件权限、密码哈希和令牌不落明文、首次改密限制、Cookie/Origin/CSRF、销售越权、授权修改撤销会话、密码重置与停用、最后超管保护、写失败回滚、无账号枚举、登录速率限制、符号链接拒绝及仅认证/设计模式的业务501边界。

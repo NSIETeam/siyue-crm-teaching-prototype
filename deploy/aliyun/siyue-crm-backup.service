@@ -1,0 +1,17 @@
+[Unit]
+Description=Siyue private database snapshot
+After=siyue-crm-auth.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/siyue-crm/runtime/node-v24.21.0-linux-x64/bin/node /opt/siyue-crm/auth-current/backend/src/backup-business.cjs
+Environment=SIYUE_AUTH_STORE=/var/lib/siyue-crm-auth/auth.json
+Environment=SIYUE_BUSINESS_STORE=/var/lib/siyue-crm-auth/business.sqlite
+Environment=SIYUE_BACKUP_DIR=/var/backups/siyue-crm
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/backups/siyue-crm /var/lib/siyue-crm-auth
+PrivateTmp=true
+

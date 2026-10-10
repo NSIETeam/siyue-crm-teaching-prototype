@@ -1,88 +1,102 @@
-# siyue-cli 员工认证与本地模拟 v0.3
+# siyue-cli：员工认证、共享业务与隔离模拟
 
-## 员工账号登录
+CLI 和正式网页使用同一员工账号、授权目录及业务处理器。正式业务的读取、预览和执行访问服务器 SQLite 数据；`simulate` 仍是完全独立的离线演示。使用 Node.js ≥24.20，与后端运行时保持一致。
 
-超级管理员在平台“设置与账号 → 员工账号与权限”创建员工。账号可以按工号自动生成；初始强密码仅创建或重置时回显一次。网页与 CLI 使用同一员工身份及最终授权。
+## 登录与改密
+
+超级管理员从“设置与账号 → 员工账号与权限”统一创建账号、生成初始密码并分配角色/范围。初始密码登录只允许改密、查看本人状态或退出；改密后重新登录。
 
 ```sh
-node cli/siyue-cli.cjs login --username sy-e010
+node cli/siyue-cli.cjs login --username <员工账号>
 node cli/siyue-cli.cjs passwd
-node cli/siyue-cli.cjs login --username sy-e010
+node cli/siyue-cli.cjs login --username <员工账号>
 node cli/siyue-cli.cjs whoami
-node cli/siyue-cli.cjs list 线索
-node cli/siyue-cli.cjs describe lead.follow
-node cli/siyue-cli.cjs plan lead.follow
 node cli/siyue-cli.cjs logout
 ```
 
-登录与改密时在终端隐藏输入密码。自动化可从进程环境注入 `SIYUE_PASSWORD`、`SIYUE_NEW_PASSWORD`，不要将口令放进命令行、脚本源码或仓库；CLI 拒绝 `--password` / `--token` 参数。首次登录与管理员重置后必须改密，完成后所有旧会话撤销，需要用新密码重新登录。
+密码通过终端隐藏输入。受控自动化可以注入 `SIYUE_PASSWORD`、`SIYUE_NEW_PASSWORD`；不要写进源码、命令参数、日志或仓库。CLI 拒绝 `--password`、`--new-password`、`--token`。
 
-默认服务器是 `https://www.siyuejn.com/crm-api/`。可通过登录的 `--server` 或 `SIYUE_SERVER` 指定 HTTPS 地址，仅 `localhost` / `127.0.0.1` / `::1` 的隔离测试允许 HTTP；不会跟随重定向泄露令牌。
+默认服务器为 `https://www.siyuejn.com/crm-api/`。登录 `--server` 或 `SIYUE_SERVER` 可指定其他 HTTPS 地址；只有 localhost/127.0.0.1/::1 测试允许 HTTP。请求不跟随重定向。
 
-CLI 会话保存在用户私有目录 `~/.config/siyue-cli/session.json`，文件 `0600`、目录 `0700`；可用 `SIYUE_CONFIG_DIR` 指定独立路径。拒绝符号链接目录和会话文件。令牌不写入标准输出，也不写入项目目录。网页使用 HttpOnly Secure Cookie 与 CSRF 校验，不使用 localStorage 存登录令牌。
+会话存于 `~/.config/siyue-cli/session.json`，目录 0700、文件 0600；可用 `SIYUE_CONFIG_DIR` 指定独立私有目录。拒绝符号链接目录/会话文件，令牌不输出。改密、管理员重置、停用、权限或范围修改均撤销旧会话，必须重新登录。
 
-`list`、`describe`、`plan` 都必须登录，且每次向服务端重新检查身份并取得过滤后的指令目录。修改员工角色、个人额外授权/禁止项、数据范围、停用或重置密码，会立即撤销该员工全部旧会话。不存在或未授权的操作不会出现在目录中。`plan` 明确返回 `commit:false` 和 `business-backend-not-enabled`；已授权不代表业务后端已实现。
-
-`operations.json` 是构建时导出的公开功能定义，不含学生数据，也不是授权结果。浏览器 `siyueCLI` 的入口仍只打开当前账号允许的原型办理页。线上真实账号认证与本机教学业务状态是两个明确边界。
-
-认证验证：
+## 查看当前授权能力
 
 ```sh
-node --test cli/auth.test.cjs
-node --test backend/test/auth.test.cjs
+node cli/siyue-cli.cjs list
+node cli/siyue-cli.cjs list 报名
+node cli/siyue-cli.cjs describe enrollment.create
+node cli/siyue-cli.cjs get state
+node cli/siyue-cli.cjs get students
+node cli/siyue-cli.cjs get schedule
+node cli/siyue-cli.cjs get reports
+node cli/siyue-cli.cjs get audit-events
 ```
 
-包含真正启动隔离的本机认证服务，再运行 CLI 完成初始账号登录、首次改密、权限目录过滤、修改权限后的旧会话失效、重新登录和退出；不使用线上员工账号。
+`get` 支持 `state / students / employees / leads / orders / schedule / reports / audit-events`。这些输出包含实际授权业务数据；如需保存，使用仓库外的私有路径，不要把学生、订单或员工资料提交公开 GitHub。
 
-## 实际执行一次课消模拟
+`list/describe` 每次检查会话并读取服务器授权目录，不根据本地角色猜测权限。登录后的 `inputSchema`、操作名与权限才是当前运行依据。`cli/operations.json` 是旧页面入口目录；仓库 `backend/contracts/operations.json` 的37项与 `backend/contracts/openapi.json` 是早期设计契约。启用共享业务后，线上 `/crm-api/openapi.json` 动态生成当前运行契约；未启用业务时才返回旧设计契约。
+
+## 预览，再执行
+
+先用 `get` 取得有权访问的记录 ID，再依据 `describe` 准备 JSON。不传数组索引、角色、客户端报价或自行计算的退款额。网页会用名称下拉完成选择；CLI 使用稳定 ID。
+
+例如创建校区的输入文件：
+
+```json
+{
+  "name": "新校区",
+  "rooms": [{"name": "教室一", "capacity": 20}]
+}
+```
+
+```sh
+node cli/siyue-cli.cjs plan campus.create \
+  --input /private/path/campus-input.json \
+  --out /private/path/campus-new.siyue-plan.json
+
+node cli/siyue-cli.cjs execute \
+  --plan /private/path/campus-new.siyue-plan.json
+```
+
+`plan` 读取当前 revision，在服务器上校验权限、输入与业务规则，输出计算结果并生成 `commit:false` 的计划文件，不提交业务。计划含操作、输入、操作者、服务器、revision、短时预览凭据及固定幂等键；文件按 0600 新建，拒绝覆盖。计划与输入最多 1 MB，不接受符号链接文件。
+
+`execute` 核验计划属于当前服务器和员工，再携带原预览及幂等键提交。成功返回新 revision 与实际结果。普通预览有效期10分钟；期间数据或权限变化会导致重新预览要求。客户端不能把预览文件里的字段改掉后继续执行。
+
+网络超时或结果不明时，**重试同一份计划文件**。同一键、同一输入返回原结果，不重复办理；同一键不同输入被拒绝。明确的校验失败可纠正输入后输出新的计划；revision 冲突则刷新资料并重新预览。不要将每次网络重试都改成新幂等键。
+
+不带 `--input/--out` 的 `plan <id>` 只显示操作的下一步提示；不等于已经完成服务器业务预览。
+
+## 业务边界
+
+- 新生报名可使用 `studentDraft`，已有学生使用 `studentId`，二者选一。批量报名既支持 `studentIds`，也支持包含新生/已有学生的 `rows`，二者选一；服务器整批事务提交。
+- 报名、调班、课次、考勤、课消、订单及退款引用同一份服务器资料。金额字段 `*Cents` / `*Minor` 是整数分；未收款报名与已生效课程权益区分。
+- `order.confirmReceipt` 和 `refund.submit` 记录已经核实的真实线下收付凭据，不会发起外部扣款、转账或退款。
+- 未接支付商户时，`order.paymentLink` 返回 `PAYMENT_PROVIDER_UNAVAILABLE`，不能获得可付款二维码。
+- 拼团、联报目前只保存活动草稿；成团和跨课程结算未实现，发布被明确拒绝。普通/续费/老带新/双人同行优惠券按实际资格校验，不等于拼团或联报收款系统已经可用。
+- 员工用 `form.*` 管理表单；客户应访问独立公开填写链接，不使用员工 CLI。公开表单不公开员工信息或其他提交者答案。
+
+业务与认证操作记录在服务器审计中。审计读取需要超管或明确的审计授权，CLI 登录本身不会获得额外业务权限。
+
+## 离线课消模拟
 
 ```sh
 node cli/siyue-cli.cjs simulate lesson-consumption --out /absolute/new-output-directory
 node --test cli/simulation.test.cjs
 ```
 
-此命令加载 `index.html` 指定的同一组应用脚本，在隔离内存和模拟存储里实际调用 `workflowSaveSessionAttendance()`，并核验页面使用的课消投影和退款试算；不是只输出调用计划，也不另写一套课消算法。它不连接阿里云、正式后端或当前浏览器，不读取或覆盖真实学生数据。
+模拟按 `index.html` 的应用脚本顺序启动隔离 VM，实际调用原型课消处理器并验证10项场景：到课扣课、请假不扣、重复保存、临时班原订单归属、角色拒绝、无效学生、请假规则、存储失败、金额/退款一致及重载。它不连接服务器、不读取浏览器，也不操作真实学生。
 
-模拟预置一门三讲的数学课程、两个班、三名学员及每人 ¥900 的已付款模拟订单。订单和临时转班关系是测试初始数据，不代表真的执行过收款或调班。课消办理通过现有处理器执行，并自动核验十项结果：到课扣课、请假不扣、重复保存去重、临时班关联原订单、销售无权修改、无效学生拒绝、请假课消规则、存储失败不落业务、金额与退款一致、持久化后重新加载。
+输出 `lesson-consumption.simulation.json` 与 `simulation-report.json`；目录须在仓库之外，已有结果不覆盖。预期3条考勤、2条课消、课消¥600、模拟实收¥2700、可退¥2100。预置付款只是测试初始状态，不代表真实收款。
 
-成功生成：
+载荷使用 `siyue.lesson-consumption.simulation`、`schemaVersion:1` 与唯一 `SIM-…` runId。只允许在演示模式先预览后显式导入，按稳定 ID 去重；正式业务入口禁止导入 SIM 记录，模拟日志不替代服务器审计。
 
-- `lesson-consumption.simulation.json`：可以在页面“CLI 课消演示”中选择、预览并确认导入的模拟记录。
-- `simulation-report.json`：逐项核验结果与金额汇总。
+## 验证与维护
 
-预期汇总为 3 条考勤、2 条已确认课消、课消 ¥600、原实收 ¥2700、剩余可退 ¥2100。原付款金额不因课消被改写。输出目录必须位于仓库之外；已有同名结果不会被覆盖。未通过校验时命令非零退出，不生成可导入的成功载荷。
-
-### 模拟载荷约定
-
-```text
-schema: "siyue.lesson-consumption.simulation"
-schemaVersion: 1
-runId: "SIM-<UTC 时间>-<随机后缀>"
-generatedAt: ISO 时间
-source: {kind: "siyue-cli", mode: "simulation", operation: "lesson-consumption", version: "0.2.0"}
-academic: {courses, classes, students, attendance, orders, refunds, sessionAdjustments}
-journal: 本次模拟产生的日志
-report: {status, checks, summary, refundEstimates}
+```sh
+node --test cli/auth.test.cjs
+node --test cli/simulation.test.cjs
+node --test backend/test/business-core.test.cjs
 ```
 
-业务对象及讲次 ID 都在本轮 `runId` 范围内，记录附带 `simulationRunId`。考勤包含稳定 `classId/studentId`；数组索引只对应载荷内部数组，页面导入必须按 ID 重新映射。导入是显式操作，先预览再合并；不能按姓名覆盖已有数据，不能把导入的模拟日志当作服务器审计。重复导入同一轮次应被拦截。
-
-## 统一办理与数据规则
-
-每项操作只提供一个主办理界面；对象选择、自动带入、计算结果与必要输入放在同一界面。提交、取消、预览、清空筛选等从属于该操作，不单独创建重复表单。
-学生、线索、课程、班级、订单引用共享 ID；业务模块从同一份状态读取，不再次建立独立档案。报名表已合并，沿用共享报价、重复订单检查、待支付订单与到账后生效逻辑。
-本轮未重写所有历史表单。现有多步骤流程与所有写入处理仍需逐项迁移到此契约，并做业务联动验收。
-
-## 待接入的正式写入协议
-
-请求：operationId、schemaVersion、input、expectedRevision、idempotencyKey；身份从认证会话解析，不能信任客户端传入的角色。
-响应：requestId、status、resultIds、revision、events、fieldErrors。
-服务端对功能权限、校区范围、记录归属及字段权限再次校验；一个事务完成档案/订单/名单等相关变更，发布带 revision 的事件刷新各页面。重复提交以 idempotencyKey 返回同一结果；版本冲突返回 CONFLICT，不覆盖其他人的修改。
-统一错误码：UNAUTHENTICATED、FORBIDDEN、VALIDATION_ERROR、NOT_FOUND、CONFLICT、DUPLICATE、NOT_IMPLEMENTED。
-
-正式计划指令族：lead.create/assign/transfer/release/follow、course.create/update、class.create/update/batch-create/relocate、enrollment.create/batch-create、session.attendance/move/substitute/record、enrollment.transfer/refund、order.payment-confirm、promotion.create/publish、account.update、role.grant。
-这些正式写入名称目前仅预留；当前可执行真实账号登录、本人改密和退出；业务处理仍限于上面明确限定的本地模拟。后续以稳定业务名替换当前 action.<page>.<hash> 并保留旧 ID 别名。
-
-账号认证、初始口令生成、本人改密、管理员重置、角色与个人权限调整及账号审计已接入真实认证服务。CRM / 教学业务仍为浏览器本地原型，没有真实支付、跨浏览器或跨账号业务数据实时同步。
-
-正式后端设计见 [backend/README.md](../backend/README.md)。首版稳定指令、输入和前端旧 ID 别名以 [后端操作目录](../backend/contracts/operations.json) 为下一阶段契约依据；页面业务入口仍只打开原型办理页；CLI 模拟不提供生产业务写入或跨设备业务数据同步，CLI 账号认证独立使用真实服务。
+核心集成测试真实启动本机服务并经 CLI 预览、执行、重试和读取共享记录，另验证授权变化、幂等与备份重开；不操作线上员工或业务。后端配置、审计和备份恢复参见 [后端说明](../backend/README.md)。SQLite、认证库、备份与计划文件都应存放在仓库外私有目录，不能通过 GitHub 备份真实业务数据。

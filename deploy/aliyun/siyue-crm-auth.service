@@ -1,5 +1,5 @@
 [Unit]
-Description=Siyue employee authentication API
+Description=Siyue authenticated business API
 After=network.target
 StartLimitIntervalSec=60
 StartLimitBurst=3
@@ -13,6 +13,8 @@ ExecStart=/opt/siyue-crm/runtime/node-v24.21.0-linux-x64/bin/node src/server.cjs
 Environment=NODE_ENV=production
 Environment=SIYUE_BACKEND_PORT=8787
 Environment=SIYUE_AUTH_STORE=/var/lib/siyue-crm-auth/auth.json
+Environment=SIYUE_BUSINESS_STORE=/var/lib/siyue-crm-auth/business.sqlite
+Environment=SIYUE_POLICY_WORKER=1
 Environment=SIYUE_PUBLIC_ORIGIN=https://www.siyuejn.com
 Environment=SIYUE_COOKIE_PATH=/crm-api/
 Environment=SIYUE_TRUST_PROXY=loopback

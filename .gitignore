@@ -11,3 +11,11 @@ auth.json.lock
 initial-admin.json
 session.json
 .auth-*.tmp
+
+# Private shared business data and backups.
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+business-data/
+backups/
+*.siyue-plan.json
