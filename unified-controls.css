@@ -39,3 +39,11 @@ body :is(.content,.modal,.drawer) table.table :is(th,td) :is(a,span,strong){word
 body :is(.content,.modal,.drawer) table.table .actions{flex-wrap:nowrap;white-space:nowrap}
 body :is(.content,.modal,.drawer) table.table td>.input{min-width:140px}
 .single-enrollment .form-grid{margin-bottom:20px}.single-enrollment .section-title{margin-top:20px}.single-enrollment .enrollment-quote{margin-top:20px}
+
+/* Every return control uses the same left arrow, including nested form steps. */
+.ui-icon-definitions{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+body .back-control{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+body .back-control .back-icon{display:block;width:20px;height:20px;flex:0 0 20px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+body button.back-link{border:0;background:transparent;padding:4px 0;font-weight:inherit;line-height:1.5}
+body button.back-link:hover{color:#244ed5}
+body .back-control:focus-visible{outline:2px solid #315deb;outline-offset:3px}

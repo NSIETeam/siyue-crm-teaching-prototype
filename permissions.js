@@ -49,7 +49,7 @@ for(const name of ['academicRender','leadRender','shortcutRender','mallRender','
 function permissionDenied(page){
   state.page=page;permissionState.currentPage=page;
   $('#crumb').textContent='无权限';
-  $('#view').innerHTML=`<div class="card pad permission-denied"><h2>无权限</h2><p class="muted">当前职位未获授权访问此页面。</p><button class="btn" onclick="permissionGoHome()">返回可访问页面</button></div>`;
+  $('#view').innerHTML=`<div class="card pad permission-denied"><h2>无权限</h2><p class="muted">当前职位未获授权访问此页面。</p><button class="back-control btn" onclick="permissionGoHome()"><svg class="back-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ui-back-arrow"></use></svg><span>返回可访问页面</span></button></div>`;
   permissionRefreshNavigation();
 }
 function permissionGoHome(){const role=permissionRole();state.page=role?.grants.find(p=>p!=='permissions')||'system';render()}
