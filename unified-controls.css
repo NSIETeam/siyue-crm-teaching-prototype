@@ -1,0 +1,41 @@
+/* Shared compact summaries: one surface, equal cells, label above value. */
+body .content :is(.workflow-metrics,.lead-stats,.mall-metrics,.data-summary,.structure-summary,.stat-strip){display:flex;flex-wrap:nowrap;gap:0;background:#fff;border:1px solid #e7edf5;border-radius:12px;padding:10px 0;margin:0 0 18px;overflow-x:auto;box-shadow:none}
+body .content :is(.workflow-metrics,.lead-stats,.mall-metrics,.data-summary,.structure-summary,.stat-strip)>:is(.metric,.lead-stat,.mall-metric,.card,.stat){flex:1 0 100px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:0;border-radius:0;padding:5px 14px;background:transparent;box-shadow:none;text-align:center}
+body .content :is(.workflow-metrics,.lead-stats,.mall-metrics,.data-summary,.structure-summary,.stat-strip)>:is(.metric,.lead-stat,.mall-metric,.card,.stat)+*{border-left:1px solid #e3eaf4}
+body .content :is(.workflow-metrics,.lead-stats,.mall-metrics,.data-summary,.structure-summary,.stat-strip)>*>span{order:0;color:#8190a6;font-size:12px;line-height:18px}
+body .content :is(.workflow-metrics,.lead-stats,.mall-metrics,.data-summary,.structure-summary,.stat-strip)>*>strong{order:1;display:block;font-size:23px;line-height:29px;margin:0;color:#243149;font-variant-numeric:tabular-nums;white-space:nowrap}
+body .content .workflow-metrics .metric small{display:none}
+body .content .workflow-metrics .metric:hover{background:#f4f7ff}
+body .content .lead-stat a{order:2;float:none;font-size:11px}
+body .content .shortcut-stat{flex-direction:column;justify-content:center;gap:5px;text-align:center}
+body .content .shortcut-stat strong{font-size:23px;line-height:29px}
+/* Tabs share an underline instead of a capsule or filled button. */
+body .content :is(.tabs,.mall-tabs,.lead-segments,.subtabs,.schedule-view-tabs,.decor-section-tabs){display:flex;flex-wrap:nowrap;gap:22px;border:0;border-bottom:1px solid #e5ebf3;border-radius:0;background:transparent;box-shadow:none;width:auto;max-width:100%;overflow-x:auto;padding-top:0;padding-bottom:0;align-items:stretch}
+body .content :is(.tabs,.mall-tabs,.lead-segments,.subtabs,.schedule-view-tabs,.decor-section-tabs)>button{position:relative;flex-shrink:0;border:0!important;border-radius:0;background:transparent!important;box-shadow:none!important;padding:13px 2px 16px;margin:0;min-height:44px;color:#8190a6;font-weight:600;white-space:nowrap;overflow:visible}
+body .content :is(.tabs,.mall-tabs,.lead-segments,.subtabs,.schedule-view-tabs,.decor-section-tabs)>button::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:#315deb;transform:scaleX(0);transform-origin:center;transition:transform .22s ease}
+body .content :is(.tabs,.mall-tabs,.lead-segments,.subtabs,.schedule-view-tabs,.decor-section-tabs)>button:is(.active,.primary,[aria-selected="true"]){color:#315deb}
+body .content :is(.tabs,.mall-tabs,.lead-segments,.subtabs,.schedule-view-tabs,.decor-section-tabs)>button:is(.active,.primary,[aria-selected="true"])::after{transform:scaleX(1);animation:tab-line-grow .24s ease-out}
+body .content :is(.tabs,.mall-tabs,.lead-segments,.subtabs,.schedule-view-tabs,.decor-section-tabs)>button:not(:disabled):hover{color:#315deb}
+@keyframes tab-line-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+/* Course search and actions stay on one row; narrow panels can scroll. */
+body .content .course-toolbar{display:flex;flex-wrap:nowrap;align-items:center;gap:10px;overflow-x:auto;padding-bottom:2px}
+body .content .course-toolbar>.toolbar-left{flex:1 1 210px;width:auto;min-width:120px}
+body .content .course-toolbar>.toolbar-left>.input{width:100%!important;max-width:none;height:40px}
+body .content .course-toolbar>.toolbar-right{display:flex;flex:0 0 auto;flex-wrap:nowrap;width:auto;gap:8px}
+body .content .course-toolbar .btn{height:40px;padding:0 12px}
+/* Native disclosures use the sidebar's NE / SE arrows. */
+body details>summary{list-style:none;position:relative;padding-right:32px!important}
+body details>summary::-webkit-details-marker{display:none}
+body details>summary::marker{content:''}
+body details>summary::after{content:'';position:absolute;right:8px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:center/20px 20px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238da4c2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 19 19 5M7 5h12v12'/%3E%3C/svg%3E")}
+body details[open]>summary::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238da4c2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 5 14 14M7 19h12V7'/%3E%3C/svg%3E")}
+@media(prefers-reduced-motion:reduce){body .content :is(.tabs,.mall-tabs,.lead-segments,.subtabs,.schedule-view-tabs,.decor-section-tabs)>button::after{animation:none!important;transition:none}}
+
+/* Business tables grow horizontally instead of compressing Chinese labels. */
+body :is(.content,.modal,.drawer) .table-wrap{min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+body :is(.content,.modal,.drawer) table.table{table-layout:auto!important;width:max-content;min-width:100%;max-width:none}
+body :is(.content,.modal,.drawer) table.table :is(th,td){white-space:nowrap!important;word-break:normal;overflow-wrap:normal;max-width:none}
+body :is(.content,.modal,.drawer) table.table :is(th,td) :is(a,span,strong){word-break:normal;overflow-wrap:normal}
+body :is(.content,.modal,.drawer) table.table .actions{flex-wrap:nowrap;white-space:nowrap}
+body :is(.content,.modal,.drawer) table.table td>.input{min-width:140px}
+.single-enrollment .form-grid{margin-bottom:20px}.single-enrollment .section-title{margin-top:20px}.single-enrollment .enrollment-quote{margin-top:20px}

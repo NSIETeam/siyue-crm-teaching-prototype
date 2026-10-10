@@ -5,7 +5,13 @@
 .nav-level-3{font-size:12.5px;padding:8px 12px 8px 46px;margin:1px 0}
 .nav-level-3.active{background:#315deb;color:#fff}
 .nav-toggle.active-parent{color:#fff;background:#24405f}
-.nav-chevron{color:#7f98b9;font-size:16px;line-height:1;transition:transform .2s}
-.nav-toggle[aria-expanded="false"] .nav-chevron{transform:rotate(-90deg)}
+.nav-chevron{color:#8da4c2;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;flex:none}
+.nav-chevron svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.nav-icon-expand{display:none}
+.nav-toggle[aria-expanded="false"] .nav-chevron .nav-icon-expand{display:block}
+.nav-toggle[aria-expanded="false"] .nav-chevron .nav-icon-collapse{display:none}
+.nav-toggle[aria-expanded="true"] .nav-chevron .nav-icon-collapse{display:block}
+.nav-toggle[aria-expanded="true"] .nav-chevron .nav-icon-expand{display:none}
+.nav-toggle:hover .nav-chevron{color:currentColor}
 .nav-children[hidden]{display:none!important}
 @media(max-width:680px){.sidebar{display:block;max-height:280px;overflow:auto}.nav-level-1,.nav-level-2,.nav-level-3{white-space:normal}.nav-level-3{width:100%}}

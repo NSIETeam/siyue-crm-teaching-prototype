@@ -19,25 +19,26 @@
 <link rel="stylesheet" href="schedule-caterpillar.css">
 <link rel="stylesheet" href="batch-operations.css">
 <link rel="stylesheet" href="system-settings.css">
+<link rel="stylesheet" href="operation-directory.css">
+<link rel="stylesheet" href="account-settings.css">
+<link rel="stylesheet" href="mall-decor-editor.css">
+<link rel="stylesheet" href="unified-controls.css">
 </head>
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand" style="font-size:16px;letter-spacing:0;white-space:nowrap">CRM·教务综合系统</div>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="shortcuts" aria-expanded="true" aria-controls="nav-shortcuts">快捷入口 <span class="nav-chevron">⌄</span></button>
-    <div class="nav-children" id="nav-shortcuts">
-      <button class="menu-item nav-level-2" data-page="quickRegister">线索登记</button>
-      <button class="menu-item nav-level-2" data-page="quickEnroll">报名</button>
-    </div>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="leads" aria-expanded="true" aria-controls="nav-leads">线索 <span class="nav-chevron">⌄</span></button>
+    <div class="brand brand-logo"><svg viewBox="289 1157 5328 1229" role="img" aria-label="思跃培优" xmlns="http://www.w3.org/2000/svg"><title>思跃培优</title><image href="assets/siyue-peiyou-logo.png" width="5906" height="3543"/></svg></div>
+    <button class="menu-item nav-level-1 workspace-entry" data-page="home">工作台</button>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="leads" aria-expanded="true" aria-controls="nav-leads">线索 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
     <div class="nav-children" id="nav-leads">
+      <button class="menu-item nav-level-2" data-page="quickRegister">线索登记</button>
       <button class="menu-item nav-level-2" data-page="leadTodo">今日待办</button>
       <button class="menu-item nav-level-2" data-page="myLeads">我的线索</button>
       <button class="menu-item nav-level-2" data-page="leadManage">线索管理</button>
     </div>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="academic" aria-expanded="true" aria-controls="nav-academic">教务 <span class="nav-chevron">⌄</span></button>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="academic" aria-expanded="true" aria-controls="nav-academic">教务 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
     <div class="nav-children" id="nav-academic">
-      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="teaching" aria-expanded="true" aria-controls="nav-teaching">教学管理 <span class="nav-chevron">⌄</span></button>
+      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="teaching" aria-expanded="true" aria-controls="nav-teaching">教学管理 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
       <div class="nav-children" id="nav-teaching">
         <button class="menu-item nav-level-3" data-page="course">课程管理</button>
         <button class="menu-item nav-level-3" data-page="classes">班级管理</button>
@@ -46,7 +47,7 @@
         <button class="menu-item nav-level-3" data-page="makeup">补课</button>
         <button class="menu-item nav-level-3" data-page="schedule">课表</button>
       </div>
-      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="business" aria-expanded="true" aria-controls="nav-business">业务办理 <span class="nav-chevron">⌄</span></button>
+      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="business" aria-expanded="true" aria-controls="nav-business">业务办理 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
       <div class="nav-children" id="nav-business">
         <button class="menu-item nav-level-3" data-page="enroll">报名</button>
         <button class="menu-item nav-level-3" data-page="tempMove">临时调班</button>
@@ -55,20 +56,20 @@
         <button class="menu-item nav-level-3" data-page="supplement">补费</button>
       </div>
     </div>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="learning" aria-expanded="true" aria-controls="nav-learning">教学 <span class="nav-chevron">⌄</span></button>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="learning" aria-expanded="true" aria-controls="nav-learning">教学 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
     <div class="nav-children" id="nav-learning">
       <button class="menu-item nav-level-2" data-page="learningActive">在读学生</button>
       <button class="menu-item nav-level-2" data-page="learningHistory">历史学生</button>
       <button class="menu-item nav-level-2" data-page="learningData">数据管理</button>
     </div>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="mall" aria-expanded="true" aria-controls="nav-mall">商城工具 <span class="nav-chevron">⌄</span></button>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="mall" aria-expanded="true" aria-controls="nav-mall">商城工具 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
     <div class="nav-children" id="nav-mall">
-      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="courseMall" aria-expanded="true" aria-controls="nav-course-mall">课程商城 <span class="nav-chevron">⌄</span></button>
+      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="courseMall" aria-expanded="true" aria-controls="nav-course-mall">课程商城 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
       <div class="nav-children" id="nav-course-mall">
         <button class="menu-item nav-level-3" data-page="mallDecor">商城装修</button>
         <button class="menu-item nav-level-3" data-page="mallShelf">课程上架</button>
       </div>
-      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="marketing" aria-expanded="true" aria-controls="nav-marketing">营销工具 <span class="nav-chevron">⌄</span></button>
+      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="marketing" aria-expanded="true" aria-controls="nav-marketing">营销工具 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
       <div class="nav-children" id="nav-marketing">
         <button class="menu-item nav-level-3" data-page="mallGroup">拼团</button>
         <button class="menu-item nav-level-3" data-page="mallJoint">联报</button>
@@ -76,7 +77,7 @@
         <button class="menu-item nav-level-3" data-page="marketingForms">表单</button>
       </div>
     </div>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="finance" aria-expanded="true" aria-controls="nav-finance">财务中心 <span class="nav-chevron">⌄</span></button>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="finance" aria-expanded="true" aria-controls="nav-finance">财务中心 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
     <div class="nav-children" id="nav-finance">
       <button class="menu-item nav-level-2" data-page="orders">收费订单</button>
       <button class="menu-item nav-level-2" data-page="financeRefunds">退转记录</button>
@@ -84,12 +85,12 @@
       <button class="menu-item nav-level-2" data-page="financeConsumption">课消记录</button>
       <button class="menu-item nav-level-2" data-page="financeReceipts">收款设置</button>
     </div>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="basicSettings" aria-expanded="true" aria-controls="nav-basic-settings">基础设置 <span class="nav-chevron">⌄</span></button>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="basicSettings" aria-expanded="true" aria-controls="nav-basic-settings">基础设置 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
     <div class="nav-children" id="nav-basic-settings">
       <button class="menu-item nav-level-2" data-page="system">系统配置</button>
       <button class="menu-item nav-level-2" data-page="campus">校区配置</button>
       <button class="menu-item nav-level-2" data-page="teaching">教学配置</button>
-      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="staffManage" aria-expanded="true" aria-controls="nav-staff-manage">员工管理 <span class="nav-chevron">⌄</span></button>
+      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="staffManage" aria-expanded="true" aria-controls="nav-staff-manage">员工管理 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
       <div class="nav-children" id="nav-staff-manage">
         <button class="menu-item nav-level-3" data-page="staff">员工列表</button>
         <button class="menu-item nav-level-3" data-page="positions">职位管理</button>
@@ -98,13 +99,14 @@
       </div>
     </div>
   </aside>
-  <main class="main"><header class="topbar"><div class="crumb">教培 CRM / <span id="crumb">基础设置</span></div><div class="user"><label for="demo-role">演示身份</label><select class="select permission-identity" id="demo-role" onchange="permissionChangeIdentity(this.value)"><option value="admin">主管理员</option><option value="finance">财务岗</option><option value="sales">招生综合岗</option><option value="manager">业务岗负责人（只读）</option></select><span class="avatar">管</span></div></header><div id="view" class="content"></div></main>
+  <main class="main"><header class="topbar"><div class="crumb"><span id="crumb">基础设置</span></div><div class="user"><button type="button" class="avatar account-trigger" onclick="accountOpen()" aria-label="设置和账号管理" aria-haspopup="dialog" title="设置和账号管理"><span class="avatar-letter">管</span><svg class="avatar-gear" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3-.5 2-2 1L4.5 6 3 9l1.5 1.5v3L3 15l1.5 3 2-.1 2 1L9 21h6l.5-2 2-1 2 .1 1.5-3-1.5-1.5v-3L21 9l-1.5-3-2 .1-2-1L15 3Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></header><div id="view" class="content"></div></main>
 </div>
 <div class="toast" id="toast"></div>
 <script>
 const state={page:'system',mode:'list',tab:'机构信息',editing:false,campusEdit:null,staffEdit:null,campuses:[{name:'城中校区',rooms:8,seats:180,active:true,address:'江苏省 苏州市 姑苏区 人民路18号',merchant:'苏州思跃教育科技有限公司'},{name:'园区校区',rooms:5,seats:120,active:true,address:'江苏省 苏州市 工业园区 星湖街66号',merchant:'苏州思跃教育科技有限公司'},{name:'新区校区',rooms:3,seats:75,active:false,address:'江苏省 苏州市 虎丘区 长江路28号',merchant:'未绑定'}],staff:[{name:'袁老师',phone:'130****3533',gender:'男',campus:'城中校区',roles:'前台、教务、面授主讲',active:true},{name:'陈老师',phone:'138****6281',gender:'女',campus:'园区校区',roles:'校区主管、招生',active:true}],config:{学科:[['语文',false,'语文'],['数学',true,'数学'],['英语',false,'英语'],['物理',true,'物理'],['化学',false,'化学'],['生物',false,'生物']],学期:[['春季',true,'春季'],['暑期',true,'暑期'],['秋季',true,'秋季'],['寒假',true,'寒假'],['全季',true,'全季']],年级:[['1年级',false,'1年级'],['2年级',false,'2年级'],['3年级',true,'3年级'],['4年级',true,'4年级'],['5年级',true,'5年级'],['6年级',true,'6年级']],班型:[['创新班',true,'大伟长班'],['尖子班',true,'校内拔高'],['提高班',true,'刷题班'],['X班',true,'S+班'],['Y班',true,'S班'],['Z班',true,'培优班']]}};
 const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function heading(title,sub){return `<div class="heading"><div><h1>${title}</h1><p class="subtitle">${sub}</p></div></div>`}
+// The top navigation identifies the page; content begins with the task itself.
+function heading(title,sub){return ['暂无自定义职位','未找到表单','请先新建表单'].includes(sub)?`<div class="card pad"><div class="empty">${esc(sub)}</div></div>`:''}
 function toast(msg){const e=$('#toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2600)}
 function render(){document.querySelectorAll('.menu-item').forEach(e=>e.classList.toggle('active',e.dataset.page===state.page));$('#crumb').textContent=({system:'系统配置',campus:'校区配置',teaching:'教学配置',staff:'员工管理'})[state.page]||'待设计';let html='';if(state.page==='system')html=systemPage();else if(state.page==='campus')html=campusPage();else if(state.page==='teaching')html=teachingPage();else if(state.page==='staff')html=staffPage();else html=heading('待设计页面','该模块已列入功能清单，等待详细业务规则和参考图。')+`<div class="card pad"><div class="empty">下一批原型将在这里展开</div></div>`;$('#view').innerHTML=html}
 function systemPage(){return heading('系统配置','配置机构资料及业务规则')+`<div class="card"><div class="tabs"><button class="tab active">机构信息</button>${['考勤配置','调课配置','转班配置','进班配置'].map(x=>`<button class="tab" disabled title="功能清单标注为暂未开发">${x}</button>`).join('')}</div><div class="pad"><p class="notice">文档注明其余配置标签暂未开发，原型中以禁用状态展示。</p><h2 class="section-title">机构信息</h2><div class="form-grid"><div class="field"><label class="required">机构名称</label><input class="input" id="org-name" value="苏州思跃培优"></div><div class="field full"><label class="required">机构地址</label><div class="inline"><select class="select"><option>中国大陆</option></select><select class="select"><option>江苏省</option></select><select class="select"><option>苏州市</option></select><select class="select"><option>姑苏区</option></select></div></div><div class="field full"><label>详细地址</label><input class="input" value="人民路18号"></div></div><div class="form-actions"><button class="btn primary" onclick="toast('机构信息已保存（原型演示）')">保存修改</button></div></div></div>`}
@@ -131,5 +133,9 @@ document.querySelectorAll('.menu-item').forEach(e=>e.addEventListener('click',()
 <script src="command-search.js"></script>
 <script src="batch-operations.js"></script>
 <script src="system-settings.js"></script>
+<script src="operation-directory.js"></script>
+<script src="account-settings.js"></script>
+<script src="mall-decor-editor.js"></script>
+<script src="operation-contract.js"></script>
 </body>
 </html>

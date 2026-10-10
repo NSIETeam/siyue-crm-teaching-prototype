@@ -1,0 +1,16 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>系统改造计划与原始方案索引</title><style>body{font:16px/1.85 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;color:#243149;background:#f4f7fb;margin:0}main{max-width:1000px;margin:36px auto;padding:40px;background:white;border:1px solid #e1e8f2;border-radius:16px}h1{font-size:32px;line-height:1.3}h2{font-size:23px;margin-top:34px;border-bottom:1px solid #e7edf4;padding-bottom:10px}h3{font-size:18px}a{color:#315deb}nav{display:flex;flex-wrap:wrap;gap:18px}.meta{color:#7a8ba1}.note{background:#f1f5fd;padding:16px 20px;border-radius:8px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{border:1px solid #e3eaf2;text-align:left;vertical-align:top;padding:12px}th{background:#f6f8fc}li{margin:8px 0}code{font-size:14px;background:#f0f3f8;padding:2px 5px}img{max-width:100%}@media(max-width:700px){main{margin:0;padding:22px;border:0;border-radius:0}table{display:block;overflow:auto}}@media print{body{background:white}main{margin:0;border:0;padding:0}a{color:inherit}h2{break-after:avoid}tr{break-inside:avoid}}</style><main><div class="meta">思跃 · CRM 与教务系统 · 2026-10-10</div><h1>系统改造计划与原始方案索引</h1>
+<nav><a href="siyue-system-design.html">原始业务逻辑与改造方案</a><a href="siyue-prototype-revision-plan.html">原型修改建议与界面草图</a><a href="siyue-daily-2026-10-10.html">今天的修改日报</a></nav>
+<p class="note">目标：参考学而思 CRM＋教学系统的成熟教务流程与 BOSS 的营销机制，将集团平台从多张大表单，改为按任务办理、信息一次填写、共享对象自动联动，并支持 Agent 与 siyue-cli 操作。最优先是高效好用。</p>
+<h2>直接复用的图与方案</h2><p>以下两份原文件保留任务开始阶段的分析、逻辑图、修改建议和界面草图，不重画、不以今日实现覆盖原计划。</p>
+<ul><li><a href="siyue-system-design.html">三平台研究与业务流程改造方案</a>：覆盖统一对象、身份工作台、线索归属、课程模板、营销商品化、报名收款、课表、临时调班、长期转班、代课、退课与 Agent。</li><li><a href="siyue-prototype-revision-plan.html">现有原型修改方案</a>：覆盖导航调整、四张界面草图、逐模块修改清单、共享事实、两条完整业务线与分批验收场景。</li><li><a href="siyue-diagrams-source.zip">流程图可编辑源文件</a>：保留 Mermaid 图源及配套文件。</li></ul>
+<h2>已明确的业务方向</h2>
+<table><tr><th>领域</th><th>目标设计</th></tr>
+<tr><td>课程与教学</td><td>课程设置包含讲次内容、适龄范围、资料与价格；班级关联课程、老师、学生与进度；课次独立保存实际授课、考勤与代课记录。</td></tr>
+<tr><td>调整与退课</td><td>临时调整指定学生、课程与目标班，默认章节一致；长期学生转班与多个班级迁移校区是两个功能。退课依据已上进度和实收款试算，确认后撤销未来点名，保留历史记录。</td></tr>
+<tr><td>营销与商城</td><td>课程事实复用为商品详情；优惠按模板、课程和条件配置，形成可追溯销售版本；支持老带新、双人同行、续费等；报名报价关联优惠，订单连接扫码收款。</td></tr>
+<tr><td>CRM</td><td>扫码或员工录入线索；来源、登记人和当前负责人分开。销售自录可保留，放弃后可转交；其他渠道进入公海；管理员分配，按规则提醒与回收。</td></tr>
+<tr><td>课表</td><td>老师和学生使用按日期、时间显示占用、空档与冲突的时间色块；教室、校区使用表格。支持对象与日期筛选，点击课次办理相关操作。</td></tr>
+<tr><td>身份与操作</td><td>按身份展示工作台和数据范围；搜索同时找对象与有权限的操作；一件事在同一界面填写必要信息，复用共享档案；搜索、界面与 CLI 共用操作目录。</td></tr>
+<tr><td>界面</td><td>紧凑统计栏、同排工具栏、蓝色下划线标签、统一 SVG 图标；表格不挤压中文，窄屏横向滚动；低频设置按需展开。</td></tr></table>
+<h2>后续实施顺序</h2><ol><li>逐项验收端到端原型：线索→报名→支付确认→入班→考勤，以及调班、代课、退课、退款。</li><li>将剩余历史流程迁移到单一办理界面，统一必要字段、共享 ID 和数据更新契约；补齐实际场景中的搜索入口。</li><li>接入正式服务端：认证、动作权限、校区及记录范围、事务、版本检查、幂等、审计与跨账号同步。</li><li>接入真实支付、退款、通知、定时提醒与回收，再启用 Agent 和 siyue-cli 业务写入。</li><li>在不同身份、窗口宽度、缩放比例及真实数据规模下做完整验收。</li></ol>
+<p>当前 GitHub Pages 是公开前端演示，不代表上述正式能力均已上线。原方案中的计划项也不等于今天已交付。</p></main></html>

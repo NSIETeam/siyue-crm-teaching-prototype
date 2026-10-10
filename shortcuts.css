@@ -55,3 +55,17 @@
  .content .shortcut-date-range{gap:4px}
  .content .shortcut-date-range .input{padding-left:6px;padding-right:6px;font-size:12px}
 }
+
+/* Search stays visible; secondary filters expand only on request. */
+.content .shortcut-filter-bar>.shortcut-search-field{display:block}
+.content .shortcut-filter-bar .shortcut-search>.input{padding-right:62px;height:42px}
+.content .shortcut-search .quick-filter-toggle{position:absolute;right:4px;top:4px;bottom:4px;width:42px;display:flex;align-items:center;justify-content:center;border:0;border-left:1px solid #dce4ef;background:transparent;color:#7c8da5;border-radius:0 5px 5px 0;padding:0}
+.content .shortcut-search .quick-filter-toggle svg{position:static;transform:none;width:19px;height:19px;color:inherit}
+.content .quick-filter-toggle:hover,.content .quick-filter-toggle[aria-expanded="true"],.content .quick-filter-toggle.is-filtered{color:#315deb;background:#edf2ff}
+.quick-filter-toggle:focus-visible{outline:2px solid #315deb;outline-offset:1px}
+#quick-filter-badge{position:absolute;right:1px;top:-2px;background:#315deb;color:white;min-width:14px;height:14px;border-radius:7px;font-size:10px;line-height:14px;text-align:center}
+#quick-filter-badge[hidden],.content .quick-filter-panel[hidden]{display:none!important}
+.content .quick-filter-panel{display:grid;gap:16px;background:#f8faff;border:1px solid #e5ebf4;border-radius:8px;padding:16px}
+.content .quick-filter-panel .shortcut-extra-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+.quick-filter-footer{display:flex;justify-content:flex-end;gap:8px}
+@container(max-width:360px){.content .quick-filter-panel .shortcut-extra-filters{grid-template-columns:1fr}}

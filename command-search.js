@@ -45,4 +45,4 @@ workflowSearchEntries=function(query){const q=String(query||'').trim().toLowerCa
  const records=commandEntitySearch(query).filter(x=>x.meta!=='快捷操作');
  return [...commands,...records].slice(0,20);
 };
-const commandSearchInput=document.querySelector('#global-action-search');if(commandSearchInput)commandSearchInput.placeholder='搜索姓名，或输入报名、调班、转移线索…';
+const commandSearchInput=document.querySelector('#global-action-search');if(commandSearchInput)commandSearchInput.placeholder='使用搜索功能快速找到操作';

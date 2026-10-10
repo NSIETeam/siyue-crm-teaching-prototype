@@ -1,12 +1,12 @@
 // 员工权限原型。真实系统仍需服务端鉴权与持久化；此处演示职位授权、回显和访问体验。
 const permissionGroups=[
-  {id:'workspace',name:'快捷入口',items:[['quickRegister','线索登记'],['quickEnroll','报名']]},
+  {id:'workspace',name:'登记与报名',items:[['quickRegister','线索登记'],['quickEnroll','报名']]},
   {id:'leads',name:'线索',items:[['leadTodo','今日待办'],['myLeads','我的线索'],['leadManage','线索管理']]},
   {id:'academic',name:'教务',items:[['course','课程管理'],['classes','班级管理'],['students','学生管理'],['attendance','考勤'],['makeup','补课'],['schedule','课表'],['enroll','报名'],['tempMove','临时调班'],['transfer','转课／班'],['withdraw','退课／退班'],['supplement','补费']]},
   {id:'learning',name:'教学',items:[['learningActive','在读学生'],['learningHistory','历史学生'],['learningData','数据管理']]},
   {id:'mall',name:'商城工具',items:[['mallDecor','商城装修'],['mallShelf','课程上架'],['mallGroup','拼团'],['mallJoint','联报'],['mallCoupon','优惠券'],['marketingForms','表单']]},
   {id:'finance',name:'财务中心',items:[['orders','收费订单'],['financeRefunds','退转记录'],['financeArrears','欠费记录'],['financeConsumption','课消记录'],['financeReceipts','收款设置']]},
-  {id:'settings',name:'基础设置',items:[['system','系统配置'],['campus','校区配置'],['teaching','教学配置'],['staff','员工列表'],['positions','职位管理'],['permissions','权限管理（只读）'],['permissionLogs','权限变更日志']]}
+  {id:'settings',name:'基础设置',items:[['system','系统配置'],['campus','校区配置'],['teaching','教学配置'],['staff','员工列表'],['positions','职位管理'],['permissions','权限管理'],['permissionLogs','权限变更日志']]}
 ];
 const permissionAll=permissionGroups.flatMap(g=>g.items.map(x=>x[0]));
 const permissionState={identity:'admin',roles:[

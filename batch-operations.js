@@ -83,6 +83,6 @@ const batchClassesPage=classesPage;
 classesPage=function(){let html=batchClassesPage().replace(/onclick="toast\('批量建班规则待确认'\)"/g,'onclick="batchOpen(\'create\')"');if(batchAllowed('transfer'))html=html.replace('</div><span class="count">','<button class="btn" onclick="batchOpen(\'transfer\')">批量学生转班</button><button class="btn" onclick="batchOpen(\'campus\')">批量班级转校区</button></div><span class="count">');return html};
 const batchStudentsPage=studentsPage;
 studentsPage=function(){let html=batchStudentsPage();if(batchAllowed('enroll'))html=html.replace('<div class="toolbar-left">','<div class="toolbar-left"><button class="btn" onclick="batchOpen(\'enroll\')">批量报名</button>');if(batchAllowed('transfer'))html=html.replace('<div class="toolbar-left">','<div class="toolbar-left"><button class="btn" onclick="batchOpen(\'transfer\')">批量转班</button>');return html};
-const batchEnrollPage=enrollPage;
-enrollPage=function(){return (batchAllowed('enroll')?'<div class="batch-shortcut"><button class="btn" onclick="batchOpen(\'enroll\')">批量报名</button></div>':'')+batchEnrollPage()};
+// Reuse the existing enrollment tab instead of adding a duplicate action.
+enrollTab=function(t){if(t==='批量报名')batchOpen('enroll')};
 [['create','classes','classes','批量创建班级 批量建班'],['enroll','enroll','enroll','批量报名 批量报课'],['transfer','transfer','transfer','批量转移班级 批量转班 批量学生转班 整班学生转班'],['campus','classes','classes','批量班级转校区 批量转校区 批量搬迁班级']].forEach(([kind,page,guard,aliases])=>commandWorkflows.unshift({label:batchNames[kind],words:aliases.split(' '),page,guard,run:()=>batchOpen(kind),hint:'批量选择 → 预览校验 → 确认办理'}));
