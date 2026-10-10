@@ -14,7 +14,8 @@
       "page": "classes",
       "permission": {
         "page": "classes",
-        "action": "classes"
+        "action": "classes",
+        "required": "class.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -36,7 +37,8 @@
       "page": "classes",
       "permission": {
         "page": "classes",
-        "action": "classes"
+        "action": "classes",
+        "required": "class.relocate"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -59,7 +61,8 @@
       "page": "transfer",
       "permission": {
         "page": "transfer",
-        "action": "transfer"
+        "action": "transfer",
+        "required": "enrollment.batchTransfer"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -80,7 +83,8 @@
       "page": "enroll",
       "permission": {
         "page": "enroll",
-        "action": "enroll"
+        "action": "enroll",
+        "required": "enrollment.batchCreate"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -101,7 +105,8 @@
       "page": "classes",
       "permission": {
         "page": "classes",
-        "action": "classes"
+        "action": "classes",
+        "required": "class.batchCreate"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -125,7 +130,8 @@
       "page": "enroll",
       "permission": {
         "page": "enroll",
-        "action": "enroll"
+        "action": "enroll",
+        "required": "enrollment.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -150,7 +156,8 @@
       "page": "tempMove",
       "permission": {
         "page": "tempMove",
-        "action": "academic"
+        "action": "academic",
+        "required": "session.move"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -173,7 +180,8 @@
       "page": "transfer",
       "permission": {
         "page": "transfer",
-        "action": "transfer"
+        "action": "transfer",
+        "required": "enrollment.transfer"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -196,7 +204,8 @@
       "page": "schedule",
       "permission": {
         "page": "schedule",
-        "action": "academic"
+        "action": "academic",
+        "required": "session.substitute"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -219,7 +228,8 @@
       "page": "withdraw",
       "permission": {
         "page": "withdraw",
-        "action": "withdraw"
+        "action": "withdraw",
+        "required": "enrollment.withdraw"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -241,7 +251,8 @@
       "page": "supplement",
       "permission": {
         "page": "supplement",
-        "action": "supplement"
+        "action": "supplement",
+        "required": "order.paymentLink"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -264,7 +275,8 @@
       "page": "schedule",
       "permission": {
         "page": "schedule",
-        "action": "academic"
+        "action": "academic",
+        "required": "session.attendance"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -286,7 +298,8 @@
       "page": "schedule",
       "permission": {
         "page": "schedule",
-        "action": "academic"
+        "action": "academic",
+        "required": "session.record"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -310,7 +323,8 @@
       "page": "quickRegister",
       "permission": {
         "page": "quickRegister",
-        "action": "lead"
+        "action": "lead",
+        "required": "lead.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -335,7 +349,8 @@
       "page": "myLeads",
       "permission": {
         "page": "myLeads",
-        "action": "lead"
+        "action": "lead",
+        "required": "lead.transfer"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -358,7 +373,8 @@
       "page": "leadManage",
       "permission": {
         "page": "leadManage",
-        "action": "assign"
+        "action": "assign",
+        "required": "lead.assign"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -382,7 +398,8 @@
       "page": "myLeads",
       "permission": {
         "page": "myLeads",
-        "action": "lead"
+        "action": "lead",
+        "required": "lead.release"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -405,7 +422,8 @@
       "page": "myLeads",
       "permission": {
         "page": "myLeads",
-        "action": "lead"
+        "action": "lead",
+        "required": "lead.follow"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -427,7 +445,8 @@
       "page": "course",
       "permission": {
         "page": "course",
-        "action": "course"
+        "action": "course",
+        "required": "course.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -450,7 +469,8 @@
       "page": "classes",
       "permission": {
         "page": "classes",
-        "action": "classes"
+        "action": "classes",
+        "required": "class.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -472,7 +492,8 @@
       "page": "students",
       "permission": {
         "page": "students",
-        "action": "academic"
+        "action": "academic",
+        "required": "student.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -498,7 +519,8 @@
       "page": "mallCoupon",
       "permission": {
         "page": "mallCoupon",
-        "action": "mallCoupon"
+        "action": "mallCoupon",
+        "required": "promotion.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -520,7 +542,8 @@
       "page": "staff",
       "permission": {
         "page": "staff",
-        "action": "staff"
+        "action": "staff",
+        "required": "employee.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -547,7 +570,8 @@
       "page": "leadManage",
       "permission": {
         "page": "leadManage",
-        "action": "policy"
+        "action": "policy",
+        "required": "leadPolicy.preview"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -569,7 +593,8 @@
       "page": "system",
       "permission": {
         "page": "system",
-        "action": null
+        "action": null,
+        "required": "settings.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -592,7 +617,8 @@
       "page": "system",
       "permission": {
         "page": "system",
-        "action": null
+        "action": null,
+        "required": "settings.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -614,7 +640,8 @@
       "page": "system",
       "permission": {
         "page": "system",
-        "action": null
+        "action": null,
+        "required": "settings.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -636,7 +663,8 @@
       "page": "system",
       "permission": {
         "page": "system",
-        "action": null
+        "action": null,
+        "required": "settings.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -658,7 +686,8 @@
       "page": "system",
       "permission": {
         "page": "system",
-        "action": null
+        "action": null,
+        "required": "settings.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -680,7 +709,8 @@
       "page": "schedule",
       "permission": {
         "page": "schedule",
-        "action": null
+        "action": null,
+        "required": "schedule.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -701,7 +731,8 @@
       "page": "schedule",
       "permission": {
         "page": "schedule",
-        "action": null
+        "action": null,
+        "required": "schedule.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -722,7 +753,8 @@
       "page": "schedule",
       "permission": {
         "page": "schedule",
-        "action": null
+        "action": null,
+        "required": "schedule.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -742,7 +774,8 @@
       "page": "schedule",
       "permission": {
         "page": "schedule",
-        "action": null
+        "action": null,
+        "required": "schedule.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -763,7 +796,8 @@
       "page": "campus",
       "permission": {
         "page": "campus",
-        "action": "campus"
+        "action": "campus",
+        "required": "settings.update"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -784,7 +818,8 @@
       "page": "teaching",
       "permission": {
         "page": "teaching",
-        "action": null
+        "action": null,
+        "required": "settings.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -805,7 +840,8 @@
       "page": "teaching",
       "permission": {
         "page": "teaching",
-        "action": null
+        "action": null,
+        "required": "settings.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -826,7 +862,8 @@
       "page": "teaching",
       "permission": {
         "page": "teaching",
-        "action": null
+        "action": null,
+        "required": "settings.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -847,7 +884,8 @@
       "page": "teaching",
       "permission": {
         "page": "teaching",
-        "action": null
+        "action": null,
+        "required": "settings.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -870,7 +908,8 @@
       "page": "marketingForms",
       "permission": {
         "page": "marketingForms",
-        "action": "marketingForms"
+        "action": "marketingForms",
+        "required": "lead.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -892,7 +931,8 @@
       "page": "marketingForms",
       "permission": {
         "page": "marketingForms",
-        "action": "marketingForms"
+        "action": "marketingForms",
+        "required": "lead.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -914,7 +954,8 @@
       "page": "mallGroup",
       "permission": {
         "page": "mallGroup",
-        "action": "mallGroup"
+        "action": "mallGroup",
+        "required": "promotion.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -936,7 +977,8 @@
       "page": "mallJoint",
       "permission": {
         "page": "mallJoint",
-        "action": "mallJoint"
+        "action": "mallJoint",
+        "required": "promotion.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -959,7 +1001,8 @@
       "page": "mallShelf",
       "permission": {
         "page": "mallShelf",
-        "action": "mallShelf"
+        "action": "mallShelf",
+        "required": "product.publish"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -982,7 +1025,8 @@
       "page": "orders",
       "permission": {
         "page": "orders",
-        "action": null
+        "action": null,
+        "required": "order.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1004,7 +1048,8 @@
       "page": "financeRefunds",
       "permission": {
         "page": "financeRefunds",
-        "action": null
+        "action": null,
+        "required": "refund.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1027,7 +1072,8 @@
       "page": "financeArrears",
       "permission": {
         "page": "financeArrears",
-        "action": null
+        "action": null,
+        "required": "order.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1050,7 +1096,8 @@
       "page": "positions",
       "permission": {
         "page": "positions",
-        "action": null
+        "action": null,
+        "required": "role.grant"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1076,7 +1123,8 @@
       "page": "permissionLogs",
       "permission": {
         "page": "permissionLogs",
-        "action": null
+        "action": null,
+        "required": "audit.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1099,7 +1147,8 @@
       "page": "home",
       "permission": {
         "page": "home",
-        "action": null
+        "action": null,
+        "required": "self"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1121,7 +1170,8 @@
       "page": "staff",
       "permission": {
         "page": "staff",
-        "action": null
+        "action": null,
+        "required": "account.update"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1143,7 +1193,8 @@
       "page": "permissions",
       "permission": {
         "page": "permissions",
-        "action": null
+        "action": null,
+        "required": "role.grant"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1166,7 +1217,8 @@
       "page": "course",
       "permission": {
         "page": "course",
-        "action": "course"
+        "action": "course",
+        "required": "course.update"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1188,7 +1240,8 @@
       "page": "classes",
       "permission": {
         "page": "classes",
-        "action": "classes"
+        "action": "classes",
+        "required": "class.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1209,7 +1262,8 @@
       "page": "studentArchives",
       "permission": {
         "page": "studentArchives",
-        "action": null
+        "action": null,
+        "required": "student.archive"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1231,7 +1285,8 @@
       "page": "staff",
       "permission": {
         "page": "staff",
-        "action": "staff"
+        "action": "staff",
+        "required": "account.update"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1254,7 +1309,8 @@
       "page": "mallDecor",
       "permission": {
         "page": "mallDecor",
-        "action": "mallDecor"
+        "action": "mallDecor",
+        "required": "store.design"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1276,7 +1332,8 @@
       "page": "positions",
       "permission": {
         "page": "positions",
-        "action": "positions"
+        "action": "positions",
+        "required": "role.grant"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1298,7 +1355,8 @@
       "page": "teacherArchives",
       "permission": {
         "page": "teacherArchives",
-        "action": null
+        "action": null,
+        "required": "teacher.archive"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1320,7 +1378,8 @@
       "page": "staffArchives",
       "permission": {
         "page": "staffArchives",
-        "action": null
+        "action": null,
+        "required": "staff.archive"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1343,7 +1402,267 @@
       "page": "learningData",
       "permission": {
         "page": "learningData",
-        "action": null
+        "action": null,
+        "required": "session.attendance"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "sales.metrics.view",
+      "label": "查看销售转化率",
+      "aliases": [
+        "我的转化率",
+        "销售业绩",
+        "转化数据",
+        "转化率",
+        "样本不足"
+      ],
+      "page": "home",
+      "permission": {
+        "page": "home",
+        "action": null,
+        "required": "lead.conversion.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "crm.archive",
+      "label": "归档线索",
+      "aliases": [
+        "关闭线索",
+        "归档客户",
+        "归档线索"
+      ],
+      "page": "myLeads",
+      "permission": {
+        "page": "myLeads",
+        "action": null,
+        "required": "lead.follow"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "crm.restore",
+      "label": "重新激活线索",
+      "aliases": [
+        "恢复线索",
+        "重新激活",
+        "取消归档"
+      ],
+      "page": "leadManage",
+      "permission": {
+        "page": "leadManage",
+        "action": null,
+        "required": "lead.assign"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "crm.remind",
+      "label": "线索跟进提醒",
+      "aliases": [
+        "一键提醒",
+        "跟进预警",
+        "超时线索"
+      ],
+      "page": "leadManage",
+      "permission": {
+        "page": "leadManage",
+        "action": null,
+        "required": "lead.assign"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "crm.policy.preview",
+      "label": "试运行线索回收策略",
+      "aliases": [
+        "策略试跑",
+        "试运行",
+        "预览回收"
+      ],
+      "page": "leadManage",
+      "permission": {
+        "page": "leadManage",
+        "action": null,
+        "required": "leadPolicy.preview"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "crm.policy.publish",
+      "label": "发布线索回收策略",
+      "aliases": [
+        "发布回收策略",
+        "保存保留策略"
+      ],
+      "page": "leadManage",
+      "permission": {
+        "page": "leadManage",
+        "action": null,
+        "required": "leadPolicy.publish"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "crm.import",
+      "label": "批量导入线索",
+      "aliases": [
+        "导入线索",
+        "批量登记",
+        "CSV线索",
+        "粘贴线索"
+      ],
+      "page": "quickRegister",
+      "permission": {
+        "page": "quickRegister",
+        "action": null,
+        "required": "lead.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "settings.campus",
+      "label": "管理校区与教室",
+      "aliases": [
+        "校区启用",
+        "校区停用",
+        "教室配置",
+        "编辑校区"
+      ],
+      "page": "campus",
+      "permission": {
+        "page": "campus",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "settings.dictionary",
+      "label": "教学字典配置",
+      "aliases": [
+        "学科",
+        "难度",
+        "学期",
+        "年级",
+        "班型"
+      ],
+      "page": "teaching",
+      "permission": {
+        "page": "teaching",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "settings.receipts",
+      "label": "收款渠道设置",
+      "aliases": [
+        "收款主体",
+        "微信支付",
+        "支付宝",
+        "银行转账"
+      ],
+      "page": "financeReceipts",
+      "permission": {
+        "page": "financeReceipts",
+        "action": null,
+        "required": "settings.update"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "data.export",
+      "label": "导出教学数据备份",
+      "aliases": [
+        "备份数据",
+        "下载数据",
+        "导出JSON"
+      ],
+      "page": "learningData",
+      "permission": {
+        "page": "learningData",
+        "action": null,
+        "required": "report.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1363,7 +1682,8 @@
       "page": "quickRegister",
       "permission": {
         "page": "quickRegister",
-        "action": null
+        "action": null,
+        "required": "lead.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1383,7 +1703,8 @@
       "page": "quickEnroll",
       "permission": {
         "page": "quickEnroll",
-        "action": null
+        "action": null,
+        "required": "enrollment.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1403,7 +1724,8 @@
       "page": "leadTodo",
       "permission": {
         "page": "leadTodo",
-        "action": null
+        "action": null,
+        "required": "lead.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1423,7 +1745,8 @@
       "page": "myLeads",
       "permission": {
         "page": "myLeads",
-        "action": null
+        "action": null,
+        "required": "lead.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1443,7 +1766,8 @@
       "page": "leadManage",
       "permission": {
         "page": "leadManage",
-        "action": null
+        "action": null,
+        "required": "lead.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1463,7 +1787,8 @@
       "page": "course",
       "permission": {
         "page": "course",
-        "action": null
+        "action": null,
+        "required": "course.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1483,7 +1808,8 @@
       "page": "classes",
       "permission": {
         "page": "classes",
-        "action": null
+        "action": null,
+        "required": "class.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1503,7 +1829,8 @@
       "page": "students",
       "permission": {
         "page": "students",
-        "action": null
+        "action": null,
+        "required": "student.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1523,7 +1850,8 @@
       "page": "attendance",
       "permission": {
         "page": "attendance",
-        "action": null
+        "action": null,
+        "required": "session.attendance"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1543,7 +1871,8 @@
       "page": "makeup",
       "permission": {
         "page": "makeup",
-        "action": null
+        "action": null,
+        "required": "session.move"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1563,7 +1892,8 @@
       "page": "schedule",
       "permission": {
         "page": "schedule",
-        "action": null
+        "action": null,
+        "required": "schedule.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1583,7 +1913,8 @@
       "page": "enroll",
       "permission": {
         "page": "enroll",
-        "action": null
+        "action": null,
+        "required": "enrollment.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1603,7 +1934,8 @@
       "page": "tempMove",
       "permission": {
         "page": "tempMove",
-        "action": null
+        "action": null,
+        "required": "session.move"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1623,7 +1955,8 @@
       "page": "transfer",
       "permission": {
         "page": "transfer",
-        "action": null
+        "action": null,
+        "required": "enrollment.transfer"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1643,7 +1976,8 @@
       "page": "withdraw",
       "permission": {
         "page": "withdraw",
-        "action": null
+        "action": null,
+        "required": "enrollment.withdraw"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1663,7 +1997,8 @@
       "page": "supplement",
       "permission": {
         "page": "supplement",
-        "action": null
+        "action": null,
+        "required": "order.paymentLink"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1683,7 +2018,8 @@
       "page": "learningActive",
       "permission": {
         "page": "learningActive",
-        "action": null
+        "action": null,
+        "required": "student.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1703,7 +2039,8 @@
       "page": "learningHistory",
       "permission": {
         "page": "learningHistory",
-        "action": null
+        "action": null,
+        "required": "student.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1723,7 +2060,8 @@
       "page": "learningData",
       "permission": {
         "page": "learningData",
-        "action": null
+        "action": null,
+        "required": "report.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1743,7 +2081,8 @@
       "page": "mallDecor",
       "permission": {
         "page": "mallDecor",
-        "action": null
+        "action": null,
+        "required": "store.design"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1763,7 +2102,8 @@
       "page": "mallShelf",
       "permission": {
         "page": "mallShelf",
-        "action": null
+        "action": null,
+        "required": "store.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1783,7 +2123,12 @@
       "page": "mallGroup",
       "permission": {
         "page": "mallGroup",
-        "action": null
+        "action": null,
+        "required": null,
+        "anyOf": [
+          "promotion.create",
+          "promotion.publish"
+        ]
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1803,7 +2148,12 @@
       "page": "mallJoint",
       "permission": {
         "page": "mallJoint",
-        "action": null
+        "action": null,
+        "required": null,
+        "anyOf": [
+          "promotion.create",
+          "promotion.publish"
+        ]
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1823,7 +2173,12 @@
       "page": "mallCoupon",
       "permission": {
         "page": "mallCoupon",
-        "action": null
+        "action": null,
+        "required": null,
+        "anyOf": [
+          "promotion.create",
+          "promotion.publish"
+        ]
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1843,7 +2198,8 @@
       "page": "marketingForms",
       "permission": {
         "page": "marketingForms",
-        "action": null
+        "action": null,
+        "required": "lead.create"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1863,7 +2219,8 @@
       "page": "orders",
       "permission": {
         "page": "orders",
-        "action": null
+        "action": null,
+        "required": "order.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1883,7 +2240,8 @@
       "page": "financeRefunds",
       "permission": {
         "page": "financeRefunds",
-        "action": null
+        "action": null,
+        "required": "refund.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1903,7 +2261,8 @@
       "page": "financeArrears",
       "permission": {
         "page": "financeArrears",
-        "action": null
+        "action": null,
+        "required": "order.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1923,7 +2282,8 @@
       "page": "financeConsumption",
       "permission": {
         "page": "financeConsumption",
-        "action": null
+        "action": null,
+        "required": "consumption.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1943,7 +2303,8 @@
       "page": "financeReceipts",
       "permission": {
         "page": "financeReceipts",
-        "action": null
+        "action": null,
+        "required": "settings.update"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1963,7 +2324,8 @@
       "page": "system",
       "permission": {
         "page": "system",
-        "action": null
+        "action": null,
+        "required": "settings.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -1983,7 +2345,8 @@
       "page": "campus",
       "permission": {
         "page": "campus",
-        "action": null
+        "action": null,
+        "required": "settings.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -2003,7 +2366,8 @@
       "page": "teaching",
       "permission": {
         "page": "teaching",
-        "action": null
+        "action": null,
+        "required": "settings.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -2023,7 +2387,8 @@
       "page": "staff",
       "permission": {
         "page": "staff",
-        "action": null
+        "action": null,
+        "required": "account.update"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -2043,7 +2408,8 @@
       "page": "positions",
       "permission": {
         "page": "positions",
-        "action": null
+        "action": null,
+        "required": "role.grant"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -2063,7 +2429,8 @@
       "page": "permissions",
       "permission": {
         "page": "permissions",
-        "action": null
+        "action": null,
+        "required": "role.grant"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -2083,7 +2450,8 @@
       "page": "permissionLogs",
       "permission": {
         "page": "permissionLogs",
-        "action": null
+        "action": null,
+        "required": "audit.read"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -2103,7 +2471,8 @@
       "page": "studentArchives",
       "permission": {
         "page": "studentArchives",
-        "action": null
+        "action": null,
+        "required": "student.archive"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -2123,7 +2492,8 @@
       "page": "teacherArchives",
       "permission": {
         "page": "teacherArchives",
-        "action": null
+        "action": null,
+        "required": "teacher.archive"
       },
       "mode": "open-form",
       "inputSchema": {
@@ -2143,7 +2513,8 @@
       "page": "staffArchives",
       "permission": {
         "page": "staffArchives",
-        "action": null
+        "action": null,
+        "required": "staff.archive"
       },
       "mode": "open-form",
       "inputSchema": {

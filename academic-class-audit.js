@@ -21,7 +21,8 @@ function academicRoomDetails(value){
 function academicClassRooms(value){return [...new Set(academicRoomDetails(value).map(r=>r.name))]}
 function academicSelect(id,options,current='',extra=''){return `<select id="${academicHTML(id)}" class="select" ${extra}><option value="">请选择</option>${options.map(o=>{const [value,label]=Array.isArray(o)?o:[o,o];return `<option value="${academicHTML(value)}" ${String(value)===String(current)?'selected':''}>${academicHTML(label)}</option>`}).join('')}</select>`}
 function academicReplaceSelect(html,id,options,current='',extra=''){return html.replace(new RegExp(`<select[^>]*id="${id}"[^>]*>[\\s\\S]*?</select>`),academicSelect(id,options,current,extra))}
-function academicConfigOptions(type,current){return [...new Set([...(state.config[type]||[]).map(x=>x[2]||x[0]),current].filter(Boolean))]}
+function academicConfigOptions(type,current){return [...new Set([...(state.config[type]||[]).map(x=>x[0]),current].filter(Boolean))]}
+function academicConfigChoices(type,current){const labels=new Map((state.config[type]||[]).map(x=>[x[0],x[2]||x[0]]));return academicConfigOptions(type,current).map(value=>[value,labels.get(value)||value])}
 function academicRosterIds(c){return [...new Set([...(c.studentIds||[]),...a.students.filter(s=>s.classIds?.includes(c.id)||s.className===c.name).map(s=>s.id)])]}
 function academicClassReferenced(c){return academicRosterIds(c).length>0||Number(c.students)>0||a.orders.some(o=>o.classId===c.id)||a.attendance.some(r=>r.classId===c.id||r.classIndex===a.classes.indexOf(c))||(c.sessions||[]).length>0||(c.schedule||[]).length>0||(a.sessionAdjustments||[]).some(r=>r.sourceClassId===c.id||r.targetClassId===c.id)}
 function academicCourseReferences(course){
@@ -35,7 +36,7 @@ const academicCourseFormBase=courseForm;
 courseForm=function(){
  const c=a.selectedClass===null?null:a.courses[a.selectedClass];let html=academicCourseFormBase().replace('<div class="card pad">','<div class="card pad academic-edit-form">');
  const year=String(c?.year||new Date().getFullYear());html=academicReplaceSelect(html,'course-year',[...new Set([String(new Date().getFullYear()),String(new Date().getFullYear()+1),year])],year);
- for(const [id,key,type] of [['course-subject','subject','学科'],['course-grade','grade','年级'],['course-term','term','学期'],['course-class-type','classType','班型']])html=academicReplaceSelect(html,id,academicConfigOptions(type,c?.[key]),c?.[key]||'');
+ for(const [id,key,type] of [['course-subject','subject','学科'],['course-grade','grade','年级'],['course-term','term','学期'],['course-class-type','classType','班型']])html=academicReplaceSelect(html,id,academicConfigChoices(type,c?.[key]),c?.[key]||'');
  html=academicReplaceSelect(html,'course-charge',['整期'],c?.chargeMode||'整期');
  html=html.replace('创建课程</button>',`${c?'保存课程':'创建课程'}</button>`);
  if(c&&academicCourseReferences(c).used)html=html.replace('<div id="session-list">','<p class="help">已排课或报名的讲次保留原内容；教学内容调整请创建新课程版本。</p><div id="session-list">');

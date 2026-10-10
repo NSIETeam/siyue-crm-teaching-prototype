@@ -19,7 +19,7 @@ render=function(){if(leadPages[state.page])leadRender();else{document.querySelec
 function leadNav(page){state.page=page;leadState.modal=null;render()}
 function leadRender(){leadRefreshSchoolGrades();const p=state.page,active=p==='leadDetail'?leadState.returnPage:p;document.querySelectorAll('.menu-item').forEach(e=>e.classList.toggle('active',e.dataset.page===active));document.querySelectorAll('[data-nav-toggle]').forEach(e=>e.classList.remove('active-parent'));document.querySelector('[data-nav-toggle="leads"]').classList.add('active-parent');$('#crumb').textContent='线索 / '+leadPages[p];$('#view').innerHTML=({leadTodo:leadTodoPage,myLeads:myLeadsPage,leadManage:leadManagePage,leadDetail:leadDetailPage})[p]()+ (leadState.modal?leadModalPage():'')}
 function leadDetail(index,from){leadState.selected=index;leadState.returnPage=from||state.page;leadNav('leadDetail')}
-function leadPill(value){let cls=value.includes('热')?'hot':value.includes('温')?'warm':value.includes('冷')?'cold':value.includes('新')?'new':value.includes('超时')?'overdue':value.includes('分配')?'assigned':'';return `<span class="lead-pill ${cls}">${esc(value)}</span>`}
+function leadPill(value){value=String(value||'未标记');let cls=/热|高意向/.test(value)?'hot':/温|中意向/.test(value)?'warm':/冷|低意向/.test(value)?'cold':value.includes('新')?'new':value.includes('超时')?'overdue':value.includes('分配')?'assigned':'';return `<span class="lead-pill ${cls}">${esc(value)}</span>`}
 function leadPerson(l){return `<div class="lead-name">${esc(l.name)}</div><div class="lead-secondary">${esc(l.name)}${esc(l.guardian)} · ${esc(l.phone)}</div>`}
 function leadSegments(items,current,fn){return `<div class="lead-segments">${items.map(([label,count])=>`<button class="${current===label?'active':''}" onclick="${fn}('${label}')">${label} <small>${count}</small></button>`).join('')}</div>`}
 function leadTodoPage(){let list=leadState.leads.map((l,i)=>({...l,index:i})).filter(l=>l.owner==='王敏'&&(l.stage.includes('新')||l.next.startsWith('今天'))).sort((x,y)=>(x.stage.includes('新')?0:1)-(y.stage.includes('新')?0:1));return heading('今日待办','先处理新线索，再跟进今天约定沟通的家长')+`<div class="lead-stats"><div class="lead-stat"><span>我的线索</span><strong>${leadState.leads.filter(l=>l.owner==='王敏'&&l.status==='mine').length}</strong></div><div class="lead-stat"><span>新线索</span><strong>${list.filter(l=>l.stage.includes('新')).length}</strong></div><div class="lead-stat"><span>今日待沟通</span><strong>${list.filter(l=>l.next.startsWith('今天')).length}</strong></div></div><div class="card pad"><div class="toolbar"><h2 class="section-title" style="margin:0">待办列表</h2><button class="btn" onclick="leadNav('myLeads')">查看我的线索</button></div>${aTable(['学生 / 家长','年级 · 意向学科','阶段','下次跟进','操作'],list.map(l=>`<tr><td>${leadPerson(l)}</td><td>${l.grade} · ${l.subject}</td><td>${leadPill(l.stage)}</td><td>${esc(l.next)}</td><td><button class="btn small" onclick="leadDetail(${l.index},'leadTodo')">查看并跟进</button></td></tr>`))}</div>`}
@@ -50,7 +50,7 @@ function leadSchoolGrade(stage,entryYear,now=new Date()){
 }
 function leadRefreshSchoolGrades(){
   leadState.leads.forEach(l=>{
-    const school=l.schools?.find(x=>x.entryYear);
+    const school=l.schools?.filter(x=>x.entryYear).sort((a,b)=>Number(b.entryYear)-Number(a.entryYear))[0];
     if(!school)return;
     const grade=leadSchoolGrade(school.stage,school.entryYear);
     if(grade){l.grade=grade;l.currentSchoolStage=grade.startsWith('小')?'小学':grade.startsWith('初')?'初中':grade.startsWith('高')?'高中':grade;}
@@ -68,7 +68,7 @@ function leadAddSchool(){
   document.querySelector('#lead-school-rows').insertAdjacentHTML('beforeend',leadSchoolRow({},true));
 }
 function leadSyncGradeFromSchool(){
-  const row=[...document.querySelectorAll('.lead-school-row')].find(x=>x.querySelector('.lead-school-year').value);
+  const row=[...document.querySelectorAll('.lead-school-row')].filter(x=>x.querySelector('.lead-school-year').value).sort((a,b)=>Number(b.querySelector('.lead-school-year').value)-Number(a.querySelector('.lead-school-year').value))[0];
   if(!row)return;
   const grade=leadSchoolGrade(row.querySelector('.lead-school-stage').value,row.querySelector('.lead-school-year').value);
   if(leadGradeNames.includes(grade))$('#lead-grade').value=grade;

@@ -2,7 +2,7 @@
 
 [阿里云在线原型](https://www.siyuejn.com/crm/) · [GitHub Pages 镜像](https://nsieteam.github.io/siyue-crm-teaching-prototype/) · [改造计划与原始逻辑图](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-project-plan.html) · [账号与销售统计增补](docs/siyue-auth-2026-10-10.html) · [课程、建班与排课验收](docs/academic-audit-2026-10-10.html) · [2026-10-10 日报](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-daily-2026-10-10.html) · [进度与问题验收](https://nsieteam.github.io/siyue-crm-teaching-prototype/docs/siyue-audit-2026-10-10.html)
 
-前端交互原型。当前快照：2026-10-10。下载后可直接打开 index.html，无需安装依赖。
+前端交互原型。当前快照：2026-10-11。下载后可直接打开 index.html，无需安装依赖。
 
 包含角色工作台、共享操作搜索、CRM、课程与班级、时间轴课表、单页报名、批量办理、商城装修、配置与权限原型。cli/ 提供 siyue-cli 目录查询、调用计划和实际执行应用处理器的隔离课消模拟。
 
@@ -59,3 +59,11 @@ backup-manifest.json 记录同步时的原型源码 SHA-256。docs/ 保留早期
 课程先设置逐讲内容，再创建班级并选择真实启用校区、教室和在职老师。班级列表的“排课”或搜索“班级排课”可按每周上课日生成未排讲次，逐行调整日期时段，检查实际授课老师、教室及学生冲突后整批保存。每讲保留稳定标识，点名、代课、临转、补课和课消分别关联对应课次。
 
 取消课次不会因重开排期恢复；已有记录不会被重新排课改写。转校区只更新未来未授课课次，历史地点保留。课程、班级、批量办理及相关权限回归和 Safari 实际验收见[专项报告](docs/academic-audit-2026-10-10.html)。新排课入口已同步 siyue-cli 操作目录，业务接口仍属预留契约，不提供真实业务写入。
+
+## CRM、财务、商城与平台专项验收
+
+[全平台专项验收报告](docs/platform-audit-2026-10-11.html)按功能列出修复与验证。新增线索批量导入支持 CSV/TSV、表头映射、逐行纠错、预览和整批保存；待办按授权范围去重，与本人登记统计明确区分。报名和退款按稳定课程/班级/订单编号核对，模拟到账时重验容量、时间与权限；营销草稿、发布版本、上下架和表单收集限制分别处理。
+
+教学字典草稿不再提前修改生效配置，对外名称与内部业务值分开。员工列表支持搜索与行内操作，账号审计支持保留筛选的可靠翻页。搜索与认证 CLI 目录已登记 111 个浏览器操作，并携带精确权限；这些目录项是打开界面的命令，真实业务执行接口仍待实现。
+
+本轮全套前端与 CLI 回归 422 项、后端 26 项通过。Safari 实测了线索导入纠错、字典保存、优惠发布、报名计价、模拟到账和表单收集至线索；未对真实学生、真实收退款或外部消息做写入。

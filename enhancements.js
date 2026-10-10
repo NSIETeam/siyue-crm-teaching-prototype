@@ -202,7 +202,7 @@ saveLead=function(){const editing=leadState.formMode==='edit',previous=editing?{
 };
 // Assign durable identities to legacy fixtures without reordering index-based references.
 a.courses.forEach((c,i)=>{c.id=c.id||`CRS-DEMO-${i+1}`;c.fee=c.fee??1000;c.product=c.product||{title:c.name,summary:`${c.grade} · ${c.subject} · ${c.term}`,price:c.fee,version:1};c.version=c.version||c.product.version||1});
-a.classes.forEach(c=>{const course=a.courses.find(x=>x.id===c.courseId||x.name===c.course);c.courseId=course?.id;c.lessonId=c.lessonId||course?.lessons?.[0]?.id||`${course?.id}-PENDING-1`;c.lessonVersion=c.lessonVersion||course?.version||1;c.studentIds=c.studentIds||a.students.filter(s=>s.className===c.name).map(s=>s.id)});
+a.classes.forEach(c=>{const candidates=a.courses.filter(x=>c.courseId?x.id===c.courseId:x.name===c.course),course=candidates.length===1?candidates[0]:null;c.courseId=c.courseId||course?.id;c.lessonId=c.lessonId||course?.lessons?.[0]?.id||`${course?.id}-PENDING-1`;c.lessonVersion=c.lessonVersion||course?.version||1;c.studentIds=c.studentIds||a.students.filter(s=>s.className===c.name).map(s=>s.id)});
 a.orders.forEach(o=>{const s=a.students.find(x=>x.id===o.studentId||x.name===o.student),c=a.classes.find(x=>x.id===o.classId||x.course===o.product);o.studentId=o.studentId||s?.id;o.classId=o.classId||c?.id;if(!o.paymentState)o.paymentState=o.status==='交易成功'?'已支付':'待支付';o.entitlementState=o.entitlementState||(o.paymentState==='已支付'?'已生效':'未生效')});
 const workflowCourseFormPrefill=courseForm;
 courseForm=function(){let html=workflowCourseFormPrefill(),c=a.selectedClass===null?null:a.courses[a.selectedClass];if(!c)return html;

@@ -87,11 +87,12 @@ function createAuthService(options){
    if(pathname==='/v1/roles'&&req.method==='GET')return respond(200,{roles,permissions});
    if(pathname==='/v1/catalog'&&req.method==='GET'){
     const allowed=new Set(effectivePermissions(actor));const operations=catalog.operations.filter(x=>allowed.has(x.permission));const ids=new Set(operations.flatMap(x=>x.frontendAliases));
-    return respond(200,{...catalog,mode:'authenticated-design',authorizationFiltered:true,description:'当前账号已授权的操作定义；业务执行仍未实现。',operations,frontendOperations:frontend.operations.filter(x=>ids.has(x.id)),userVersion:actor.version,scope:actor.scope});
+    return respond(200,{...catalog,mode:'authenticated-design',authorizationFiltered:true,description:'当前账号已授权的操作定义；业务执行仍未实现。',operations,frontendOperations:frontend.operations.filter(x=>x.permission?.anyOf?.length?x.permission.anyOf.some(p=>allowed.has(p)):x.permission?.required?x.permission.required==='self'||allowed.has(x.permission.required):ids.has(x.id)),userVersion:actor.version,scope:actor.scope});
    }
    if(pathname==='/v1/admin/audit'&&req.method==='GET'){
     action='audit.query';if(!actor.roleIds.includes('superadmin')&&!effectivePermissions(actor).includes('audit.read'))reject(403,'FORBIDDEN','无操作日志查看权限');
     const query=new URL(req.url,'http://local').searchParams;const from=query.get('from'),to=query.get('to');if((from&&!Number.isFinite(Date.parse(from)))||(to&&!Number.isFinite(Date.parse(to))))reject(400,'INVALID_DATE','日期筛选无效');
+    if(from&&to&&Date.parse(from)>Date.parse(to))reject(400,'INVALID_DATE','开始日期不能晚于结束日期');
     const count=query.has('limit')?Number(query.get('limit')):100;if(!Number.isInteger(count)||count<1||count>500)reject(400,'INVALID_LIMIT','每页数量须为 1–500');
     let result=store.state.audit.filter(x=>(!query.get('actor')&&!query.get('actorId')||x.actorId===(query.get('actor')||query.get('actorId')))&&(!query.get('action')||x.action===query.get('action'))&&(!query.get('outcome')||x.outcome===query.get('outcome'))&&(!from||Date.parse(x.at)>=Date.parse(from))&&(!to||Date.parse(x.at)<=Date.parse(to))).slice().reverse();
     if(query.get('before')){const index=result.findIndex(x=>x.id===query.get('before'));if(index<0)reject(400,'INVALID_CURSOR','日志分页位置无效');result=result.slice(index+1);}

@@ -15,7 +15,7 @@ function mallRender(){
   document.querySelector(`[data-nav-toggle="${marketing?'marketing':'courseMall'}"]`).classList.add('active-parent');
   $('#crumb').textContent='商城工具 / '+(marketing?'营销工具':'课程商城')+' / '+(form?({group:'拼团',joint:'联报',coupon:'优惠券'}[mallState.formType]+' / 新建'):mallPages[page]);
   const view={mallDecor:mallDecorPage,mallShelf:mallShelfPage,mallGroup:()=>mallActivityPage('group'),mallJoint:()=>mallActivityPage('joint'),mallCoupon:()=>mallActivityPage('coupon'),mallForm:mallFormPage}[page];
-  $('#view').innerHTML=view()+(mallState.picker?mallPickerPage():'');
+  $('#view').innerHTML=view()+(mallState.picker&&typeof commercePickedCourses!=='function'?mallPickerPage():'');
 }
 function mallCourses(){return a.courses.map((c,i)=>({...c,index:i}))}
 function mallStats(items){return `<div class="mall-metrics">${[['活动数',items.length],['进行中',items.filter(x=>x.status==='进行中').length],['未开始',items.filter(x=>x.status==='未开始').length]].map(([label,value])=>`<div class="card mall-metric"><strong>${value}</strong><span>${label}</span></div>`).join('')}</div>`}

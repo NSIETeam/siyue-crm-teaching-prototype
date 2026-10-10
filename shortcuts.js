@@ -42,17 +42,17 @@ function shortcutRender(){
   if(page==='quickRegister')shortcutApplyFilters();
 }
 function shortcutRegisterPage(){
-  const registered=leadState.leads.map((l,index)=>({...l,index})).filter(l=>l.registrar===shortcutCurrentUser());
+  const registered=typeof crmRegisteredLeads==='function'?crmUniqueLeads(crmRegisteredLeads()):leadState.leads.map((l,index)=>({...l,index})).filter(l=>l.registrar===shortcutCurrentUser());
   const today=shortcutDayOffset(0),ninetyDaysAgo=shortcutDayOffset(89);
   const valid=registered.filter(l=>shortcutMatchDate(l.createdAt,ninetyDaysAgo,today));
-  const enrolledLeadIds=new Set(a.orders.filter(o=>o.productCategory==='正价课'&&o.originLeadId).map(o=>o.originLeadId));
-  const convertedCount=new Set(registered.filter(l=>enrolledLeadIds.has(l.leadId)).map(l=>`${l.name}|${l.contactPhone||l.phone}`)).size;
+  const enrolledLeadIds=new Set(a.orders.filter(o=>o.productCategory==='正价课'&&o.originLeadId&&salesMetricsPaid(o)).map(o=>o.originLeadId));
+  const convertedCount=new Set(registered.filter(l=>enrolledLeadIds.has(l.leadId)&&salesMetricsPaidOrders(l).length).map(l=>l.leadId)).size;
   const stats=[
     ['累计登记',registered.length,'该账号全部登记线索总计；转交后仍计入。'],
     ['有效线索',valid.length,'该账号近90天登记的全部线索总计（含今天）。'],
-    ['已转化',convertedCount,'该账号登记线索中，有过报名正价课行为的人数总计。']
+    ['已转化',convertedCount,'该账号登记线索中，已关联学生并确认收到正价课款项的人数；待支付及免费订单不计入。']
   ];
-  const rows=registered.map(l=>{const intent=shortcutIntent(l);return `<tr data-created="${esc(l.createdAt?.slice(0,10)||'')}" data-search="${esc([l.name,l.guardian,l.phone].join(' '))}" data-stage="${esc(l.stage)}" data-intent="${esc(intent)}"><td>${leadPerson(l)}</td><td>${esc(l.grade)}</td><td>${esc(l.subject)}</td><td>${esc(l.createdAt||'—')}</td><td>${esc(l.owner)}</td><td>${leadPill(l.stage)}</td><td><span class="shortcut-intent">${esc(intent)}</span></td><td>${esc(l.history.at(-1)?.[1]||'—')}</td><td><button class="btn small" onclick="leadDetail(${l.index},'quickRegister')">详情</button></td></tr>`});
+  const rows=registered.map(l=>{const intent=shortcutIntent(l);return `<tr data-created="${esc(typeof salesMetricsDate==='function'?salesMetricsDate(l.createdAt):l.createdAt?.slice(0,10)||'')}" data-search="${esc([l.name,l.guardian,l.phone,l.contactPhone||''].join(' '))}" data-stage="${esc(l.stage)}" data-intent="${esc(intent)}"><td>${leadPerson(l)}</td><td>${esc(l.grade)}</td><td>${esc(l.subject)}</td><td>${esc(typeof crmDisplayTime==='function'?crmDisplayTime(l.createdAt):l.createdAt||'—')}</td><td>${esc(l.owner)}</td><td>${leadPill(l.stage)}</td><td><span class="shortcut-intent">${esc(intent)}</span></td><td>${esc(l.history.at(-1)?.[1]||'—')}</td><td><button class="btn small" onclick="leadDetail(${l.index},'quickRegister')">详情</button></td></tr>`});
   return heading('线索登记','查看本人录入的线索；分配、转化或归档后仍归入原登记人统计')+
     `<div class="shortcut-stats card" aria-label="线索登记统计">${stats.map(([name,value,note])=>`<div class="shortcut-stat" title="${esc(note)}"><span>${esc(name)}</span><strong>${value}</strong></div>`).join('')}<details class="shortcut-stat-help"><summary>统计口径</summary><div>${stats.map(([name,value,note])=>`<p><b>${esc(name)}：</b>${esc(note)}</p>`).join('')}</div></details></div>`+
     `<div class="card pad shortcut-register-card"><div class="toolbar"><div class="toolbar-left"><h2 class="section-title" style="margin:0">我录入的线索</h2><span class="count">共 ${registered.length} 条</span></div><div class="toolbar-right"><button class="btn" onclick="leadState.modal='import';leadRender()">批量导入</button><button class="btn primary" onclick="leadState.formMode='create';leadState.modal='form';leadRender()">+ 单个登记</button></div></div>`+
@@ -62,7 +62,7 @@ function shortcutRegisterPage(){
 function shortcutIntent(lead){if(lead.stage==='已报名')return '已报名';return {'冷意向':'低意向','温意向':'中意向','热意向':'高意向'}[lead.intent]||lead.intent||'未标记'}
 function shortcutSetDate(){const from=$('#quick-date-from').value,to=$('#quick-date-to').value;if(from&&to&&from>to){toast('开始日期不能晚于结束日期');return}shortcutFilter.from=from;shortcutFilter.to=to;shortcutFilter.preset='';document.querySelectorAll('.shortcut-presets .btn').forEach(e=>e.classList.remove('selected'));shortcutApplyFilters()}
 function shortcutPreset(key){const days={today:0,yesterday:1,'7':6,'30':29,'90':89}[key];shortcutFilter.from=shortcutDayOffset(days);shortcutFilter.to=shortcutDayOffset(key==='yesterday'?1:0);shortcutFilter.preset=key;shortcutRender()}
-function shortcutMatchDate(createdAt,from,to){const date=(createdAt||'').slice(0,10);return (!from||date>=from)&&(!to||date<=to)}
+function shortcutMatchDate(createdAt,from,to){const date=typeof salesMetricsDate==='function'?salesMetricsDate(createdAt):(createdAt||'').slice(0,10);return (!from&&!to)||!!date&&(!from||date>=from)&&(!to||date<=to)}
 function shortcutMatchFilters(record){const search=shortcutFilter.search.trim().toLowerCase();return (!search||record.search.toLowerCase().includes(search))&&shortcutMatchDate(record.created,shortcutFilter.from,shortcutFilter.to)&&(!shortcutFilter.stage||record.stage===shortcutFilter.stage)&&(!shortcutFilter.intent||record.intent===shortcutFilter.intent)}
 function shortcutApplyFilters(){shortcutSyncFilterButton();let count=0;document.querySelectorAll('.quick-lead-table tbody tr').forEach(row=>{const found=shortcutMatchFilters(row.dataset);row.hidden=!found;if(found)count++});const label=$('#quick-filter-count');if(label)label.textContent=count}
 

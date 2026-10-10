@@ -92,7 +92,7 @@ function workspaceEnhanceRows(){
   const expand=event=>{if(event.type==='keydown'&&!['Enter',' '].includes(event.key))return;event.preventDefault();event.stopPropagation();
    const next=row.nextElementSibling,open=next?.classList.contains('workspace-action-row');document.querySelectorAll('.workspace-action-row').forEach(x=>x.remove());document.querySelectorAll('.workspace-record-row').forEach(x=>x.setAttribute('aria-expanded','false'));if(open)return;
    const tr=document.createElement('tr');tr.className='workspace-action-row';const td=document.createElement('td');td.colSpan=row.cells.length;const bar=document.createElement('div');bar.className='workspace-action-buttons';
-   for(const action of actions){const b=document.createElement('button');b.type='button';b.className='btn small';b.innerHTML=action.innerHTML;b.setAttribute('onclick',action.getAttribute('onclick'));bar.append(b)}
+   for(const action of actions){const b=document.createElement('button');b.type='button';b.className='btn small';b.innerHTML=action.innerHTML;const label=action.getAttribute('aria-label')||action.getAttribute('title')||action.textContent.trim();if(label){b.setAttribute('aria-label',label);b.title=label;if(!b.textContent.trim()){const text=document.createElement('span');text.textContent=label;b.append(text)}}b.setAttribute('onclick',action.getAttribute('onclick'));bar.append(b)}
    td.append(bar);tr.append(td);row.after(tr);row.setAttribute('aria-expanded','true');
   };row.addEventListener('click',expand,true);row.addEventListener('keydown',expand,true);
  }

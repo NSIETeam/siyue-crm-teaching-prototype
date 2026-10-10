@@ -45,8 +45,8 @@ function salesMetricsOwner(lead){
 }
 function salesMetricsSameOwner(left,right){
  if(!left||!right)return false;
- if(left.id&&right.id)return left.id===right.id;
- if(left.account&&right.account)return left.account===right.account;
+ if(left.id||right.id)return !!left.id&&!!right.id&&left.id===right.id;
+ if(left.account||right.account)return !!left.account&&!!right.account&&left.account===right.account;
  // Names are a legacy bridge only when the employee directory has no ambiguity.
  return !!left.name&&left.name===right.name&&(state.staff||[]).filter(s=>s.name===left.name).length<=1;
 }
@@ -107,7 +107,7 @@ function salesMetricsSetPeriod(period){if(!['30','90','all'].includes(period))re
 function salesMetricsCard(){
  const data=salesMetricsRows(),scope=data.access.kind;if(scope==='none')return '';
  const summary=salesMetricsSummarize(data.rows),excluded=Object.values(data.excluded).reduce((sum,n)=>sum+n,0);
- const title=scope==='self'?'我的转化':'销售转化',label=scope==='self'?'本人':scope==='campus'?'授权校区':'全部校区';
+ const title=scope==='self'?'我的转化':scope==='campus'?'授权校区销售转化':'全部销售转化',label=scope==='self'?'本人负责':'按负责人统计';
  const members=scope==='self'?[]:[...new Map(data.rows.map(row=>[row.owner.key,row.owner])).values()].map(owner=>({owner,summary:salesMetricsSummarize(data.rows.filter(row=>salesMetricsSameOwner(owner,row.owner)))}));
  const rate=summary.reliable?summary.rate.toFixed(1)+'%':'样本不足';
  return `<section class="card sales-metrics" aria-label="销售转化统计"><div class="sales-metrics-header"><strong>${title}</strong><span class="muted">${label}</span><select class="select" aria-label="转化统计周期" onchange="salesMetricsSetPeriod(this.value)">${[['30','近30天登记'],['90','近90天登记'],['all','全部登记日期']].map(([id,text])=>`<option value="${id}" ${salesMetricsUI.period===id?'selected':''}>${text}</option>`).join('')}</select></div><div class="sales-metrics-strip"><div><span>已转化 / 统计线索</span><strong>${summary.converted}<small> / ${summary.total}</small></strong></div><div><span>转化率</span><strong class="${summary.reliable?'':'sales-metrics-insufficient'}">${rate}</strong></div>${summary.reliable?'':`<div><span>观察样本</span><strong>${summary.progress}<small> / ${salesMetricsMinimum}</small></strong></div>`}</div>${summary.reliable?'':`<div class="sales-metrics-sample"><progress max="${salesMetricsMinimum}" value="${summary.progress}" aria-label="样本积累进度"></progress><span>再积累 ${summary.remaining} 条，暂不参与转化率排名</span></div>`}<details class="sales-metrics-definition"><summary>统计口径${excluded?' · '+excluded+' 条待核验':''}</summary><p>${data.range.label}${data.range.from?'（'+data.range.from+' 至 '+data.range.to+'）':''}；按线索 ID 去重。未转化按当前负责人，已转化按首次到账时负责人和校区快照归属。登记人与销售负责人分别保留。</p><p>仅关联学生档案的已支付订单计入转化；报名草稿、待支付、仅修改“已报名”阶段均不计入。同一线索多次付款只计一次转化。后续退课保留首次转化记录，本指标不是留存率。</p><p>缺少登记日期 ${data.excluded.missingDate} 条、成交归属 ${data.excluded.missingAttribution} 条、线索 ID ${data.excluded.missingId} 条，均不进入分子或分母。达到10条只解除小样本隐藏，并不代表统计已稳定。</p></details>${members.length?`<details class="sales-metrics-members"><summary>查看销售明细</summary>${aTable(['销售','已转化 / 统计线索','转化率'],members.map(({owner,summary:m})=>`<tr><td>${esc(owner.name)}<div class="muted">${esc(owner.campus)}</div></td><td>${m.converted} / ${m.total}</td><td>${m.reliable?m.rate.toFixed(1)+'%':'样本不足 · 不参与排名'}</td></tr>`))}</details>`:''}</section>`;
