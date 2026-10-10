@@ -37,9 +37,28 @@ node cli/siyue-cli.cjs get audit-events
 
 `list/describe` 每次检查会话并读取服务器授权目录，不根据本地角色猜测权限。登录后的 `inputSchema`、操作名与权限才是当前运行依据。`cli/operations.json` 是旧页面入口目录；仓库 `backend/contracts/operations.json` 的37项与 `backend/contracts/openapi.json` 是早期设计契约。启用共享业务后，线上 `/crm-api/openapi.json` 动态生成当前运行契约；未启用业务时才返回旧设计契约。
 
+## 快速填写（新增）
+
+不用先查齐 ID 或手写完整 JSON。登录后可直接按名称填写，或生成 CSV 批量填写：
+
+```sh
+node cli/siyue-cli.cjs fill 建班 --name 四年级数学周六班 \
+  --course 四年级数学秋季课 --campus 城中校区 --teacher 陈老师 \
+  --room 教室01 --capacity 20 --out /private/path/class.plan.json
+node cli/siyue-cli.cjs template 批量报名 --format csv --out /private/path/students.csv
+node cli/siyue-cli.cjs check 批量报名 --class 四年级数学周六班 --rows /private/path/students.csv
+node cli/siyue-cli.cjs fill 批量报名 --class 四年级数学周六班 \
+  --rows /private/path/students.csv --out /private/path/enroll.plan.json
+node cli/siyue-cli.cjs execute --plan /private/path/enroll.plan.json
+```
+
+`check` 校验但不写计划；`fill` 生成服务器预览计划，`execute` 才提交。CSV 逐行指出错误，明确的手机号/数字格式会规范并列出，重名须改填 ID。通用 `--set 字段=值` 支持嵌套路径；`--price` 按元精确转分。JSON 模板由当前授权 schema 生成。
+
+[完整快填说明与线索、排课、报名示例](../docs/siyue-cli-quickfill.md)。
+
 ## 预览，再执行
 
-先用 `get` 取得有权访问的记录 ID，再依据 `describe` 准备 JSON。不传数组索引、角色、客户端报价或自行计算的退款额。网页会用名称下拉完成选择；CLI 使用稳定 ID。
+使用底层 `plan` 指令时，先用 `get` 取得有权访问的记录 ID，再依据 `describe` 准备 JSON。不传数组索引、角色、客户端报价或自行计算的退款额。网页通过名称下拉选择；CLI 快填可以解析名称，底层 `plan` 使用稳定 ID。
 
 例如创建校区的输入文件：
 
@@ -63,7 +82,7 @@ node cli/siyue-cli.cjs execute \
 
 `execute` 核验计划属于当前服务器和员工，再携带原预览及幂等键提交。成功返回新 revision 与实际结果。普通预览有效期10分钟；期间数据或权限变化会导致重新预览要求。客户端不能把预览文件里的字段改掉后继续执行。
 
-网络超时或结果不明时，**重试同一份计划文件**。同一键、同一输入返回原结果，不重复办理；同一键不同输入被拒绝。明确的校验失败可纠正输入后输出新的计划；revision 冲突则刷新资料并重新预览。不要将每次网络重试都改成新幂等键。
+网络超时或结果不明时，**重试同一份计划文件**。同一键、同一输入返回已办理标识，不重复办理；详情可通过 `get` 或网页刷新查看。同一键不同输入被拒绝。明确的校验失败可纠正输入后输出新的计划；revision 冲突则刷新资料并重新预览。不要将每次网络重试都改成新幂等键。
 
 不带 `--input/--out` 的 `plan <id>` 只显示操作的下一步提示；不等于已经完成服务器业务预览。
 
@@ -94,7 +113,7 @@ node --test cli/simulation.test.cjs
 ## 验证与维护
 
 ```sh
-node --test cli/auth.test.cjs
+node --test cli/auth.test.cjs cli/quick-fill.test.cjs
 node --test cli/simulation.test.cjs
 node --test backend/test/business-core.test.cjs
 ```
