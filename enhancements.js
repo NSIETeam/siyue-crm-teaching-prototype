@@ -1,4 +1,6 @@
 /* Cross-module workflow layer for the teaching CRM prototype. Demo data only. */
+function workflowOrderClosed(order){return ['已退课','已取消'].includes(order.entitlementState)||['已取消','已关闭'].includes(order.paymentState)||['已取消','已关闭'].includes(order.status)}
+function workflowOrderOutstanding(order){return !workflowOrderClosed(order)&&money(order.amount)>money(order.paid)}
 const workflowState={home:true,query:'',offerTemplate:'续费',scheduleView:'campus',range:'本周',selectedSession:null,payments:[]};
 const workflowOriginalRender=render;
 render=function(){
@@ -27,7 +29,7 @@ function workflowHome(){
  const id=permissionState?.identity||'admin',role=permissionRole?.(id),name=id==='sales'?'王敏':id==='manager'?'陈老师':id==='finance'?'财务同事':'校区主管';
  const myLeads=(leadState?.leads||[]).filter(x=>x.owner===name||id==='admin'&&['new','recycle','warning'].includes(x.status));
  const overdue=myLeads.filter(x=>x.next==='今天'||x.status==='warning');
- const unpaid=(state.academic?.orders||[]).filter(x=>money(x.amount)>money(x.paid));
+ const unpaid=(state.academic?.orders||[]).filter(workflowOrderOutstanding);
  document.querySelectorAll('.menu-item').forEach(e=>e.classList.remove('active'));
  $('#crumb').textContent='我的工作';
  $('#view').innerHTML=`<div class="home-greeting"><button class="btn primary" onclick="state.page='quickRegister';leadState.formMode='create';leadState.modal='form';render()">＋ 新建线索</button></div>
@@ -94,7 +96,7 @@ finishEnroll=function(){
 };
 function workflowSimulatePayment(orderId){const o=a.orders.find(x=>x.id===orderId);if(!o||o.paymentState==='已支付'){toast('订单不存在或已确认到账');return}o.paid=o.amount;o.status='交易成功';o.paymentState='已支付';o.entitlementState='已生效';const s=a.students.find(x=>x.id===o.studentId),c=a.classes.find(x=>x.id===o.classId);if(s){s.status='在读';s.enrollmentStatus='已生效';if(c){c.studentIds=c.studentIds||[];const already=c.studentIds.includes(s.id)||s.className===c.name;if(!c.studentIds.includes(s.id))c.studentIds.push(s.id);if(!already)c.students=(c.students||0)+1;s.className=c.name}}if(o.originLeadId){const lead=leadState.leads.find(l=>l.leadId===o.originLeadId);if(lead){lead.stage='已报名';lead.history.push(['支付确认','今天',`订单${o.id}到账，课程权益已生效。`])}}toast('模拟到账成功；重复回执不会重复创建权益');if(state.page==='orders')academicRender()}
 const workflowOrdersPage=ordersPage;
-ordersPage=function(){const rows=a.orders.map(o=>`<tr><td><strong>${esc(o.product)}</strong><br><span class="quiet">${esc(o.id)}</span></td><td>${esc(o.amount)}</td><td>${esc(o.paid)}</td><td>苏州思跃教育科技有限公司</td><td>${esc(o.student)}</td><td><span class="badge ${o.paymentState==='已支付'?'':'off'}">${esc(o.paymentState||o.status)}</span><div class="help">权益：${esc(o.entitlementState||'待核验')}</div></td><td>${o.paymentState==='已支付'?'已确认':`<button class="btn small primary" onclick="workflowSimulatePayment('${esc(o.id)}')">模拟扫码到账</button>`}</td></tr>`);return aHeading('收费订单','创建订单与确认收款分开处理；到账确认后课程权益才生效')+`<div class="card"><div class="pad"><div class="toolbar"><input class="input" placeholder="搜索商品或学生" oninput="filterRows(this.value)"><span class="notice">原型支付模拟，不连接真实支付渠道</span></div>${aTable(['商品名称','应收','实收','收款主体','学生','支付与权益状态','操作'],rows)}</div></div>`};
+ordersPage=function(){const rows=a.orders.map(o=>`<tr><td><strong>${esc(o.product)}</strong><br><span class="quiet">${esc(o.id)}</span></td><td>${esc(o.amount)}</td><td>${esc(o.paid)}</td><td>苏州思跃教育科技有限公司</td><td>${esc(o.student)}</td><td><span class="badge ${o.paymentState==='已支付'?'':'off'}">${esc(o.paymentState||o.status)}</span><div class="help">权益：${esc(o.entitlementState||'待核验')}</div></td><td>${workflowOrderClosed(o)?'已关闭':o.paymentState==='已支付'?'已确认':`<button class="btn small primary" onclick="workflowSimulatePayment('${esc(o.id)}')">模拟扫码到账</button>`}</td></tr>`);return aHeading('收费订单','创建订单与确认收款分开处理；到账确认后课程权益才生效')+`<div class="card"><div class="pad"><div class="toolbar"><input class="input" placeholder="搜索商品或学生" oninput="filterRows(this.value)"><span class="notice">原型支付模拟，不连接真实支付渠道</span></div>${aTable(['商品名称','应收','实收','收款主体','学生','支付与权益状态','操作'],rows)}</div></div>`};
 // Lead ownership actions are explicit and never rewrite source attribution.
 const workflowLeadDetailPage=leadDetailPage;
 leadDetailPage=function(){let html=workflowLeadDetailPage().replace('<div class="lead-operation"><button class="btn" onclick="leadState.modal=\'follow\';leadRender()">◷ 下次跟进</button>',`<div class="lead-operation"><button class="btn" onclick="workflowTransferLead()">转交同事</button><button class="btn" onclick="workflowReleaseLead()">释放到公海</button><button class="btn" onclick="leadState.modal='follow';leadRender()">◷ 下次跟进</button>`);if(permissionState.identity==='manager')html=html.replace(/<button\b([^>]*)>[\s\S]*?<\/button>/g,(button,attrs)=>/\bclass="[^"]*\bback-control\b/.test(attrs)?button:'');return html};

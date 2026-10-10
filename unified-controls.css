@@ -47,3 +47,5 @@ body .back-control .back-icon{display:block;width:20px;height:20px;flex:0 0 20px
 body button.back-link{border:0;background:transparent;padding:4px 0;font-weight:inherit;line-height:1.5}
 body button.back-link:hover{color:#244ed5}
 body .back-control:focus-visible{outline:2px solid #315deb;outline-offset:3px}
+
+.withdrawal-manual{margin-top:18px;max-width:none}.withdrawal-reason{white-space:normal;min-width:200px;max-width:300px;font-size:12px;line-height:1.5;color:#8190a6}

@@ -35,16 +35,16 @@ finishEnroll=function(){
 };
 workflowSimulatePayment=function(id){
  if(!workflowGuard('payment'))return;const o=a.orders.find(x=>x.id===id),c=a.classes.find(x=>x.id===o?.classId),s=a.students.find(x=>x.id===o?.studentId);
- if(!o||!c||!s||o.entitlementState==='已退课'){toast('订单或关联档案无效');return}if(o.paymentState==='已支付'){toast('该订单已确认到账，请勿重复操作');return}
+ if(!o||!c||!s||workflowOrderClosed(o)){toast('订单或关联档案无效');return}if(o.paymentState==='已支付'){toast('该订单已确认到账，请勿重复操作');return}
  const amount=money(o.amount);if(!Number.isFinite(amount)||amount<0){toast('订单金额无效');return}if(!batchRoster(c,s)&&batchOccupied(c)>=Number(c.capacity)){toast('班级已满，请先处理名额');return}
  o.paid=o.amount;o.status='交易成功';o.paymentState='已支付';o.entitlementState='已生效';s.status='在读';s.enrollmentStatus='已生效';const count=batchOccupied(c);if(!batchRoster(c,s))c.students=count+1;c.studentIds=[...new Set([...(c.studentIds||[]),s.id])];s.classIds=[...new Set([...(s.classIds||[]),c.id])];s.className=c.name;
  const lead=leadState.leads.find(l=>l.leadId===o.originLeadId);if(lead){lead.stage='已报名';lead.history=lead.history||[];lead.history.push(['支付确认','今天',`订单 ${o.id} 到账，课程权益已生效。`])}workflowPersist();render();toast('模拟到账成功，课程权益已生效');
 };
 const auditEstimateBase=workflowRefundEstimate;
 workflowRefundEstimate=function(si,ci){const x=auditEstimateBase(si,ci);x.ready=x.ready&&Number.isFinite(x.paid)&&x.paid>=0&&Number.isFinite(x.refund)&&x.refund>=0&&x.refund<=x.paid;return x};
-workflowConfirmRefund=function(id){if(!workflowGuard('refundPayment'))return;const r=(a.refunds||[]).find(x=>x.id===id),o=a.orders.find(x=>x.id===r?.orderId);if(!r||r.status!=='待财务退款'){toast('该退款已处理或不存在');return}if(!o||o.entitlementState!=='已退课'||!Number.isFinite(r.amount)||r.amount<0||r.amount>money(o.paid)){toast('退款依据或金额无效');return}r.status='已模拟退款';r.completedAt=new Date().toISOString();o.refundState='已退款';o.refundedAmount=r.amount;workflowPersist();render();toast('模拟退款已确认，历史记录保留')};
+workflowConfirmRefund=function(id){if(!workflowGuard('refundPayment'))return;const r=(a.refunds||[]).find(x=>x.id===id),o=a.orders.find(x=>x.id===r?.orderId);if(!r||r.status!=='待财务退款'){toast('该退款已处理或不存在');return}if(r.withdrawalVersion===1)return withdrawalConfirmRefund(id);if(!o||o.entitlementState!=='已退课'||!Number.isFinite(r.amount)||r.amount<0||r.amount>money(o.paid)){toast('退款依据或金额无效');return}r.status='已模拟退款';r.completedAt=new Date().toISOString();o.refundState='已退款';o.refundedAmount=r.amount;workflowPersist();render();toast('模拟退款已确认，历史记录保留')};
 const auditLegacyAttendance=saveAttendance;saveAttendance=function(...args){if(!workflowGuard('academic'))return;return auditLegacyAttendance(...args)};
-for(const name of ['saveAttendance','finishEnroll','workflowSimulatePayment','finishFlow','workflowConfirmRefund','saveLead','saveFollow','archiveLead','leadToEnrollment','assignLead','reactivateLead','workflowCommitTransfer','workflowCommitRelease','saveCourse','saveClass','workflowSaveSessionAttendance','workflowSaveTeachingRecord','workflowCommitMove','workflowConfirmSubstitute','academicConfirmMakeup','saveMakeup','academicMarkNoMakeup']){const fn=globalThis[name];if(typeof fn==='function')globalThis[name]=auditAtomic(fn)}
+for(const name of ['saveAttendance','finishEnroll','workflowSimulatePayment','finishFlow','workflowConfirmRefund','withdrawalConfirmRefund','saveLead','saveFollow','archiveLead','leadToEnrollment','assignLead','reactivateLead','workflowCommitTransfer','workflowCommitRelease','saveCourse','saveClass','workflowSaveSessionAttendance','workflowSaveTeachingRecord','workflowCommitMove','workflowConfirmSubstitute','academicConfirmMakeup','saveMakeup','academicMarkNoMakeup']){const fn=globalThis[name];if(typeof fn==='function')globalThis[name]=auditAtomic(fn)}
 
 // Render once after all authoritative state and final handlers are restored.
 render();
