@@ -4,3 +4,10 @@
 !.env.example
 node_modules/
 *.log
+
+# Private authentication state must never enter the public backup.
+auth.json
+auth.json.lock
+initial-admin.json
+session.json
+.auth-*.tmp

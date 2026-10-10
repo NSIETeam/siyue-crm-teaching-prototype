@@ -9,6 +9,9 @@
   "batch-operations.css",
   "batch-operations.js",
   "command-search.js",
+  "deployment-config.js",
+  "employee-auth.css",
+  "employee-auth.js",
   "enhancements.js",
   "finance-quick-actions.css",
   "finance-quick-actions.js",
@@ -17,6 +20,9 @@
   "interface-polish.js",
   "leads.css",
   "leads.js",
+  "lesson-consumption-demo.js",
+  "lesson-consumption-example.js",
+  "lesson-consumption.js",
   "mall-decor-editor.css",
   "mall-decor-editor.js",
   "mall.css",
@@ -33,6 +39,8 @@
   "permissions.js",
   "profile-quick-actions.css",
   "profile-quick-actions.js",
+  "sales-metrics.css",
+  "sales-metrics.js",
   "schedule-caterpillar.css",
   "schedule-caterpillar.js",
   "shortcuts.css",
@@ -44,8 +52,5 @@
   "unified-controls.css",
   "withdrawal.js",
   "workspace-navigation.css",
-  "workspace-navigation.js",
-  "lesson-consumption.js",
-  "lesson-consumption-demo.js",
-  "lesson-consumption-example.js"
+  "workspace-navigation.js"
 ]

@@ -1,0 +1,34 @@
+[Unit]
+Description=Siyue employee authentication API
+After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=siyue-crm-auth
+Group=siyue-crm-auth
+WorkingDirectory=/opt/siyue-crm/auth-current/backend
+ExecStart=/opt/siyue-crm/runtime/node-v24.21.0-linux-x64/bin/node src/server.cjs
+Environment=NODE_ENV=production
+Environment=SIYUE_BACKEND_PORT=8787
+Environment=SIYUE_AUTH_STORE=/var/lib/siyue-crm-auth/auth.json
+Environment=SIYUE_PUBLIC_ORIGIN=https://www.siyuejn.com
+Environment=SIYUE_COOKIE_PATH=/crm-api/
+Environment=SIYUE_TRUST_PROXY=loopback
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/siyue-crm-auth
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+MemoryMax=512M
+TasksMax=64
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target

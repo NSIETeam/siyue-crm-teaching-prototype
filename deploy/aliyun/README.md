@@ -94,3 +94,21 @@ node deploy/aliyun/verify-http.cjs \
 - Safari HTTPS 页面已验证搜索、预览与导入演示课消，显示 2 次合计 ¥600。
 - 原站点仍返回原有登录跳转；Nginx、原业务服务和 PostgreSQL 均运行正常。
 - 上一静态版本保留，后端骨架未部署。
+
+
+## 员工认证服务（2026-10-10）
+
+静态前端与认证服务分别发布：网页 `/crm/`，同源认证 API `/crm-api/`；原有站点、问答服务与数据库不迁移。`deployment-config.js` 仅在 `www.siyuejn.com` / `siyuejn.com` 启用登录；GitHub Pages 保留演示模式。
+
+- 独立用户：`siyue-crm-auth`（无登录 shell）。
+- 私有数据：`/var/lib/siyue-crm-auth/auth.json`，目录 0700、文件 0600，包含密码哈希、令牌哈希与认证审计，不在 Nginx 公开目录。
+- 代码：`/opt/siyue-crm/auth-releases/<releaseId>`；`auth-current` 指向在用版本。
+- 进程：`siyue-crm-auth.service`，仅监听 `127.0.0.1:8787`，由 Nginx 同源代理。
+- 运行时：官方 Node.js 24.21.0 Linux x64，下载后核对官方 SHA-256；路径写在 service 模板中。
+- 代理模板：`auth-api.nginx.conf`；service 模板：`siyue-crm-auth.service`。接口自行对登录实施账号、IP、全局限流。Nginx 覆盖真实来源地址。
+
+提交已审核源码后，用 `node deploy/aliyun/build-auth-release.cjs --out /absolute/staging` 生成只含服务代码、契约与部署模板的包。包不包含账号库、初始密码、CLI 登录文件或测试资料。上线前核验文件哈希和 Nginx 配置，保留前一个代码链接和配置备份。
+
+首次初始化只执行一次，凭证单独交付给负责人；以后使用平台管理员重置，不覆盖数据库。回滚时停止服务、将 `auth-current` 指回原版再启动；保留当前认证数据库，禁止以源码包覆盖或回退已变更密码/授权的数据库。没有旧认证版本时可停用本服务并保留私有数据，再回退前端；不能将演示身份作为认证替代。
+
+正常停止会释放 writer 锁；异常退出时先确认锁内 PID 已停止再人工处理残留锁，不能盲删。单进程 JSON 存储适合此阶段的小规模账号服务；审计达到 32 MiB 时须先受控归档，后续应迁移到有备份和保留策略的数据库。业务 API 仍返回 501，本次未开通真实支付或跨账号业务数据同步。

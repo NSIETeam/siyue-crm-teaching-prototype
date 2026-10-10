@@ -1,10 +1,38 @@
-# siyue-cli 操作目录与本地模拟 v0.2
+# siyue-cli 员工认证与本地模拟 v0.3
 
-## 当前可用
+## 员工账号登录
 
-`node cli/siyue-cli.cjs list 报名` 查询指令；`describe <id>` 返回定义；`plan <id>` 生成不提交的调用计划。
-浏览器 `siyueCLI.list()` 只返回当前身份可用操作；`describe(id)` 与 `open(id)` 再次校验权限。全局搜索共用此目录。浏览器 open 只打开办理表单，不直接提交。
-`operations.json` 是构建时导出的公开功能定义，不含学生数据，也不是授权结果。增加操作时应登记 commandWorkflows 并重新导出。
+超级管理员在平台“设置与账号 → 员工账号与权限”创建员工。账号可以按工号自动生成；初始强密码仅创建或重置时回显一次。网页与 CLI 使用同一员工身份及最终授权。
+
+```sh
+node cli/siyue-cli.cjs login --username sy-e010
+node cli/siyue-cli.cjs passwd
+node cli/siyue-cli.cjs login --username sy-e010
+node cli/siyue-cli.cjs whoami
+node cli/siyue-cli.cjs list 线索
+node cli/siyue-cli.cjs describe lead.follow
+node cli/siyue-cli.cjs plan lead.follow
+node cli/siyue-cli.cjs logout
+```
+
+登录与改密时在终端隐藏输入密码。自动化可从进程环境注入 `SIYUE_PASSWORD`、`SIYUE_NEW_PASSWORD`，不要将口令放进命令行、脚本源码或仓库；CLI 拒绝 `--password` / `--token` 参数。首次登录与管理员重置后必须改密，完成后所有旧会话撤销，需要用新密码重新登录。
+
+默认服务器是 `https://www.siyuejn.com/crm-api/`。可通过登录的 `--server` 或 `SIYUE_SERVER` 指定 HTTPS 地址，仅 `localhost` / `127.0.0.1` / `::1` 的隔离测试允许 HTTP；不会跟随重定向泄露令牌。
+
+CLI 会话保存在用户私有目录 `~/.config/siyue-cli/session.json`，文件 `0600`、目录 `0700`；可用 `SIYUE_CONFIG_DIR` 指定独立路径。拒绝符号链接目录和会话文件。令牌不写入标准输出，也不写入项目目录。网页使用 HttpOnly Secure Cookie 与 CSRF 校验，不使用 localStorage 存登录令牌。
+
+`list`、`describe`、`plan` 都必须登录，且每次向服务端重新检查身份并取得过滤后的指令目录。修改员工角色、个人额外授权/禁止项、数据范围、停用或重置密码，会立即撤销该员工全部旧会话。不存在或未授权的操作不会出现在目录中。`plan` 明确返回 `commit:false` 和 `business-backend-not-enabled`；已授权不代表业务后端已实现。
+
+`operations.json` 是构建时导出的公开功能定义，不含学生数据，也不是授权结果。浏览器 `siyueCLI` 的入口仍只打开当前账号允许的原型办理页。线上真实账号认证与本机教学业务状态是两个明确边界。
+
+认证验证：
+
+```sh
+node --test cli/auth.test.cjs
+node --test backend/test/auth.test.cjs
+```
+
+包含真正启动隔离的本机认证服务，再运行 CLI 完成初始账号登录、首次改密、权限目录过滤、修改权限后的旧会话失效、重新登录和退出；不使用线上员工账号。
 
 ## 实际执行一次课消模拟
 
@@ -53,8 +81,8 @@ report: {status, checks, summary, refundEstimates}
 统一错误码：UNAUTHENTICATED、FORBIDDEN、VALIDATION_ERROR、NOT_FOUND、CONFLICT、DUPLICATE、NOT_IMPLEMENTED。
 
 正式计划指令族：lead.create/assign/transfer/release/follow、course.create/update、class.create/update/batch-create/relocate、enrollment.create/batch-create、session.attendance/move/substitute/record、enrollment.transfer/refund、order.payment-confirm、promotion.create/publish、account.update、role.grant。
-这些正式写入名称目前仅预留；当前可实际执行的是上面明确限定的本地模拟。后续以稳定业务名替换当前 action.<page>.<hash> 并保留旧 ID 别名。
+这些正式写入名称目前仅预留；当前可执行真实账号登录、本人改密和退出；业务处理仍限于上面明确限定的本地模拟。后续以稳定业务名替换当前 action.<page>.<hash> 并保留旧 ID 别名。
 
-目前只有本机浏览器原型状态与部分本地存储，没有服务端认证、真实支付、跨浏览器或跨账号实时同步。
+账号认证、初始口令生成、本人改密、管理员重置、角色与个人权限调整及账号审计已接入真实认证服务。CRM / 教学业务仍为浏览器本地原型，没有真实支付、跨浏览器或跨账号业务数据实时同步。
 
-正式后端设计见 [backend/README.md](../backend/README.md)。首版稳定指令、输入和前端旧 ID 别名以 [后端操作目录](../backend/contracts/operations.json) 为下一阶段契约依据；页面入口仍只打开办理页，CLI 模拟并不提供生产写入、真实认证或跨设备同步。
+正式后端设计见 [backend/README.md](../backend/README.md)。首版稳定指令、输入和前端旧 ID 别名以 [后端操作目录](../backend/contracts/operations.json) 为下一阶段契约依据；页面业务入口仍只打开原型办理页；CLI 模拟不提供生产业务写入或跨设备业务数据同步，CLI 账号认证独立使用真实服务。

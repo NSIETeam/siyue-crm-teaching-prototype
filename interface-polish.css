@@ -86,7 +86,7 @@ body .topbar>.global-action>.input{width:100%;min-height:42px}
 /* Use the original transparent logo; its viewBox omits transparent margins. */
 body .sidebar .brand.brand-logo{padding:4px 12px 22px;line-height:0}
 .brand-logo svg{display:block;width:100%;height:auto;aspect-ratio:5328/1229;overflow:hidden}
-.brand-logo svg{filter:brightness(0) invert(1)}
+/* Logo color is fixed inside its SVG, independent of cached CSS filters. */
 @media(max-width:760px){body .sidebar .brand.brand-logo{padding:4px 8px 18px}}
 
 /* Shared consumption summary and actions remain compact at narrow widths. */
