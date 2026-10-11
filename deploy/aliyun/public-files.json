@@ -1,6 +1,9 @@
 [
   "academic-class-audit.css",
   "academic-class-audit.js",
+  "academic-dictionary.js",
+  "academic-planner.css",
+  "academic-planner.js",
   "academic-repairs.js",
   "academic-scheduling.js",
   "academic-session-audit.js",
@@ -68,5 +71,6 @@
   "unified-controls.css",
   "withdrawal.js",
   "workspace-navigation.css",
-  "workspace-navigation.js"
+  "workspace-navigation.js",
+  "qrcode-vendor.js"
 ]

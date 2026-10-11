@@ -36,6 +36,7 @@
 <link rel="stylesheet" href="finance-audit.css">
 <link rel="stylesheet" href="platform-audit.css">
 <link rel="stylesheet" href="business-api.css">
+<link rel="stylesheet" href="academic-planner.css">
 </head>
 <body>
 <svg class="ui-icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" width="0" height="0"><defs><symbol id="ui-back-arrow" viewBox="0 0 24 24"><path d="M21 12H3M12 3l-9 9 9 9"/></symbol></defs></svg>
@@ -49,6 +50,12 @@
       <button class="menu-item nav-level-2" data-page="leadTodo">今日待办</button>
       <button class="menu-item nav-level-2" data-page="myLeads">我的线索</button>
       <button class="menu-item nav-level-2" data-page="leadManage">线索管理</button>
+      <button class="menu-item nav-level-2" data-page="salesMetrics">销售统计</button>
+    </div>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="forms" aria-expanded="true" aria-controls="nav-forms">表单 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
+    <div class="nav-children" id="nav-forms">
+      <button class="menu-item nav-level-2" data-page="marketingForms">表单管理</button>
+      <button class="menu-item nav-level-2" data-page="formSubmissions">提交审核</button>
     </div>
     <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="academic" aria-expanded="true" aria-controls="nav-academic">教务 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
     <div class="nav-children" id="nav-academic">
@@ -60,6 +67,10 @@
         <button class="menu-item nav-level-3" data-page="attendance">考勤</button>
         <button class="menu-item nav-level-3" data-page="makeup">补课</button>
         <button class="menu-item nav-level-3" data-page="schedule">课表</button>
+        <button class="menu-item nav-level-3" data-page="teacherCourses">我的课程</button>
+        <button class="menu-item nav-level-3" data-page="rescheduleRequests">调课申请</button>
+        <button class="menu-item nav-level-3" data-page="rescheduleApprovals">调课审批</button>
+        <button class="menu-item nav-level-3" data-page="teacherMetrics">教师统计</button>
       </div>
       <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="business" aria-expanded="true" aria-controls="nav-business">业务办理 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
       <div class="nav-children" id="nav-business">
@@ -88,7 +99,6 @@
         <button class="menu-item nav-level-3" data-page="mallGroup">拼团</button>
         <button class="menu-item nav-level-3" data-page="mallJoint">联报</button>
         <button class="menu-item nav-level-3" data-page="mallCoupon">优惠券</button>
-        <button class="menu-item nav-level-3" data-page="marketingForms">表单</button>
       </div>
     </div>
     <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="finance" aria-expanded="true" aria-controls="nav-finance">财务中心 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
@@ -170,6 +180,9 @@ document.querySelectorAll('.menu-item').forEach(e=>e.addEventListener('click',()
 <script src="platform-audit.js"></script>
 <script src="operation-journal.js"></script>
 <script src="employee-auth.js"></script>
+<script src="academic-dictionary.js"></script>
+<script src="academic-planner.js"></script>
+<script src="qrcode-vendor.js"></script>
 <script src="business-api.js"></script>
 </body>
 </html>

@@ -83,3 +83,59 @@ test('operation schema annotations keep distinct references and nested draft lab
  const cls=index.get('class.create').inputSchema.properties;
  assert.equal(cls.name.title,'名称');assert.equal(cls.teacherId.title,'授课老师');assert.equal(cls.courseId.title,'课程');
 });
+
+test('shared academic dictionary has twelve canonical grades and bounded legacy aliases in Node and browser',()=>{
+ const dictionary=require('../../academic-dictionary.js'),vm=require('node:vm'),fs=require('node:fs');
+ assert.equal(dictionary.grades.length,12);assert.equal(dictionary.grades[0].value,'小学一年级');assert.equal(dictionary.grades[11].value,'高中三年级');
+ for(const [alias,value]of [['小一','小学一年级'],['一年级','小学一年级'],['1年级','小学一年级'],['４年级','小学四年级'],['小学六年级','小学六年级'],['初一','初中一年级'],['七年级','初中一年级'],['9年级','初中三年级'],['高一','高中一年级'],['高3','高中三年级']])assert.equal(dictionary.normalizeGrade(alias),value,alias);
+ assert.equal(dictionary.equalGrade('小四','小学四年级'),true);assert.equal(dictionary.equalGrade('小四','初中一年级'),false);assert.equal(dictionary.equalGrade(undefined,''),false);assert.equal(dictionary.normalizeGrade('  旧实验年级  '),'旧实验年级');assert.equal(dictionary.normalizeGrade('高四'),'高四');
+ assert.deepEqual(dictionary.subjects({subjects:['数学','围棋','围棋']},['围棋','编程',null]).slice(-2),['围棋','编程']);
+ const ctx={};vm.runInNewContext(fs.readFileSync(require.resolve('../../academic-dictionary.js'),'utf8'),ctx);assert.equal(ctx.SiyueAcademicDictionary.normalizeGrade('初二'),'初中二年级');assert.equal(ctx.SiyueAcademicDictionary.grades.length,12);
+});
+test('new course/student inputs save canonical grades and permit configured or existing legacy subjects',()=>{
+ const b=fixture();b.state.dictionary.subjects=['围棋'];const course=b.course({grade:'4年级',subject:'围棋'}),student=b.student({grade:'小四'});assert.equal(course.grade,'小学四年级');assert.equal(student.grade,'小学四年级');
+ const old=b.course();old.subject='旧综合素养';const custom=b.course({name:'兼容课程',subject:'旧综合素养'});assert.equal(custom.subject,'旧综合素养');
+ checkReject(b,'course.create',{name:'非法科目',grade:'小四',subject:'没有配置的随机学科',priceCents:0,lessons:[{title:'一',durationMinutes:45}]},/有效学科/);
+ checkReject(b,'student.create',{name:'非法年级',phone:'13988880001',grade:'高四'},/有效年级/);
+ checkReject(b,'course.create',{name:'非法年级课',grade:'成年班',subject:'数学',priceCents:0,lessons:[{title:'一',durationMinutes:45}]},/有效年级/);
+});
+test('normalizing a referenced legacy grade is not a teaching version change and never rewrites existing order snapshots',()=>{
+ const b=fixture(),course=b.course();course.grade='小四';const c=b.klass(course),student=b.student(),{order}=b.enroll(student,c);const before=structuredClone(order),version=course.curriculumVersion;
+ b.run('course.update',{courseId:course.id,grade:'小学四年级',name:'规范显示名称',priceCents:13000});assert.equal(course.grade,'小学四年级');assert.equal(course.curriculumVersion,version);assert.deepEqual(b.state.orders[0],before);assert.equal(order.grade,'小四');
+ checkReject(b,'course.update',{courseId:course.id,grade:'小学五年级'},/版本不可重写/);
+ const old=b.course({name:'旧任意标签课程'});old.grade='旧实验年级';old.subject='旧特殊科目';const version2=old.curriculumVersion;b.run('course.update',{courseId:old.id,name:'旧课只改名'});assert.equal(old.grade,'旧实验年级');assert.equal(old.subject,'旧特殊科目');assert.equal(old.curriculumVersion,version2);
+});
+test('legacy and canonical grades interoperate in permanent and temporary transfer without bypassing mismatched grades',()=>{
+ const {b,course,c,student,e}=ready();course.grade='小四';const targetCourse=b.course({name:'标准年级课程',grade:'小学四年级'}),target=b.klass(targetCourse,{name:'标准班级',teacherId:'U',room:'教室02',schedule:targetCourse.lessons.map((l,i)=>({lessonId:l.id,date:'2026-11-'+String(2+i*7).padStart(2,'0'),time:'09:00–10:00'}))});
+ const appointment=b.run('makeup.assign',{enrollmentId:e.id,sourceSessionId:c.schedule[0].id,targetClassId:target.id,targetSessionId:target.schedule[0].id,kind:'temporary',reason:'兼容旧年级'}).adjustment;assert.equal(appointment.targetClassId,target.id);b.run('makeup.cancel',{adjustmentId:appointment.id,reason:'改为永久转班'});
+ assert.equal(b.run('enrollment.transfer',{enrollmentId:e.id,targetClassId:target.id,reason:'同年级转班'}).enrollment.classId,target.id);
+ const wrong=b.course({name:'初一数学',grade:'初一'}),wrongClass=b.klass(wrong,{name:'错误年级班',teacherId:'T',room:'教室01',schedule:[]});checkReject(b,'enrollment.transfer',{enrollmentId:e.id,targetClassId:wrongClass.id,reason:'错误'},/相同年级/);assert.equal(student.grade,'小学四年级');
+});
+test('campus grade and subject coverage guards creation, update and relocation while empty legacy ranges remain unrestricted',()=>{
+ const b=fixture();Object.assign(b.state.campuses[0],{grades:['小四'],subjects:['数学']});Object.assign(b.state.campuses[1],{grades:['初一'],subjects:['英语']});const course=b.course({campusId:'A'}),c=b.klass(course,{schedule:[]});
+ checkReject(b,'course.create',{name:'校区不教语文',campusId:'A',grade:'小四',subject:'语文',priceCents:10000,lessons:[{title:'一',durationMinutes:60}]},/学科.*范围/);
+ checkReject(b,'course.create',{name:'超出覆盖年级',campusId:'A',grade:'初一',subject:'数学',priceCents:10000,lessons:[{title:'一',durationMinutes:60}]},/年级.*范围/);
+ checkReject(b,'class.create',{name:'跨范围建班',courseId:course.id,campusId:'B',room:'教室01',teacherId:'T',capacity:3},/范围/);
+ const wrong=b.course({name:'全校初一数学',grade:'初一'});checkReject(b,'class.update',{classId:c.id,courseId:wrong.id},/年级.*范围/);
+ checkReject(b,'class.relocate',{classIds:[c.id],campusId:'B',room:'教室01'},/范围/);
+ Object.assign(b.state.campuses[1],{grades:[],subjects:[]});assert.equal(b.run('class.relocate',{classIds:[c.id],campusId:'B',room:'教室01'}).classes[0].campusId,'B');
+ const reusable=b.klass(course,{name:'课程可在符合范围的另一校区开班',campusId:'B',schedule:[]});assert.equal(reusable.courseId,course.id);
+});
+test('server pricing summaries preserve exact per-lesson cents and separate course list price from discounted receipts',()=>{
+ const b=fixture(),course=b.course();assert.deepEqual(course.pricing,{basis:'lesson',lessonCount:3,baseUnitCents:3333,remainderCents:2,totalCents:10001});assert(course.lessons.every(l=>!('priceCents'in l)));
+ const c=b.klass(course),student=b.student();coupon(b,course,'通用优惠');const {order,e}=b.enroll(student,c,{couponId:'Q'});assert.equal(order.amountCents,9001);assert.equal(order.pricing.totalCents,0);b.pay(order,3000,'PART');assert.deepEqual(order.pricing,{basis:'lesson',lessonCount:3,baseUnitCents:1000,remainderCents:0,totalCents:3000});b.pay(order,6001,'REST');assert.deepEqual(order.pricing,{basis:'lesson',lessonCount:3,baseUnitCents:3000,remainderCents:1,totalCents:9001});const snapshot=structuredClone(order);
+ b.run('course.update',{courseId:course.id,priceCents:20000});assert.equal(course.pricing.totalCents,20000);assert.deepEqual(order,snapshot);
+ b.now='2026-11-01T04:00:00Z';b.run('session.attendance',{classId:c.id,sessionId:c.schedule[0].id,rows:[{studentId:student.id,status:'attended'}]});assert.equal(b.state.consumptions[0].amountCents,3001);const out=b.run('enrollment.withdraw',{enrollmentId:order.enrollmentId,reason:'退剩余课次'});assert.equal(out.refund.amountCents,6000);assert.equal(out.refund.amountCents+b.state.consumptions[0].amountCents,order.paidCents);
+});
+test('45, 80 and 90 minute sessions retain exact lengths on schedule and move; minutes do not alter per-lesson fees',()=>{
+ const b=fixture(),course=b.course({lessons:[45,80,90].map((durationMinutes,i)=>({title:'课次'+i,durationMinutes}))}),ranges=['09:00–09:45','09:00–10:20','09:00–10:30'];const c=b.klass(course,{schedule:course.lessons.map((l,i)=>({lessonId:l.id,date:'2026-11-0'+(i+1),time:ranges[i]}))});
+ for(let i=0;i<3;i++){const s=c.schedule[i];checkReject(b,'session.move',{classId:c.id,sessionId:s.id,date:s.date,time:'12:00–13:00',reason:'不得统一成60分钟'},/时长/);}
+ for(let i=0;i<3;i++){const s=c.schedule[i];b.run('session.move',{classId:c.id,sessionId:s.id,date:s.date,time:['12:00–12:45','12:00–13:20','12:00–13:30'][i],reason:'移动开始时间'});}
+ const student=b.student(),{order}=b.enroll(student,c);b.pay(order);b.now='2026-11-04T00:00:00Z';for(const s of c.schedule)b.run('session.attendance',{classId:c.id,sessionId:s.id,rows:[{studentId:student.id,status:'attended'}]});assert.deepEqual(b.state.consumptions.map(x=>x.amountCents),[3334,3334,3333]);assert.equal(b.state.consumptions.reduce((sum,x)=>sum+x.amountCents,0),10001);
+});
+test('exact-duration drag-style changes still reject teacher and room overlaps and protected session edits atomically',()=>{
+ const b=fixture(),course=b.course({lessons:[{title:'80分钟课',durationMinutes:80}]}),first=b.klass(course,{schedule:[{lessonId:course.lessons[0].id,date:'2026-11-01',time:'09:00–10:20'}]}),second=b.klass(course,{name:'另一老师班',room:'教室02',teacherId:'U',schedule:[{lessonId:course.lessons[0].id,date:'2026-11-01',time:'10:30–11:50'}]});
+ checkReject(b,'session.move',{classId:second.id,sessionId:second.schedule[0].id,date:'2026-11-01',time:'10:00–11:20',room:'教室01',reason:'教室冲突'},/冲突/);
+ b.run('class.update',{classId:second.id,teacherId:'T'});checkReject(b,'class.schedule',{classId:second.id,sessions:[{id:second.schedule[0].id,lessonId:course.lessons[0].id,date:'2026-11-01',time:'10:00–11:20'}]},/冲突/);
+ b.now='2026-11-01T04:00:00Z';checkReject(b,'session.move',{classId:first.id,sessionId:first.schedule[0].id,date:'2026-11-02',time:'09:00–10:20',reason:'历史保护'},/历史/);checkReject(b,'class.schedule',{classId:first.id,sessions:[]},/已记录|预约/);
+});

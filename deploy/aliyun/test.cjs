@@ -30,4 +30,22 @@ test('activation script parses as POSIX shell without changing any server',()=>{
  execFileSync('sh',['-n',path.join(__dirname,'activate-release.sh')]);
 });
 
-test('authentication release excludes private stores and macOS metadata',t=>{const parent=fs.mkdtempSync(path.join(os.tmpdir(),'siyue-auth-release-test-'));t.after(()=>fs.rmSync(parent,{recursive:true,force:true}));const result=JSON.parse(execFileSync(process.execPath,[path.join(__dirname,'build-auth-release.cjs'),'--out',parent],{encoding:'utf8'}));const archive=execFileSync('tar',['-tzf',result.archive],{encoding:'utf8'}).trim().split('\n');assert.equal(archive.length,24);assert.ok(archive.every(p=>!p.includes('._')&&!p.includes('initial-admin')&&!p.includes('auth.json')&&!p.includes('session.json')));assert.equal(result.files.length,23);for(const file of result.files){const bytes=fs.readFileSync(path.join(parent,result.releaseId,file.path));assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),file.sha256)}});
+test('authentication release excludes private stores and includes every runtime dependency',t=>{
+ const parent=fs.mkdtempSync(path.join(os.tmpdir(),'siyue-auth-release-test-'));t.after(()=>fs.rmSync(parent,{recursive:true,force:true}));
+ const result=JSON.parse(execFileSync(process.execPath,[path.join(__dirname,'build-auth-release.cjs'),'--out',parent],{encoding:'utf8'}));
+ const archive=execFileSync('tar',['-tzf',result.archive],{encoding:'utf8'}).trim().split('\n');
+ const files=new Set(result.files.map(file=>file.path));
+ assert.equal(archive.length,files.size+1);
+ assert.ok(archive.every(p=>!p.includes('._')&&!p.includes('initial-admin')&&!p.includes('auth.json')&&!p.includes('session.json')));
+ for(const file of result.files){
+  const bytes=fs.readFileSync(path.join(parent,result.releaseId,file.path));
+  assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),file.sha256);
+  if(!/\.(?:cjs|js)$/.test(file.path))continue;
+  for(const match of bytes.toString().matchAll(/require\(['"](\.[^'"]+)['"]\)/g)){
+   const dependency=path.posix.normalize(path.posix.join(path.posix.dirname(file.path),match[1]));
+   assert.ok(files.has(dependency),`${file.path} requires missing release file ${dependency}`);
+  }
+ }
+ // Load the packaged service from its isolated directory, without starting a server.
+ execFileSync(process.execPath,['-e',"require('./backend/src/business-service.cjs');require('./backend/src/auth-service.cjs')"],{cwd:path.join(parent,result.releaseId),stdio:'pipe'});
+});

@@ -2,9 +2,11 @@
 const permissionGroups=[
   {id:'workspace',name:'登记与报名',items:[['quickRegister','线索登记'],['quickEnroll','报名']]},
   {id:'leads',name:'线索',items:[['leadTodo','今日待办'],['myLeads','我的线索'],['leadManage','线索管理']]},
-  {id:'academic',name:'教务',items:[['course','课程管理'],['classes','班级管理'],['students','学生管理'],['attendance','考勤'],['makeup','补课'],['schedule','课表'],['enroll','报名'],['tempMove','临时调班'],['transfer','转课／班'],['withdraw','退课／退班'],['supplement','补费']]},
+  {id:'forms',name:'表单',items:[['marketingForms','表单管理'],['formSubmissions','提交审核']]},
+  {id:'salesReports',name:'招生统计',items:[['salesMetrics','销售统计']]},
+  {id:'academic',name:'教务',items:[['course','课程管理'],['classes','班级管理'],['students','学生管理'],['teacherCourses','我的课程'],['attendance','考勤'],['makeup','补课'],['schedule','课表'],['rescheduleRequests','调课申请'],['rescheduleApprovals','调课审批'],['enroll','报名'],['tempMove','临时调班'],['transfer','转课／班'],['withdraw','退课／退班'],['supplement','补费'],['teacherMetrics','教师统计']]},
   {id:'learning',name:'教学',items:[['learningActive','在读学生'],['learningHistory','历史学生'],['learningData','数据管理']]},
-  {id:'mall',name:'商城工具',items:[['mallDecor','商城装修'],['mallShelf','课程上架'],['mallGroup','拼团'],['mallJoint','联报'],['mallCoupon','优惠券'],['marketingForms','表单']]},
+  {id:'mall',name:'商城工具',items:[['mallDecor','商城装修'],['mallShelf','课程上架'],['mallGroup','拼团'],['mallJoint','联报'],['mallCoupon','优惠券']]},
   {id:'finance',name:'财务中心',items:[['orders','收费订单'],['financeRefunds','退转记录'],['financeArrears','欠费记录'],['financeConsumption','课消记录'],['financeReceipts','收款设置']]},
   {id:'settings',name:'基础设置',items:[['system','系统配置'],['campus','校区配置'],['teaching','教学配置'],['staff','员工列表'],['positions','职位管理'],['permissions','权限管理'],['permissionLogs','权限变更日志']]}
 ];
@@ -38,7 +40,7 @@ function permissionRole(id=permissionState.identity){return permissionState.role
 function permissionCanVisit(page){
   if(permissionState.identity==='admin')return true;
   const role=permissionRole();if(!role||!role.active)return false;
-  const aliases={leadDetail:['leadTodo','myLeads','leadManage','quickRegister'],studentDetail:['students','learningActive','learningHistory'],courseForm:['course'],classForm:['classes'],mallForm:['mallGroup','mallJoint','mallCoupon'],marketingFormBuilder:['marketingForms'],marketingFormPreview:['marketingForms'],marketingFormSubmissions:['marketingForms']};
+  const aliases={leadDetail:['leadTodo','myLeads','leadManage','quickRegister'],studentDetail:['students','learningActive','learningHistory'],courseForm:['course'],classForm:['classes'],mallForm:['mallGroup','mallJoint','mallCoupon'],marketingFormBuilder:['marketingForms'],marketingFormPreview:['marketingForms'],marketingFormSubmissions:['marketingForms'],formSubmissions:['formSubmissions','marketingForms']};
   if(aliases[page])return aliases[page].some(p=>role.grants.includes(p));
   return role.grants.includes(page);
 }
