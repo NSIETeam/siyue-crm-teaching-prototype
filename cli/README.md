@@ -20,6 +20,16 @@ node cli/siyue-cli.cjs logout
 
 会话存于 `~/.config/siyue-cli/session.json`，目录 0700、文件 0600；可用 `SIYUE_CONFIG_DIR` 指定独立私有目录。拒绝符号链接目录/会话文件，令牌不输出。改密、管理员重置、停用、权限或范围修改均撤销旧会话，必须重新登录。
 
+超级管理员可用 `accounts list` 查看员工账号；`accounts create` 当前支持内置教师与销售角色，分别固定为 `assigned` 与 `own` 范围，不接受自定义权限、范围或角色。每次创建须提供唯一姓名、用户名和工号，并用 `--out` 指向一个不存在的私有凭据文件；目录会收紧到 0700，凭据文件为 0600。一次性初始密码只保存在该文件，不写终端。命令创建的账号仍须首次登录改密。账号创建接口没有服务端幂等键，若创建响应不明确，命令会保留空凭据标记并停止；先用 `accounts list` 核对，不要盲目重试或重置密码。完全匹配的现有员工可复用，任何身份、授权或范围冲突都会停止。
+
+```sh
+node cli/siyue-cli.cjs accounts list
+node cli/siyue-cli.cjs accounts create --name 测试教师1 \
+  --username test-teacher-01 --employee-no TEST-T001 \
+  --role teacher --out /private/path/test-teacher-01.json
+node --test cli/account-admin.test.cjs
+```
+
 ## 查看当前授权能力
 
 ```sh
