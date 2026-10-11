@@ -63,6 +63,7 @@ function outcomeLabel(value){
  return ({success:'成功',preview:'预览 · 未提交',replayed:'已去重',denied:'已拒绝',rejected:'已拒绝',failed:'失败',failure:'失败',error:'失败'})[outcome]||'已记录/未知';
 }
 function safeName(value){return typeof value==='string'&&value.trim()&&value.trim().length<=120?value.trim():undefined;}
+function safePermissionList(value){if(!Array.isArray(value)||value.length>200)return undefined;const clean=value.filter(item=>typeof item==='string'&&item.length<=100&&/^[a-z][a-zA-Z0-9]*(?:\.[a-zA-Z0-9]+)+$/.test(item));return clean.length===value.length?[...new Set(clean)].sort():undefined;}
 function businessName(change,changes,state){
  if(change.collection==='orders'){
   const order=change.after||change.before||(Array.isArray(state?.orders)?state.orders.find(item=>item?.id===change.id):null);
@@ -115,9 +116,12 @@ function selectAuditPage(events,directory,query,businessState){
    }).filter(Boolean);
    const resultCount=Number.isSafeInteger(event.details?.resultCount)&&event.details.resultCount>=0?event.details.resultCount:undefined;
    const targetId=typeof event.targetId==='string'?event.targetId:undefined;
-   const targetName=targetId?safeName(users.get(targetId)?.name):undefined;
+   const targetName=targetId?(safeName(event.details?.roleName)||safeName(users.get(targetId)?.name)):undefined;
    const needsAttention=attentionEvent(event);
-   return {id:event.id,at:event.at,actorId:event.actorId??null,actorName:event.actorName||user?.name||null,...(targetId?{targetId,...(targetName?{targetName}:{})}:{}),action:event.action,outcome:event.outcome,outcomeLabel:outcomeLabel(event.outcome),category:category(event),attention:needsAttention,requestId:event.requestId,summary:{...(rawChanges.length?{changes}:{}),...(resultCount!==undefined?{resultCount}:{})}};
+   const permissionsAdded=event.action==='role.update'?safePermissionList(event.details?.permissionsAdded):undefined;
+   const permissionsRemoved=event.action==='role.update'?safePermissionList(event.details?.permissionsRemoved):undefined;
+   const affectedUsers=event.action==='role.update'&&Number.isSafeInteger(event.details?.affectedUsers)&&event.details.affectedUsers>=0?event.details.affectedUsers:undefined;
+   return {id:event.id,at:event.at,actorId:event.actorId??null,actorName:event.actorName||user?.name||null,...(targetId?{targetId,...(targetName?{targetName}:{})}:{}),action:event.action,outcome:event.outcome,outcomeLabel:outcomeLabel(event.outcome),category:category(event),attention:needsAttention,requestId:event.requestId,summary:{...(rawChanges.length?{changes}:{}),...(resultCount!==undefined?{resultCount}:{}),...(permissionsAdded?{permissionsAdded}:{}),...(permissionsRemoved?{permissionsRemoved}:{}),...(affectedUsers!==undefined?{affectedUsers}:{})}};
   }),
   hasMore:rows.length>filters.count,
   nextBefore:rows.length>filters.count?page.at(-1)?.id||null:null,

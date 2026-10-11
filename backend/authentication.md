@@ -37,7 +37,8 @@ node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --
 | `GET /v1/auth/me` | 返回当前 `{user,expiresAt}`；浏览器另返回 `csrfToken` |
 | `POST /v1/auth/password` | `{currentPassword,newPassword}`；撤销旧会话。浏览器首次改密原子签发新会话并返回 `{changed:true,reauthenticate:false,user,csrfToken,expiresAt}`；CLI 和浏览器日常改密返回 `{changed:true,reauthenticate:true}`，要求重新登录 |
 | `POST /v1/auth/logout` | 撤销当前会话；浏览器同时清除 Cookie |
-| `GET /v1/roles` | 返回 `roles` 与全部可配置 `permissions` |
+| `GET /v1/roles` | 返回当前有效 `roles`、全部可配置 `permissions` 和 `reservedPermissions`；每个角色包含 `version` 和 `editable` |
+| `PATCH /v1/admin/roles/:id` | 超级管理员提交 `{permissions,expectedVersion}` 修改角色权限；返回 `{role,affectedUsers,changed}` |
 | `GET /v1/catalog` | 仅返回当前账号有权使用的业务 `operations` 及其 `frontendOperations`；启用共享业务时返回当前运行输入模型；未启用时仍为设计目录 |
 | `GET /v1/admin/users` | 超级管理员获取账号列表，无密码或密码哈希 |
 | `POST /v1/admin/users` | 超级管理员创建账号；字段见下；仅此次返回 `initialPassword` |
@@ -47,7 +48,7 @@ node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --
 
 浏览器使用 `HttpOnly; Secure; SameSite=Strict` Cookie，JavaScript 无法读取会话令牌。所有浏览器写请求还需正确 `Origin` 及 `X-CSRF-Token`。登录请求需要正确 `Origin` 和一次性图片验证码，尚未有会话时不要求 CSRF。携带 `Origin`、`Sec-Fetch-Site` 或本站认证/验证码 Cookie 的请求不能把 `client` 写成 `cli` 来跳过验证码，返回 `BROWSER_CLIENT_REQUIRED`。CLI 使用 `Authorization: Bearer <token>`，不接受角色请求头，不可将浏览器 Cookie 当成 CLI 令牌。
 
-浏览器默认使用不含持久化期限的会话 Cookie，服务端有效期最长 8 小时；勾选 `remember:true` 后使用持久安全 Cookie，服务端有效期最长 30 天。CLI 始终最长 8 小时。初始密码登录仍最多 10 分钟，但保留记住登录的选择；浏览器首次改密时在同一持久化事务内修改密码、撤销全部旧会话并签发新会话，前端直接使用响应进入平台，无须再次登录。保存失败不会签发 Cookie 或撤销原会话。退出、管理员重置密码、停用和修改权限继续立即使相关会话失效。每次请求均核查用户停用状态、会话有效期及用户版本。普通员工不能自提权。密码至少 10 位，包含大小写字母、数字和符号，且不能包含账号或与原密码相同。服务端使用独立随机盐的 scrypt 哈希（N=32768、r=8、p=1、64 字节输出）及恒定时间比较；Bearer 令牌仅保存 SHA-256，不保存明文令牌。登录有账号、IP 和全局三层速率限制；账号不存在、密码错误、账号停用统一返回相同认证错误。
+浏览器默认使用不含持久化期限的会话 Cookie，服务端有效期最长 8 小时；勾选 `remember:true` 后使用持久安全 Cookie，服务端有效期最长 30 天。CLI 始终最长 8 小时。初始密码登录仍最多 10 分钟，但保留记住登录的选择；浏览器首次改密时在同一持久化事务内修改密码、撤销全部旧会话并签发新会话，前端直接使用响应进入平台，无须再次登录。保存失败不会签发 Cookie 或撤销原会话。退出、管理员重置密码、停用和修改员工个人权限继续立即使相关会话失效。每次请求均核查用户停用状态、会话有效期及用户版本。普通员工不能自提权。密码至少 10 位，包含大小写字母、数字和符号，且不能包含账号或与原密码相同。服务端使用独立随机盐的 scrypt 哈希（N=32768、r=8、p=1、64 字节输出）及恒定时间比较；Bearer 令牌仅保存 SHA-256，不保存明文令牌。登录有账号、IP 和全局三层速率限制；账号不存在、密码错误、账号停用统一返回相同认证错误。
 
 ## 图片验证码
 
@@ -71,6 +72,16 @@ node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --
 自动化测试可在 `createAuthService` 构造参数中的 `captchaOptions` 注入随机数和时钟；正式进程不从环境变量读取此选项，也不存在固定验证码或关闭验证的生产开关。部署须包含新增模块 `backend/src/auth-captcha.cjs`。
 
 ## 账号字段和可变授权
+
+### 修改角色权限
+
+超级管理员在「员工管理 → 权限管理」选择角色后，勾选权限并点击保存。修改作用于具有此角色的现有员工及以后分配到此角色的员工，员工个人的额外允许与明确禁止仍按原优先级生效，校区等数据范围不变。角色草稿不会因点击选项而自动提交。
+
+角色配置存入独立认证存储，旧存储缺少此配置时继续采用内置默认值。服务每次授权均读取当前有效配置；权限撤销不会等待员工退出登录。角色更新同步有效会话的用户版本，不延长会话有效期，也不恢复已经撤销的会话。员工账号停用、密码重置等原有撤销规则不变。
+
+更新请求必须提交最近读取到的 `expectedVersion`；版本过期返回 `409 ROLE_VERSION_CONFLICT`，应重新读取后核对修改。无变化的保存返回 `changed:false`。角色变更写入 `role.update` 日志，显示角色名称、增加和移除的权限以及影响人数。
+
+超级管理员角色保持完整权限，防止失去账号管理能力；其他角色不能授予 `employee.create / account.update / role.grant` 这些保留权限。其余业务权限可编辑。浏览器写入仍要求 Origin 和 CSRF 校验，API 不接受普通员工修改角色。
 
 创建请求：
 

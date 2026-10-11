@@ -2,6 +2,7 @@
 const fs=require('node:fs');
 const path=require('node:path');
 const crypto=require('node:crypto');
+const {defaultRolePolicies,validateRolePolicies}=require('./auth-policy.cjs');
 function assertRegular(file){const stat=fs.lstatSync(file);if(!stat.isFile()||stat.isSymbolicLink()||(stat.mode&0o077))throw new Error('认证文件必须为 0600 普通文件');}
 function fileExists(file){try{fs.lstatSync(file);return true;}catch(error){if(error.code==='ENOENT')return false;throw error;}}
 function atomicWrite(file,value){
@@ -19,8 +20,9 @@ class AuthStore{
   try{const fd=fs.openSync(this.lock,fs.constants.O_WRONLY|fs.constants.O_CREAT|fs.constants.O_EXCL|fs.constants.O_NOFOLLOW,0o600);fs.writeFileSync(fd,JSON.stringify({pid:process.pid,id:this.lockId}));fs.closeSync(fd);}catch(error){if(error.code==='EEXIST')throw new Error('认证存储已有写入进程；若为异常退出，请先确认该进程已停止再移除锁文件');throw error;}
   try{
    if(fileExists(this.filename)){assertRegular(this.filename);if(fs.statSync(this.filename).size>32*1024*1024)throw new Error('认证存储过大，需先归档审计');this.state=JSON.parse(fs.readFileSync(this.filename,'utf8'));}
-   else{this.state={schemaVersion:1,users:[],sessions:[],audit:[]};atomicWrite(this.filename,this.state);}
+   else{this.state={schemaVersion:1,users:[],sessions:[],audit:[],rolePolicies:defaultRolePolicies()};atomicWrite(this.filename,this.state);}
    if(this.state.schemaVersion!==1||!['users','sessions','audit'].every(k=>Array.isArray(this.state[k])))throw new Error('认证存储格式无效');
+   if(this.state.rolePolicies===undefined)this.state.rolePolicies=defaultRolePolicies();validateRolePolicies(this.state.rolePolicies);
    for(const user of this.state.users)if(!user.id||!user.username||!Array.isArray(user.roleIds)||!user.passwordHash||!Number.isInteger(user.version))throw new Error('认证账号存储损坏');
   }catch(error){this.close();throw error;}
  }
