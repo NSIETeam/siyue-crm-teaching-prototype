@@ -32,9 +32,10 @@ node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --
 
 | 方法与地址 | 输入 / 行为 |
 | --- | --- |
-| `POST /v1/auth/login` | `{username,password,client:"browser"\|"cli"}`；返回 `{user,expiresAt}`；浏览器另返回 `csrfToken` 并设置 Cookie，CLI 另返回 `token` |
+| `GET /v1/auth/captcha` | 公开验证码端点，返回 `{id,image,expiresAt}`；`image` 是 PNG data URL，同时设置安全挑战 Cookie |
+| `POST /v1/auth/login` | `{username,password,client:"browser"\|"cli"}`；浏览器另需 `captchaId / captchaCode`，可选布尔值 `remember`；返回 `{user,expiresAt}`，浏览器另返回 `csrfToken` 并设置 Cookie，CLI 另返回 `token` |
 | `GET /v1/auth/me` | 返回当前 `{user,expiresAt}`；浏览器另返回 `csrfToken` |
-| `POST /v1/auth/password` | `{currentPassword,newPassword}`；成功返回 `{changed:true,reauthenticate:true}`，撤销该用户全部会话 |
+| `POST /v1/auth/password` | `{currentPassword,newPassword}`；撤销旧会话。浏览器首次改密原子签发新会话并返回 `{changed:true,reauthenticate:false,user,csrfToken,expiresAt}`；CLI 和浏览器日常改密返回 `{changed:true,reauthenticate:true}`，要求重新登录 |
 | `POST /v1/auth/logout` | 撤销当前会话；浏览器同时清除 Cookie |
 | `GET /v1/roles` | 返回 `roles` 与全部可配置 `permissions` |
 | `GET /v1/catalog` | 仅返回当前账号有权使用的业务 `operations` 及其 `frontendOperations`；启用共享业务时返回当前运行输入模型；未启用时仍为设计目录 |
@@ -44,9 +45,30 @@ node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --
 | `POST /v1/admin/users/:id/reset-password` | 超级管理员生成新的随机初始密码，立即撤销目标全部会话并要求再次改密 |
 | `GET /v1/admin/audit` | 超级管理员或明确拥有 `audit.read` 的账号可分类检索认证和账号操作日志；共享业务启用后合并业务审计 |
 
-浏览器使用 `HttpOnly; Secure; SameSite=Strict` Cookie，JavaScript 无法读取会话令牌。所有浏览器写请求还需正确 `Origin` 及 `X-CSRF-Token`。登录请求需要正确 `Origin`，尚未有会话时不要求 CSRF。CLI 使用 `Authorization: Bearer <token>`，不接受角色请求头，不可将浏览器 Cookie 当成 CLI 令牌。
+浏览器使用 `HttpOnly; Secure; SameSite=Strict` Cookie，JavaScript 无法读取会话令牌。所有浏览器写请求还需正确 `Origin` 及 `X-CSRF-Token`。登录请求需要正确 `Origin` 和一次性图片验证码，尚未有会话时不要求 CSRF。携带 `Origin`、`Sec-Fetch-Site` 或本站认证/验证码 Cookie 的请求不能把 `client` 写成 `cli` 来跳过验证码，返回 `BROWSER_CLIENT_REQUIRED`。CLI 使用 `Authorization: Bearer <token>`，不接受角色请求头，不可将浏览器 Cookie 当成 CLI 令牌。
 
-登录有效期最长 8 小时；初始密码登录有效期 10 分钟。每次请求均核查用户停用状态、会话有效期及用户版本。普通员工不能自提权。密码至少 10 位，包含大小写字母、数字和符号，且不能包含账号或与原密码相同。服务端使用独立随机盐的 scrypt 哈希（N=32768、r=8、p=1、64 字节输出）及恒定时间比较；Bearer 令牌仅保存 SHA-256，不保存明文令牌。登录有账号、IP 和全局三层速率限制；账号不存在、密码错误、账号停用统一返回相同认证错误。
+浏览器默认使用不含持久化期限的会话 Cookie，服务端有效期最长 8 小时；勾选 `remember:true` 后使用持久安全 Cookie，服务端有效期最长 30 天。CLI 始终最长 8 小时。初始密码登录仍最多 10 分钟，但保留记住登录的选择；浏览器首次改密时在同一持久化事务内修改密码、撤销全部旧会话并签发新会话，前端直接使用响应进入平台，无须再次登录。保存失败不会签发 Cookie 或撤销原会话。退出、管理员重置密码、停用和修改权限继续立即使相关会话失效。每次请求均核查用户停用状态、会话有效期及用户版本。普通员工不能自提权。密码至少 10 位，包含大小写字母、数字和符号，且不能包含账号或与原密码相同。服务端使用独立随机盐的 scrypt 哈希（N=32768、r=8、p=1、64 字节输出）及恒定时间比较；Bearer 令牌仅保存 SHA-256，不保存明文令牌。登录有账号、IP 和全局三层速率限制；账号不存在、密码错误、账号停用统一返回相同认证错误。
+
+## 图片验证码
+
+浏览器先获取 `/v1/auth/captcha`，再提交登录：
+
+```json
+{
+  "username": "sy-e010",
+  "password": "<用户输入>",
+  "client": "browser",
+  "remember": true,
+  "captchaId": "<验证码响应 id>",
+  "captchaCode": "<用户看到的六位数字>"
+}
+```
+
+验证码由加密随机源生成六位数字（保留开头的零），在服务器将字形路径栅格化为 PNG 像素，再输出图片；不发送字形路径、数字文本节点或答案元数据。内存中仅保留答案 HMAC、随机挑战绑定值的哈希和过期时间，不写文件、审计或日志。`siyue_challenge` Cookie 为 `HttpOnly; Secure; SameSite=Strict`，路径与认证 API 一致，有效期 120 秒。答案和挑战 ID 必须与此 Cookie 同时匹配。验证码不替代密码、登录限流或 CSRF 校验。
+
+每次验证码校验尝试都会作废挑战，无论答案正确、错误或缺失；答对后若账号密码错误也必须重新取图。刷新验证码会替换该浏览器旧挑战。过期、重复使用或 Cookie 不匹配返回 `400 CAPTCHA_INVALID`，缺项返回 `400 CAPTCHA_REQUIRED`。前端在失败后重新取图，不重复提交旧挑战。端点禁止缓存，有每 IP 每分钟 20 次、全局每分钟 200 次限制，并最多保留 512 个未过期挑战；超限返回 `429 RATE_LIMITED`。跨站来源被拒绝。重启后未完成挑战失效，重新取图即可。
+
+自动化测试可在 `createAuthService` 构造参数中的 `captchaOptions` 注入随机数和时钟；正式进程不从环境变量读取此选项，也不存在固定验证码或关闭验证的生产开关。部署须包含新增模块 `backend/src/auth-captcha.cjs`。
 
 ## 账号字段和可变授权
 
@@ -90,4 +112,4 @@ node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --
 node --test backend/test/*.test.cjs
 ```
 
-测试覆盖初始化与文件权限、密码哈希和令牌不落明文、首次改密限制、Cookie/Origin/CSRF、销售越权、授权修改撤销会话、密码重置与停用、最后超管保护、写失败回滚、无账号枚举、登录速率限制、符号链接拒绝及仅认证/设计模式的业务501边界。
+测试覆盖初始化与文件权限、密码哈希和令牌不落明文、首次改密限制与原子会话轮换、验证码一次性/绑定/过期/限额、8 小时及 30 天 Cookie/会话、Cookie/Origin/CSRF、销售越权、授权修改撤销会话、密码重置与停用、最后超管保护、写失败回滚、无账号枚举、登录速率限制、符号链接拒绝及仅认证/设计模式的业务501边界。

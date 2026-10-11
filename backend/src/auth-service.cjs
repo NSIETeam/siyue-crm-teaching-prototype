@@ -1,6 +1,7 @@
 'use strict';
 const crypto=require('node:crypto');
 const {AuthStore}=require('./auth-store.cjs');
+const {createCaptchaService}=require('./auth-captcha.cjs');
 const {hashPassword,verifyPassword,initialPassword,strongPassword,tokenHash,generateUsername}=require('./auth-credentials.cjs');
 const {roles,permissions,normalizePolicy,publicUser,effectivePermissions}=require('./auth-policy.cjs');
 const catalog=require('../contracts/operations.json');
@@ -24,12 +25,17 @@ function createAuthService(options){
  const store=options.store||new AuthStore(options.storeFile);const origin=new URL(options.publicOrigin).origin;
  if(new URL(origin).protocol!=='https:'&&!options.allowInsecureTest)throw new Error('认证服务的公开地址必须使用 HTTPS');
  const cookiePath=options.cookiePath||'/crm-api/';if(!/^\/[a-zA-Z0-9/_-]*$/.test(cookiePath))throw new Error('Cookie 路径无效');
- const cookieName='siyue_session';const buckets=new Map();
+ const cookieName='siyue_session',challengeCookieName='siyue_challenge';const buckets=new Map();
+ const captcha=createCaptchaService(options.captchaOptions);
+ function readCookie(req,name){const matches=(req.headers.cookie||'').split(';').map(x=>x.trim()).filter(x=>x.startsWith(name+'='));return matches.length===1?matches[0].slice(name.length+1):undefined;}
+ function addCookie(res,value){const current=res.getHeader('Set-Cookie');res.setHeader('Set-Cookie',[...(Array.isArray(current)?current:current?[current]:[]),value]);}
+ function challengeCookie(binding,clear=false){return `${challengeCookieName}=${clear?'':binding}; Path=${cookiePath}; HttpOnly; Secure; SameSite=Strict; Max-Age=${clear?0:120}`;}
  function address(req){const remote=req.socket.remoteAddress||'';if(['127.0.0.1','::1','::ffff:127.0.0.1'].includes(remote)&&options.trustProxy){const ip=req.headers['x-real-ip'];if(typeof ip==='string'&&/^[0-9a-fA-F:.]{3,45}$/.test(ip))return ip;}return remote;}
  function limit(key,max,windowMs){const now=Date.now();for(const [k,v]of buckets)if(v.until<=now)buckets.delete(k);let value=buckets.get(key);if(!value){if(buckets.size>=2048)reject(429,'RATE_LIMITED','请求过于频繁，请稍后重试');value={count:0,until:now+windowMs};buckets.set(key,value);}value.count++;if(value.count>max)reject(429,'RATE_LIMITED','请求过于频繁，请稍后重试');}
  function audit(state,req,action,outcome,user=null,targetId=null,details={}){state.audit.push({id:crypto.randomUUID(),at:new Date().toISOString(),requestId:req.requestId||crypto.randomUUID(),actorId:user?.id||null,actorName:user?.name||null,action,outcome,targetId,ip:address(req),details});}
  function writeAudit(req,action,outcome,user,targetId,details){store.transact(s=>audit(s,req,action,outcome,user,targetId,details));}
- function cookie(token,clear=false){return `${cookieName}=${clear?'':token}; Path=${cookiePath}; HttpOnly; Secure; SameSite=Strict; Max-Age=${clear?0:28800}`;}
+ function cookie(token,{clear=false,remember=false,expiresAt}={}){const maxAge=clear?0:remember?Math.max(0,Math.floor((Date.parse(expiresAt)-Date.now())/1000)):null;return `${cookieName}=${clear?'':token}; Path=${cookiePath}; HttpOnly; Secure; SameSite=Strict${maxAge===null?'':'; Max-Age='+maxAge}`;}
+ function newSession(user,client,remember=false){const token=crypto.randomBytes(32).toString('base64url'),csrfToken=crypto.randomBytes(32).toString('base64url');const createdAt=new Date().toISOString(),expiresAt=new Date(Date.now()+(user.mustChangePassword?10*60000:client==='browser'&&remember?30*86400000:8*3600000)).toISOString();return {token,session:{tokenHash:tokenHash(token),userId:user.id,version:user.version,client,csrfToken,remember:client==='browser'&&remember,createdAt,expiresAt}};}
  function originCheck(req){if(req.headers.origin!==origin)reject(403,'ORIGIN_REJECTED','请求来源未授权');}
  function authenticate(req){
   let token,client;
@@ -54,11 +60,24 @@ function createAuthService(options){
  async function handle(req,res,pathname,respond){
   let actor=null;let action='request';let targetId=null;
   try{
+   if(pathname==='/v1/auth/captcha'&&req.method==='GET'){
+    if(req.headers.origin)originCheck(req);if(req.headers['sec-fetch-site']==='cross-site')reject(403,'ORIGIN_REJECTED','请求来源未授权');
+    limit('global-captcha',200,60000);limit('captcha-ip:'+address(req),20,60000);
+    const challenge=captcha.issue(readCookie(req,challengeCookieName));addCookie(res,challengeCookie(challenge.binding));return respond(200,{id:challenge.id,image:challenge.image,expiresAt:challenge.expiresAt});
+   }
    if(pathname==='/v1/auth/login'&&req.method==='POST'){
     action='auth.login';limit('global-login',100,60000);limit('ip:'+address(req),20,15*60000);
-    const body=await jsonBody(req);fields(body,['username','password','client']);
+    const body=await jsonBody(req);fields(body,['username','password','client','remember','captchaId','captchaCode']);
     if(!['browser','cli'].includes(body.client))reject(400,'INVALID_CLIENT','请选择有效登录方式');
-    if(body.client==='browser')originCheck(req);else if(req.headers.origin&&req.headers.origin!==origin)reject(403,'ORIGIN_REJECTED','请求来源未授权');
+    if(body.client==='browser'){
+     originCheck(req);if(body.remember!==undefined&&typeof body.remember!=='boolean')reject(400,'INVALID_INPUT','记住登录状态必须为布尔值');
+     const solved=captcha.consume(body.captchaId,body.captchaCode,readCookie(req,challengeCookieName));addCookie(res,challengeCookie('',true));
+     if(!body.captchaId||!body.captchaCode)reject(400,'CAPTCHA_REQUIRED','请输入图片验证码');
+     if(!solved)reject(400,'CAPTCHA_INVALID','验证码错误或已过期，请刷新后重试');
+    }else{
+     if(req.headers.origin!==undefined||req.headers['sec-fetch-site']!==undefined||readCookie(req,cookieName)||readCookie(req,challengeCookieName))reject(403,'BROWSER_CLIENT_REQUIRED','浏览器登录必须完成图片验证码');
+     if(body.remember!==undefined||body.captchaId!==undefined||body.captchaCode!==undefined)reject(400,'INVALID_CLIENT_OPTIONS','命令行登录不接受浏览器选项');
+    }
     const username=typeof body.username==='string'?body.username.trim().toLowerCase():'';
     limit('account:'+tokenHash(username),10,15*60000);
     const candidate=store.state.users.find(u=>u.username===username);
@@ -66,22 +85,24 @@ function createAuthService(options){
     const verified=verifyPassword(validInput?body.password:'',candidate?.passwordHash);
     if(validInput&&verified&&candidate)actor=candidate;
     if(!validInput||!verified||!candidate||candidate.disabled)reject(401,'INVALID_CREDENTIALS','账号或密码错误');
-    const token=crypto.randomBytes(32).toString('base64url');const csrfToken=crypto.randomBytes(32).toString('base64url');
-    const expiresAt=new Date(Date.now()+(candidate.mustChangePassword?10*60000:8*3600000)).toISOString();
-    const result=store.transact(state=>{const user=state.users.find(u=>u.id===candidate.id);const session={tokenHash:tokenHash(token),userId:user.id,version:user.version,client:body.client,csrfToken,createdAt:new Date().toISOString(),expiresAt};state.sessions=state.sessions.filter(s=>Date.parse(s.expiresAt)>Date.now());const active=state.sessions.filter(s=>s.userId===user.id);if(active.length>=10){const oldest=active.sort((a,b)=>a.createdAt.localeCompare(b.createdAt))[0];state.sessions=state.sessions.filter(s=>s!==oldest);}state.sessions.push(session);audit(state,req,action,'success',user,user.id);return publicUser(user);});
-    if(body.client==='browser')res.setHeader('Set-Cookie',cookie(token));return respond(200,{user:result,expiresAt,...(body.client==='cli'?{token}:{csrfToken})});
+    const issued=newSession(candidate,body.client,body.remember===true),{token}=issued,{csrfToken,expiresAt}=issued.session;
+    const result=store.transact(state=>{const user=state.users.find(u=>u.id===candidate.id);state.sessions=state.sessions.filter(s=>Date.parse(s.expiresAt)>Date.now());const active=state.sessions.filter(s=>s.userId===user.id);if(active.length>=10){const oldest=active.sort((a,b)=>a.createdAt.localeCompare(b.createdAt))[0];state.sessions=state.sessions.filter(s=>s!==oldest);}state.sessions.push(issued.session);audit(state,req,action,'success',user,user.id);return publicUser(user);});
+    if(body.client==='browser')addCookie(res,cookie(token,issued.session));return respond(200,{user:result,expiresAt,...(body.client==='cli'?{token}:{csrfToken})});
    }
    actor=authenticate(req).user;
    let session;({user:actor,session}=reauthenticate(req,{allowInitialPassword:true}));
    if(pathname==='/v1/auth/me'&&req.method==='GET')return respond(200,{user:publicUser(actor),expiresAt:session.expiresAt,...(session.client==='browser'?{csrfToken:session.csrfToken}:{})});
-   if(pathname==='/v1/auth/logout'&&req.method==='POST'){action='auth.logout';store.transact(s=>{s.sessions=s.sessions.filter(x=>x.tokenHash!==session.tokenHash);audit(s,req,action,'success',actor,actor.id);});if(session.client==='browser')res.setHeader('Set-Cookie',cookie('',true));return respond(200,{loggedOut:true});}
+   if(pathname==='/v1/auth/logout'&&req.method==='POST'){action='auth.logout';store.transact(s=>{s.sessions=s.sessions.filter(x=>x.tokenHash!==session.tokenHash);audit(s,req,action,'success',actor,actor.id);});if(session.client==='browser')addCookie(res,cookie('',{clear:true}));return respond(200,{loggedOut:true});}
    if(pathname==='/v1/auth/password'&&req.method==='POST'){
     action='auth.password';limit('password:'+actor.id,8,15*60000);const body=await jsonBody(req);({user:actor,session}=reauthenticate(req,{allowInitialPassword:true}));fields(body,['currentPassword','newPassword']);
     if(typeof body.currentPassword!=='string'||Buffer.byteLength(body.currentPassword)>256||!verifyPassword(body.currentPassword,actor.passwordHash))reject(403,'CURRENT_PASSWORD_INVALID','当前密码不正确');
     if(!strongPassword(body.newPassword,actor.username))reject(400,'WEAK_PASSWORD','密码至少 10 位，需包含大小写字母、数字和符号，且不能包含账号');
     if(body.newPassword===body.currentPassword)reject(400,'PASSWORD_UNCHANGED','新密码不能与当前密码相同');
     const passwordHash=hashPassword(body.newPassword);
-    store.transact(s=>{const user=s.users.find(u=>u.id===actor.id);user.passwordHash=passwordHash;user.mustChangePassword=false;revoke(s,user);audit(s,req,action,'success',user,user.id);});if(session.client==='browser')res.setHeader('Set-Cookie',cookie('',true));return respond(200,{changed:true,reauthenticate:true});
+    const continueBrowser=session.client==='browser'&&actor.mustChangePassword;let issued;
+    const updated=store.transact(s=>{const user=s.users.find(u=>u.id===actor.id);user.passwordHash=passwordHash;user.mustChangePassword=false;revoke(s,user);if(continueBrowser){issued=newSession(user,'browser',session.remember===true);s.sessions.push(issued.session);}audit(s,req,action,'success',user,user.id);return publicUser(user);});
+    if(continueBrowser){addCookie(res,cookie(issued.token,issued.session));return respond(200,{changed:true,reauthenticate:false,user:updated,csrfToken:issued.session.csrfToken,expiresAt:issued.session.expiresAt});}
+    if(session.client==='browser')addCookie(res,cookie('',{clear:true}));return respond(200,{changed:true,reauthenticate:true});
    }
    if(actor.mustChangePassword)reject(403,'PASSWORD_CHANGE_REQUIRED','请先修改初始密码');
    if(pathname==='/v1/roles'&&req.method==='GET')return respond(200,{roles,permissions});
@@ -120,7 +141,7 @@ function createAuthService(options){
    return false;
   }catch(error){
    const status=error.status||500;const code=error.code||'STORAGE_UNAVAILABLE';
-   try{writeAudit(req,action,'denied',actor,targetId,{code});}catch{return respond(503,{requestId:req.requestId,code:'STORAGE_UNAVAILABLE',message:'认证存储暂不可用，请稍后重试'});}
+   try{if(pathname!=='/v1/auth/captcha')writeAudit(req,action,'denied',actor,targetId,{code});}catch{return respond(503,{requestId:req.requestId,code:'STORAGE_UNAVAILABLE',message:'认证存储暂不可用，请稍后重试'});}
    return respond(status,{requestId:req.requestId,code,message:status>=500?'认证服务暂不可用，请稍后重试':error.message});
   }
  }
