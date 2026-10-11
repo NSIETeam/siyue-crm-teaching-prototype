@@ -41,9 +41,10 @@ node cli/siyue-cli.cjs get students
 node cli/siyue-cli.cjs get schedule
 node cli/siyue-cli.cjs get reports
 node cli/siyue-cli.cjs get audit-events
+node cli/siyue-cli.cjs get activity --view followups --employee <员工ID> --limit 50
 ```
 
-`get` 支持 `state / students / employees / leads / orders / schedule / reports / audit-events`。这些输出包含实际授权业务数据；如需保存，使用仓库外的私有路径，不要把学生、订单或员工资料提交公开 GitHub。
+`get` 支持 `state / students / employees / leads / orders / schedule / reports / sales-report / teacher-report / activity / audit-events`。`get activity --view followups` 可按时间倒序读取所选员工的全部历史跟进并用 `--cursor` 翻页；统计日期不限制此视图。其他活动可使用日期、线索、员工和动作过滤。这些输出包含实际授权业务数据；如需保存，使用仓库外的私有路径，不要把学生、订单或员工资料提交公开 GitHub。
 
 `list/describe` 每次检查会话并读取服务器授权目录，不根据本地角色猜测权限。登录后的 `inputSchema`、操作名与权限才是当前运行依据。`cli/operations.json` 是旧页面入口目录；仓库 `backend/contracts/operations.json` 的37项与 `backend/contracts/openapi.json` 是早期设计契约。启用共享业务后，线上 `/crm-api/openapi.json` 动态生成当前运行契约；未启用业务时才返回旧设计契约。
 
