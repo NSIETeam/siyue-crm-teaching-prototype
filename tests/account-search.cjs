@@ -11,18 +11,21 @@ const businessApi=fs.readFileSync(path.join(__dirname,'../business-api.js'),'utf
 const response=(body,status=200)=>({ok:status<400,status,json:async()=>body});
 const baseUser={id:'search-user',name:'员工',username:'search-user',roleIds:['sales'],permissions:['dashboard.read','lead.read'],scope:{type:'own'},mustChangePassword:false,version:1};
 
-async function create(actor){
+const policyOperation={id:'lead.policy.update',label:'设置保留与回收策略',permission:'leadPolicy.publish',implemented:true,execution:'server',inputSchema:{type:'object',additionalProperties:false,properties:{reserveDays:{type:'integer'},reclaimDays:{type:'integer'},firstFollowHours:{type:'integer'},decisionHours:{type:'integer'}},required:['reserveDays','reclaimDays','firstFollowHours']}};
+async function create(actor,operations=[]){
  const b=await authCreate(actor);
- b.respond(async url=>{
+ const businessCalls=[];b.respond(async url=>{
   const endpoint=String(url);
-  if(endpoint.endsWith('/v1/state'))return response({revision:1,capabilities:{businessReady:true},state:{courses:[],classes:[],students:[],leads:[],orders:[],campuses:[],staff:[],dictionary:{},settings:{},activities:{coupon:[],group:[],joint:[]},forms:[],decor:{},directory:[]}});
-  if(endpoint.endsWith('/v1/catalog'))return response({operations:[]});
+  businessCalls.push(endpoint);
+  if(endpoint.endsWith('/v1/state'))return response({revision:1,capabilities:{businessReady:true},state:{courses:[],classes:[],students:[],leads:[],orders:[],campuses:[],staff:[],dictionary:{},settings:{},leadPolicy:{reserveDays:10,reclaimDays:35,firstFollowHours:2,decisionHours:48},activities:{coupon:[],group:[],joint:[]},forms:[],decor:{},directory:[]}});
+  if(endpoint.endsWith('/v1/catalog'))return response({operations:operations.filter(op=>actor.permissions.includes(op.permission))});
   if(endpoint.endsWith('/v1/roles'))return response({roles:[{id:'sales',label:'销售',defaultScope:'own',permissions:[],version:1,editable:true}],permissions:[]});
   if(endpoint.endsWith('/v1/admin/users'))return response({users:[]});
   return response({});
  });
  b.run(businessApi);
  await new Promise(resolve=>setImmediate(resolve));
+ b.businessCalls=businessCalls;
  return b;
 }
 
@@ -45,4 +48,27 @@ test('employee management search actions stay hidden from non-superadmins even w
   const entries=actor.run(`workflowSearchEntries(${JSON.stringify(query)})`);
   assert.equal(entries.some(item=>item.meta==='员工管理'),false,`${query} must not expose a superadmin-only route`);
  }
+});
+
+test('authorized global search opens the lead retention policy draft without running it and deduplicates aliases',async()=>{
+ const admin=await create({...baseUser,roleIds:['superadmin'],permissions:['dashboard.read','leadPolicy.publish'],scope:{type:'all'}},[policyOperation]);
+ for(const query of ['线索保留','线索保留与回收策略设置','回收策略设置','保留与回收策略设置']){
+  const matches=admin.run(`workflowSearchEntries(${JSON.stringify(query)}).filter(item=>item.meta==='线索策略'||item.label==='设置保留与回收策略')`);
+  assert.equal(matches.length,1,`${query} should produce one policy destination`);
+  assert.equal(matches[0].label,'线索保留与回收策略设置');
+  assert.equal(matches[0].meta,'线索策略');
+  assert.equal(matches[0].action(),true);
+  assert.equal(admin.run('businessAPI.status().operation'),'lead.policy.update');
+  assert.deepEqual(JSON.parse(admin.run('JSON.stringify(businessAPI.academicDraft().draft)')),{reserveDays:10,reclaimDays:35,firstFollowHours:2,decisionHours:48});
+  assert.equal(admin.run('businessAPI.status().busy'),false,'opening the settings form must not start a request');
+  assert.equal(admin.businessCalls.some(url=>/operations\/lead\.policy\.update\/(preview|execute)$/.test(url)),false,'search navigation must not preview or execute');
+  admin.run('businessAPI.back()');
+ }
+});
+
+test('lead retention policy search respects both publish permission and global data scope',async()=>{
+ const withoutGrant=await create({...baseUser,roleIds:['superadmin'],permissions:['dashboard.read'],scope:{type:'all'}},[policyOperation]);
+ assert.equal(withoutGrant.run("workflowSearchEntries('线索保留').some(item=>item.meta==='线索策略')"),false);
+ const scoped=await create({...baseUser,permissions:['dashboard.read','leadPolicy.publish'],scope:{type:'campus',campusIds:['campus-a']}},[policyOperation]);
+ assert.equal(scoped.run("workflowSearchEntries('线索保留').some(item=>item.meta==='线索策略')"),false);
 });

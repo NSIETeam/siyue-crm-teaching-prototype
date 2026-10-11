@@ -34,7 +34,7 @@
 .bp-detail-section h3 span{margin-left:5px;color:var(--muted,#687386);font-size:12px;font-weight:400}
 @media(max-width:760px){.bp-stats{gap:14px}.bp-toolbar{align-items:stretch}.bp-search{max-width:none}.bp-toolbar-actions{width:100%}.bp-filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:6px}.bp-filter .select{min-width:120px}.bp-detail-heading{flex-direction:column}}
 
-.bp-toolbar .toolbar-left{flex:1;min-width:180px}.bp-toolbar .bp-search{width:100%;min-width:160px}.bp-toolbar .toolbar-right{flex:none}.bp-tabs .tab span{margin-left:5px;font-size:.9em}.bp-page .tabs{padding:0}.bp-row-toggle svg{width:18px;height:18px;vertical-align:middle}
+.bp-toolbar .toolbar-left{flex:1 1 280px;min-width:180px}.bp-toolbar .bp-search{width:auto;flex:1 1 280px;min-width:min(160px,100%);max-width:460px}.bp-toolbar .toolbar-right{flex:0 0 auto}.bp-tabs .tab span{margin-left:5px;font-size:.9em}.bp-page .tabs{padding:0}.bp-row-toggle svg{width:18px;height:18px;vertical-align:middle}
 .bp-student-detail .page-block{margin:0}
 .bp-student-detail .bp-detail-heading{padding:0;border-bottom:0}
 .bp-student-detail .bp-profile-tabs{display:flex;flex-wrap:nowrap;gap:24px;overflow-x:auto;padding:0 24px;border-bottom:1px solid var(--line,#e5e9f0)}
@@ -49,3 +49,5 @@
 .bp-profile-fields strong{font-size:14px;font-weight:500;overflow-wrap:anywhere}
 .bp-student-detail .bp-detail-section+.bp-detail-section{margin-top:24px}
 @media(prefers-reduced-motion:reduce){.bp-profile-tabs .tab::after{transition:none}}
+
+@media(max-width:760px){.bp-toolbar .bp-search{max-width:none}}
