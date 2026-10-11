@@ -4,6 +4,7 @@ const {AuthStore}=require('./auth-store.cjs');
 const {createCaptchaService}=require('./auth-captcha.cjs');
 const {hashPassword,verifyPassword,initialPassword,strongPassword,tokenHash,generateUsername}=require('./auth-credentials.cjs');
 const {roles,permissions,normalizePolicy,publicUser,effectivePermissions}=require('./auth-policy.cjs');
+const {selectAuditPage}=require('./audit-query.cjs');
 const catalog=require('../contracts/operations.json');
 const frontend=require('../../cli/operations.json');
 class HttpError extends Error{constructor(status,code,message){super(message);this.status=status;this.code=code;}}
@@ -112,12 +113,9 @@ function createAuthService(options){
    }
    if(pathname==='/v1/admin/audit'&&req.method==='GET'){
     action='audit.query';if(!actor.roleIds.includes('superadmin')&&!effectivePermissions(actor).includes('audit.read'))reject(403,'FORBIDDEN','无操作日志查看权限');
-    const query=new URL(req.url,'http://local').searchParams;const from=query.get('from'),to=query.get('to');if((from&&!Number.isFinite(Date.parse(from)))||(to&&!Number.isFinite(Date.parse(to))))reject(400,'INVALID_DATE','日期筛选无效');
-    if(from&&to&&Date.parse(from)>Date.parse(to))reject(400,'INVALID_DATE','开始日期不能晚于结束日期');
-    const count=query.has('limit')?Number(query.get('limit')):100;if(!Number.isInteger(count)||count<1||count>500)reject(400,'INVALID_LIMIT','每页数量须为 1–500');
-    let result=store.state.audit.filter(x=>(!query.get('actor')&&!query.get('actorId')||x.actorId===(query.get('actor')||query.get('actorId')))&&(!query.get('action')||x.action===query.get('action'))&&(!query.get('outcome')||x.outcome===query.get('outcome'))&&(!from||Date.parse(x.at)>=Date.parse(from))&&(!to||Date.parse(x.at)<=Date.parse(to))).slice().reverse();
-    if(query.get('before')){const index=result.findIndex(x=>x.id===query.get('before'));if(index<0)reject(400,'INVALID_CURSOR','日志分页位置无效');result=result.slice(index+1);}
-    writeAudit(req,action,'success',actor,null,{resultCount:Math.min(count,result.length)});return respond(200,{events:result.slice(0,count),hasMore:result.length>count,nextBefore:result.length>count?result[count-1].id:null});
+    const query=new URL(req.url,'http://local').searchParams;
+    const result=selectAuditPage(store.state.audit.slice().reverse(),store.state.users.map(publicUser),query);
+    writeAudit(req,action,'success',actor,null,{resultCount:result.events.length});return respond(200,result);
    }
    if(pathname==='/v1/admin/users'){
     action=req.method==='POST'?'account.create':'account.list';admin(actor);

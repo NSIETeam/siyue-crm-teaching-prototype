@@ -39,6 +39,107 @@ test('store rejects symlink files and credentials are not overwritten',()=>{cons
 test('automatic account names are valid for short Latin, punctuation, Chinese and collisions',()=>{const {generateUsername}=require('../src/auth-credentials.cjs');for(const [name,employeeNo]of [['Al',''],['A',''],['!!!',''],['王小明',''],['张老师','E03']]){const first=generateUsername(name,employeeNo,[]);assert.match(first,/^[a-z0-9][a-z0-9_-]{2,47}$/);const next=generateUsername(name,employeeNo,[{username:first}]);assert.match(next,/^[a-z0-9][a-z0-9_-]{2,47}$/);assert.notEqual(next,first);}});
 test('sessions survive a clean restart, expire server-side and release the single-writer lock',async t=>{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'siyue-auth-restart-'));const file=path.join(dir,'auth.json'),out=path.join(dir,'credentials.json');bootstrap(file,out);const credentials=JSON.parse(fs.readFileSync(out));let server;const start=async()=>{server=createServer({auth:{storeFile:file,publicOrigin:origin,captchaOptions:{randomInt:()=>4}}});server.listen(0,'127.0.0.1');await once(server,'listening');};const close=()=>new Promise(resolve=>server.close(resolve));t.after(async()=>{if(server?.listening)await close();fs.rmSync(dir,{recursive:true,force:true});});await start();const first=await request(server,'/v1/auth/login','POST',{...credentials,password:credentials.initialPassword,initialPassword:undefined,mustChangePassword:undefined,client:'cli'});assert.equal(first.status,200);assert.ok(Date.parse(first.body.expiresAt)-Date.now()<=10*60000);const headers={Authorization:'Bearer '+first.body.token};await request(server,'/v1/auth/password','POST',{currentPassword:credentials.initialPassword,newPassword},headers);const login=await request(server,'/v1/auth/login','POST',{username:credentials.username,password:newPassword,client:'cli'});await close();assert.ok(!fs.existsSync(file+'.lock'));await start();assert.equal((await request(server,'/v1/auth/me','GET',undefined,{Authorization:'Bearer '+login.body.token})).status,200);const now=Date.now;Date.now=()=>now()+9*3600000;try{assert.equal((await request(server,'/v1/auth/me','GET',undefined,{Authorization:'Bearer '+login.body.token})).status,401);}finally{Date.now=now;}});
 test('audit permission requires explicit grant and pagination does not lose same-timestamp records',async t=>{const f=await fixture(t),admin=await adminReady(f),created=await employee(f,admin),token=await activate(f,created);assert.equal((await f.call(token,'/v1/admin/audit')).status,403);assert.equal((await f.call(admin,'/v1/admin/users/'+created.user.id,'PATCH',{additionalPermissions:['audit.read']})).status,200);const login=await f.login(created.user.username,'Employee-Password!938AA');const first=await f.call(login.body.token,'/v1/admin/audit?action=auth.login&limit=1');assert.equal(first.status,200);assert.equal(first.body.hasMore,true);assert.ok(first.body.nextBefore);const next=await f.call(login.body.token,'/v1/admin/audit?action=auth.login&limit=1&before='+first.body.nextBefore);assert.equal(next.status,200);assert.notEqual(next.body.events[0].id,first.body.events[0].id);const unknown=await f.call(login.body.token,'/v1/admin/audit?before=invalid');assert.equal(unknown.status,400);});
+test('audit supports bounded actor and action-prefix search with safe projection and existing filters',async t=>{
+ const f=await fixture(t),admin=await adminReady(f),created=await employee(f,admin,{name:'审计姓名检索',employeeNo:'AuditFind03'});
+ await activate(f,created);
+ assert.equal((await f.call(admin,'/v1/admin/users/'+created.user.id,'PATCH',{additionalPermissions:['audit.read']})).status,200);
+ const login=await f.login(created.user.username,'Employee-Password!938AA');
+ const call=(query)=>f.call(login.body.token,'/v1/admin/audit?'+query);
+ const first=await call(new URLSearchParams({actorQuery:'审计姓名检索',actionPrefix:'AUTH.',limit:'1'}).toString());
+ assert.equal(first.status,200);assert.equal(first.body.events.length,1);assert.equal(first.body.hasMore,true);
+ assert.equal(first.body.events[0].actorName,'审计姓名检索');assert.match(first.body.events[0].action,/^auth\./);
+ const second=await call(new URLSearchParams({actorQuery:'审计姓名检索',actionPrefix:'auth.',limit:'1',before:first.body.nextBefore}).toString());
+ assert.equal(second.status,200);assert.equal(second.body.events.length,1);assert.notEqual(second.body.events[0].id,first.body.events[0].id);
+ const byEmployeeNo=await call(new URLSearchParams({actorQuery:'AUDITFIND03',action:'auth.login',outcome:'success',from:'2020-01-01',to:'2030-01-01'}).toString());
+ assert.equal(byEmployeeNo.status,200);assert.ok(byEmployeeNo.body.events.length>=2);assert.ok(byEmployeeNo.body.events.every(e=>e.actorId===created.user.id&&e.action==='auth.login'&&e.outcome==='success'));
+ const byActorAlias=await call(new URLSearchParams({actor:created.user.id,action:'auth.login'}).toString());
+ assert.equal(byActorAlias.status,200);assert.ok(byActorAlias.body.events.length>=2);assert.ok(byActorAlias.body.events.every(e=>e.actorId===created.user.id));
+ const accountPrefix=await call(new URLSearchParams({actorQuery:'超级管理员',actionPrefix:'ACCOUNT.'}).toString());
+ assert.equal(accountPrefix.status,200);assert.ok(accountPrefix.body.events.some(e=>e.action==='account.create'));
+ const attentionUpdate=await call(new URLSearchParams({view:'attention',action:'account.update'}).toString());
+ assert.equal(attentionUpdate.status,200);assert.ok(attentionUpdate.body.events.length>=1);assert.ok(attentionUpdate.body.events.every(e=>e.attention&&e.category==='account'&&e.outcomeLabel==='成功'));
+ assert.equal((await f.call(admin,'/v1/admin/users')).status,200);
+ const listAll=await call(new URLSearchParams({view:'all',action:'account.list'}).toString());
+ const listActivity=await call(new URLSearchParams({view:'activity',action:'account.list'}).toString());
+ const listAttention=await call(new URLSearchParams({view:'attention',action:'account.list'}).toString());
+ assert.ok(listAll.body.events.length>=1);assert.equal(listActivity.body.events.length,0);assert.equal(listAttention.body.events.length,0);
+ const accountUpdate=accountPrefix.body.events.find(e=>e.action==='account.update'&&e.targetId===created.user.id);
+ assert.ok(accountUpdate);assert.equal(accountUpdate.targetName,'审计姓名检索');
+ const event=first.body.events[0];assert.deepEqual(Object.keys(event).sort(),['action','actorId','actorName','at','attention','category','id','outcome','outcomeLabel','requestId','summary','targetId','targetName'].sort());
+ assert.equal(event.targetId,created.user.id);assert.equal(event.targetName,'审计姓名检索');
+ assert.equal(event.category,'security');assert.equal(event.attention,false);assert.equal(event.outcomeLabel,'成功');
+ assert.equal(event.details,undefined);assert.equal(event.ip,undefined);
+ assert(!JSON.stringify(first.body).includes('passwordHash'));assert(!JSON.stringify(first.body).includes(login.body.token));
+ const stored=JSON.parse(fs.readFileSync(f.file,'utf8')).audit.find(e=>e.actorId===created.user.id&&e.action==='auth.login');
+ assert.ok(stored);assert.ok(Object.hasOwn(stored,'ip'));assert.ok(Object.hasOwn(stored,'details'));assert.equal(stored.summary,undefined);
+});
+test('audit validates new search lengths and date bounds',async t=>{
+ const f=await fixture(t),admin=await adminReady(f);
+ const tooLongActor=await f.call(admin,'/v1/admin/audit?actorQuery='+encodeURIComponent('a'.repeat(121)));
+ assert.equal(tooLongActor.status,400);assert.equal(tooLongActor.body.code,'INVALID_INPUT');
+ const tooLongPrefix=await f.call(admin,'/v1/admin/audit?actionPrefix='+encodeURIComponent('a'.repeat(121)));
+ assert.equal(tooLongPrefix.status,400);assert.equal(tooLongPrefix.body.code,'INVALID_INPUT');
+ const tooLongDate=await f.call(admin,'/v1/admin/audit?from='+encodeURIComponent('2026-10-11'.repeat(5)));
+ assert.equal(tooLongDate.status,400);assert.equal(tooLongDate.body.code,'INVALID_DATE');
+});
+test('audit fills a missing actor name from the current directory without exposing raw event fields',()=>{
+ const {selectAuditPage}=require('../src/audit-query.cjs');
+ const page=selectAuditPage([{id:'legacy-event',at:'2026-10-11T00:00:00.000Z',actorId:'user-1',action:'auth.login',outcome:'success',ip:'PRIVATE-IP',details:{token:'PRIVATE-TOKEN'}}],[{id:'user-1',name:'目录当前姓名',username:'loginname',employeeNo:'EMP-1'}],new URLSearchParams('actorQuery=LOGINNAME'));
+ assert.equal(page.events.length,1);assert.equal(page.events[0].actorName,'目录当前姓名');
+ assert.equal(page.events[0].ip,undefined);assert.equal(page.events[0].details,undefined);
+ assert(!JSON.stringify(page).includes('PRIVATE-IP'));assert(!JSON.stringify(page).includes('PRIVATE-TOKEN'));
+});
+test('audit views keep previews in all, suppress read noise, and flag relevant actions without calling them anomalies',()=>{
+ const {selectAuditPage}=require('../src/audit-query.cjs');
+ const rows=[
+  {id:'read-ok',at:'2026-10-11T00:00:10.000Z',action:'read.state',outcome:'success'},
+  {id:'list-ok',at:'2026-10-11T00:00:09.000Z',action:'account.list',outcome:'success'},
+  {id:'report-ok',at:'2026-10-11T00:00:08.000Z',action:'report.sales',outcome:'success'},
+  {id:'activity-ok',at:'2026-10-11T00:00:07.000Z',action:'sales.activity',outcome:'success'},
+  {id:'roster-ok',at:'2026-10-11T00:00:06.000Z',action:'session.attendance.roster',outcome:'success'},
+  {id:'makeup-ok',at:'2026-10-11T00:00:05.500Z',action:'makeup.candidates',outcome:'success'},
+  {id:'refund-preview',at:'2026-10-11T00:00:05.000Z',action:'refund.submit',outcome:'preview'},
+  {id:'refund-ok',at:'2026-10-11T00:00:04.000Z',action:'refund.submit',outcome:'success'},
+  {id:'login-failure',at:'2026-10-11T00:00:03.000Z',action:'auth.login',outcome:'failure'},
+  {id:'account-change',at:'2026-10-11T00:00:02.000Z',action:'account.update',outcome:'success'},
+  {id:'account-reset',at:'2026-10-11T00:00:01.000Z',action:'account.resetPassword',outcome:'success'},
+ ];
+ const all=selectAuditPage(rows,[],new URLSearchParams('view=all')).events;
+ const activity=selectAuditPage(rows,[],new URLSearchParams('view=activity')).events;
+ const attention=selectAuditPage(rows,[],new URLSearchParams('view=attention')).events;
+ assert.deepEqual(all.map(e=>e.id),rows.map(e=>e.id));
+ assert.deepEqual(activity.map(e=>e.id),['refund-ok','login-failure','account-change','account-reset']);
+ assert.deepEqual(attention.map(e=>e.id),['refund-ok','login-failure','account-change','account-reset']);
+ assert.equal(all.find(e=>e.id==='refund-preview').outcomeLabel,'预览 · 未提交');
+ assert.equal(all.find(e=>e.id==='refund-preview').attention,false);
+ assert.equal(all.find(e=>e.id==='refund-ok').category,'finance');
+ assert.equal(all.find(e=>e.id==='login-failure').attention,true);
+ assert.equal(all.find(e=>e.id==='login-failure').category,'security');
+ assert.equal(all.find(e=>e.id==='account-change').attention,true);
+ assert.equal(all.find(e=>e.id==='account-change').category,'account');
+ assert.equal(all.find(e=>e.id==='list-ok').attention,false);
+ assert.equal(all.find(e=>e.id==='list-ok').category,'system');
+ for(const id of ['report-ok','activity-ok','roster-ok','makeup-ok']){assert.equal(all.find(e=>e.id===id).attention,false);assert.equal(all.find(e=>e.id===id).category,'system');}
+});
+test('audit business summaries expose historical names and order student name without other changed fields',()=>{
+ const {selectAuditPage}=require('../src/audit-query.cjs');
+ const changes=[
+  {collection:'courses',id:'course-1',before:{name:'旧课程',internalMaterial:'PRIVATE-MATERIAL'},after:{name:'新课程',internalMaterial:'PRIVATE-MATERIAL'}},
+  {collection:'classes',id:'class-1',after:{title:'四年级数学 A 班',phone:'PRIVATE-PHONE'}},
+  {collection:'leads',id:'lead-1',after:{name:'王同学线索',phone:'PRIVATE-PHONE'}},
+  {collection:'orders',id:'order-1',after:{studentId:'student-1',phone:'PRIVATE-PHONE'}},
+ ];
+ const page=selectAuditPage([{id:'event-1',at:'2026-10-11T00:00:00.000Z',action:'enrollment.transfer',outcome:'success',details:{changes}}],[],new URLSearchParams(),{students:[{id:'student-1',name:'王同学'}],classes:{id:'malformed'} });
+ const summary=page.events[0].summary.changes;
+ assert.deepEqual(summary.map(({collection,name,relatedStudentName})=>({collection,name,relatedStudentName})),[
+  {collection:'courses',name:'新课程',relatedStudentName:undefined},
+  {collection:'classes',name:'四年级数学 A 班',relatedStudentName:undefined},
+  {collection:'leads',name:'王同学线索',relatedStudentName:undefined},
+  {collection:'orders',name:undefined,relatedStudentName:'王同学'},
+ ]);
+ const output=JSON.stringify(page);for(const privateValue of ['PRIVATE-MATERIAL','PRIVATE-PHONE','details','before','after'])assert.equal(output.includes(privateValue),false);
+ assert.equal(page.events[0].category,'enrollment');assert.equal(page.events[0].attention,true);
+});
 // Synchronize on the server receiving the first JSON byte; no sleep-based races.
 async function heldJson(server,pathname,token,body,method='POST'){
  const marker=require('node:crypto').randomUUID();let startedResolve;const started=new Promise(resolve=>startedResolve=resolve);
