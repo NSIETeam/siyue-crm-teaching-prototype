@@ -75,10 +75,15 @@ test('single enrollment keeps the three server-backed steps, existing/new choice
   assert.match(html, /学生信息/);
   assert.match(html, /报名信息/);
   assert.match(html, /费用结算/);
-  assert.match(html, /选择已有学生/);
-  assert.match(html, /登记新学生/);
+  assert.match(html, /enrollment-student-summary/);
+  assert.match(html, /更换学生/);
+  assert.match(html, /class="step active" data-enrollment-step="2"/);
+  assert.match(html, /id="be-single-student-picker" hidden/);
+  assert.equal(inputAttrs(html, ['studentId']).checked, '');
   assert.match(html, /data-business-path="\[&quot;studentId&quot;\]"/);
   assert.match(html, /data-business-path="\[&quot;classId&quot;\]"/);
+  assert.equal(inputAttrs(html, ['couponClaimToken']).placeholder, '输入家长领取的兑换码');
+  assert.match(html, /优惠券兑换码/);
   assert.match(html, /四年级数学/);
   assert.match(html, /¥1200\.50/);
   assert.match(html, /待预览金额/);
@@ -91,6 +96,53 @@ test('single enrollment keeps the three server-backed steps, existing/new choice
   assert.doesNotMatch(html, /class="[^"]*be-/);
   assert.doesNotMatch(html, /服务端|外层|支付方式|实收金额|finishEnroll|workflowPersist/);
   assert.equal(h.writes.length, 0, 'renderForm must not mutate drafts');
+});
+
+test('prefilled valid student starts at class selection with compact summary and expands the picker on demand', () => {
+  const h = harness('enrollment.create', { classId: 'class-a', studentId: 'student-a' });
+  h.context.data = { ...data, students: [...data.students, { id: 'student-b', name: '学生乙', phone: '13900000002', grade: '小学二年级' }] };
+  const queued = [], scrollTarget = { calls: 0, scrollIntoView() { this.calls += 1; } };
+  const picker = { hidden: true }, button = { textContent: '更换学生' };
+  const stepButtons = [1, 2, 3].map(step => ({
+    step, current: false, attrs: {},
+    getAttribute(name) { return name === 'data-enrollment-step' ? String(step) : this.attrs[name]; },
+    setAttribute(name, value) { this.attrs[name] = value; },
+    classList: { toggle(name, value) { if (name === 'active') this.owner.current = value; }, owner: null }
+  }));
+  for (const item of stepButtons) item.classList.owner = item;
+  h.sandbox.window.document = {
+    querySelectorAll(selector) { return selector === '[data-enrollment-step]' ? stepButtons : []; },
+    querySelector(selector) {
+      if (selector === '#be-step-2') return scrollTarget;
+      if (selector === '#be-single-student-picker') return picker;
+      if (selector === '#be-single-student-change') return button;
+      return null;
+    }
+  };
+  h.sandbox.window.setTimeout = callback => queued.push(callback);
+
+  const html = h.api.renderForm({ ...h.context, draft: h.draft });
+  assert.match(html, /class="step active" data-enrollment-step="2"/);
+  assert.match(html, /分班信息/);
+  assert.match(html, /enrollment-student-summary/);
+  assert.match(html, /id="be-single-student-picker" hidden/);
+  assert.equal(inputAttrs(html, ['studentId']).checked, '', 'the hidden selected radio remains a collectable standard business field');
+  assert.equal(inputAttrs(html, ['studentId']).value, 'student-a');
+  assert.deepEqual(queued.length, 1);
+  queued.shift()();
+  assert.equal(scrollTarget.calls, 1, 'the initial class step scrolls into view after rendering');
+  assert.equal(stepButtons[1].current, true);
+
+  assert.equal(h.api.toggleStudentPicker(), true);
+  assert.equal(picker.hidden, false);
+  assert.equal(button.textContent, '收起选择');
+  assert.match(h.api.renderForm({ ...h.context, draft: h.draft }), /class="table enrollment-student-table"/);
+  assert.equal(h.api.chooseStudent('student-b'), true);
+  assert.equal(h.draft.studentId, 'student-b');
+  const replacement = h.api.renderForm({ ...h.context, draft: h.draft });
+  assert.match(replacement, /<strong>学生乙<\/strong>/);
+  assert.match(replacement, /class="step active" data-enrollment-step="2"/);
+  assert.match(replacement, /id="be-single-student-picker" hidden/);
 });
 
 test('new-student text input writes directly to standard business input path before blur', () => {

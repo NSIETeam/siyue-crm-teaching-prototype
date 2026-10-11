@@ -3,6 +3,8 @@
   'use strict';
 
   let activeStep = 1;
+  let focusedStudentId = null;
+  let singleStudentPickerExpanded = false;
   const clone = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -42,7 +44,7 @@
   }
 
   function stepNav() {
-    const rows = [['学生信息', 1], ['报名信息', 2], ['费用结算', 3]];
+    const rows = [['学生信息', 1], ['分班信息', 2], ['费用结算', 3]];
     return `<div class="steps" aria-label="报名步骤">${rows.map(([label, step], index) => `${index ? '<span class="step-line"></span>' : ''}<span class="step${activeStep === step ? ' active' : step < activeStep ? ' done' : ''}" data-enrollment-step="${step}" aria-current="${activeStep === step ? 'step' : 'false'}" onclick="SiyueBusinessEnrollment.goTo(${step})"><i>${step < activeStep ? '✓' : step}</i>${label}</span>`).join('')}</div>`;
   }
 
@@ -82,6 +84,11 @@
     const isNew = !!draft?.studentDraft;
     const pathRoot = rowIndex === null ? [] : ['rows', rowIndex];
     const feedback = `<p class="help enrollment-feedback" id="be-identity-error-${rowIndex === null ? 'single' : rowIndex}" role="status">${(rowIndex === null ? singleIssues(draft, ctx) : rowIssues(draft, ctx, rowIndex)).map(escape).join('；')}</p>`;
+    const selected = rowIndex === null && !isNew ? students(ctx).find(student => student.id === draft?.studentId) : null;
+    if (selected && !singleStudentPickerExpanded) {
+      const picker = studentPicker(ctx, pathRoot, draft.studentId);
+      return `<div class="enrollment-student-summary"><div class="enrollment-student-summary-copy"><strong>${escape(selected.name)}</strong><span>${escape(selected.phone || '未填电话')}${selected.grade ? ` · ${escape(selected.grade)}` : ''}</span></div><button type="button" class="btn small enrollment-student-change" id="be-single-student-change" onclick="SiyueBusinessEnrollment.toggleStudentPicker()" ${ctx.disabled ? 'disabled' : ''}>更换学生</button><div class="enrollment-student-picker-compact" id="be-single-student-picker" hidden>${picker}</div></div>${feedback}`;
+    }
     const control = isNew
       ? `<div class="form-grid">${input(ctx, [...pathRoot, 'studentDraft', 'name'], '学生姓名', draft.studentDraft?.name || '', { required: true, placeholder: '请输入学生姓名', disabled: ctx.disabled })}${input(ctx, [...pathRoot, 'studentDraft', 'phone'], '联系电话', draft.studentDraft?.phone || '', { required: true, type: 'tel', placeholder: '请输入手机号', help: '支持带国家码和空格的手机号格式。', disabled: ctx.disabled })}${select(ctx, [...pathRoot, 'studentDraft', 'grade'], '年级', gradeChoices(), draft.studentDraft?.grade || '', { disabled: ctx.disabled, empty: '请选择年级' })}${select(ctx, [...pathRoot, 'studentDraft', 'campusId'], '所属校区', campusChoices(ctx), draft.studentDraft?.campusId || '', { disabled: ctx.disabled, empty: '使用默认校区' })}</div>${draft.studentDraft?.originLeadId ? `<input type="hidden" data-business-path="${escape(JSON.stringify(pathFor(ctx.operation, [...pathRoot, 'studentDraft', 'originLeadId'])))}" data-business-type="string" value="${escape(draft.studentDraft.originLeadId)}">` : ''}${feedback}`
       : `${studentPicker(ctx, pathRoot, draft?.studentId || '')}${feedback}`;
@@ -124,7 +131,26 @@
     const p = escape(JSON.stringify(pathFor(ctx.operation, path)));
     if (!rows.length) return `<p class="help">当前没有可选择的学生，请切换为登记新学生。</p>`;
     const searchKey = rowIndexKey(pathRoot), query = selectedStudentSearch.get(searchKey) || '';
-    return `<div class="enrollment-student-picker"><input class="input enrollment-student-search" type="search" aria-label="搜索已有学生" placeholder="搜索姓名、手机号或年级" value="${escape(query)}" oninput="SiyueBusinessEnrollment.filterStudents(this,'${escape(searchKey)}')" ${ctx.disabled ? 'disabled' : ''}><div class="table-wrap"><table class="table enrollment-student-table"><thead><tr><th>选择</th><th>学生姓名</th><th>联系电话</th><th>年级</th></tr></thead><tbody>${rows.map(row => `<tr data-student-search="${escape([row.name, row.phone, row.grade].join(' ').toLowerCase())}" ${String(selectedId) === String(row.id) ? 'data-selected="true"' : ''}><td><input type="radio" name="enrollment-student-${searchKey}" value="${escape(row.id)}" data-business-path="${p}" data-business-type="string" ${String(selectedId) === String(row.id) ? 'checked' : ''} onchange="businessAPI.change(${p},this.value,'string')" ${ctx.disabled ? 'disabled' : ''}></td><td>${escape(row.name)}</td><td>${escape(row.phone || '—')}</td><td>${escape(row.grade || '—')}</td></tr>`).join('')}</tbody></table></div></div>`;
+    const changeHandler = pathRoot.length ? `businessAPI.change(${p},this.value,'string')` : `SiyueBusinessEnrollment.chooseStudent(this.value)`;
+    return `<div class="enrollment-student-picker"><input class="input enrollment-student-search" type="search" aria-label="搜索已有学生" placeholder="搜索姓名、手机号或年级" value="${escape(query)}" oninput="SiyueBusinessEnrollment.filterStudents(this,'${escape(searchKey)}')" ${ctx.disabled ? 'disabled' : ''}><div class="table-wrap"><table class="table enrollment-student-table"><thead><tr><th>选择</th><th>学生姓名</th><th>联系电话</th><th>年级</th></tr></thead><tbody>${rows.map(row => `<tr data-student-search="${escape([row.name, row.phone, row.grade].join(' ').toLowerCase())}" ${String(selectedId) === String(row.id) ? 'data-selected="true"' : ''}><td><input type="radio" name="enrollment-student-${searchKey}" value="${escape(row.id)}" data-business-path="${p}" data-business-type="string" ${String(selectedId) === String(row.id) ? 'checked' : ''} onchange="${changeHandler}" ${ctx.disabled ? 'disabled' : ''}></td><td>${escape(row.name)}</td><td>${escape(row.phone || '—')}</td><td>${escape(row.grade || '—')}</td></tr>`).join('')}</tbody></table></div></div>`;
+  }
+
+  function toggleStudentPicker() {
+    const ctx = root.businessAPI?.academicDraft?.();
+    if (!ctx || ctx.operation?.id !== 'enrollment.create' || ctx.disabled) return false;
+    singleStudentPickerExpanded = !singleStudentPickerExpanded;
+    const picker = root.document?.querySelector?.('#be-single-student-picker');
+    const button = root.document?.querySelector?.('#be-single-student-change');
+    if (picker) picker.hidden = !singleStudentPickerExpanded;
+    if (button) button.textContent = singleStudentPickerExpanded ? '收起选择' : '更换学生';
+    return true;
+  }
+
+  function chooseStudent(studentId) {
+    const ctx = root.businessAPI?.academicDraft?.();
+    if (!ctx || ctx.operation?.id !== 'enrollment.create' || ctx.disabled) return false;
+    singleStudentPickerExpanded = false;
+    return root.businessAPI.change(['studentId'], studentId, 'string');
   }
   function rowIndexKey(pathRoot) { return pathRoot.length ? pathRoot.join('-') : 'single'; }
   function gradeChoices() {
@@ -161,7 +187,7 @@
   function classSection(ctx) {
     const selected = classes(ctx).find(row => row.id === ctx.draft.classId);
     const rows = classChoices(ctx);
-    return `${select(ctx, ['classId'], '报名班级', rows, ctx.draft.classId || '', { required: true, disabled: ctx.disabled })}${classSummary(ctx, selected)}`;
+    return `${select(ctx, ['classId'], '选择班级', rows, ctx.draft.classId || '', { required: true, disabled: ctx.disabled })}${classSummary(ctx, selected)}`;
   }
 
   function settlementSection(ctx, batch) {
@@ -169,7 +195,8 @@
     const studentRows = students(ctx).map(row => ({ id: row.id, label: `${row.name} · ${row.phone || '未填电话'}` }));
     const selectedClass = classes(ctx).find(row => row.id === ctx.draft.classId);
     const course = courseFor(ctx, selectedClass);
-    const extra = `<div class="form-grid">${select(ctx, ['couponId'], '优惠券', offerRows, ctx.draft.couponId || '', { disabled: ctx.disabled, empty: '不使用优惠券' })}${select(ctx, ['referrerStudentId'], '推荐学生', studentRows, ctx.draft.referrerStudentId || '', { disabled: ctx.disabled, empty: '无推荐学生' })}</div>`;
+    const claimToken = !batch ? input(ctx, ['couponClaimToken'], '优惠券兑换码', ctx.draft.couponClaimToken || '', { placeholder: '输入家长领取的兑换码', help: '兑换码按领取手机号核验；使用兑换码时不能再选择其他优惠券。', disabled: ctx.disabled }) : '';
+    const extra = `<div class="form-grid">${select(ctx, ['couponId'], '优惠券', offerRows, ctx.draft.couponId || '', { disabled: ctx.disabled, empty: '不使用优惠券' })}${select(ctx, ['referrerStudentId'], '推荐学生', studentRows, ctx.draft.referrerStudentId || '', { disabled: ctx.disabled, empty: '无推荐学生' })}${claimToken}</div>`;
     const batchExtra = batch ? `<div class="summary-box">${(ctx.draft.rows || []).map((row, index) => {
       const student = students(ctx).find(item => item.id === row.studentId), name = row.studentDraft?.name || student?.name || `第 ${index + 1} 行学生`;
       return `<div class="summary-line"><span>${escape(name)} · ${escape(course?.name || '未选课程')}</span><strong>待预览金额</strong></div>`;
@@ -196,6 +223,23 @@
 
   function renderForm(ctx) {
     if (!isEnrollment(ctx?.operation)) return null;
+    if (ctx.operation.id === 'enrollment.create') {
+      const selected = students(ctx).find(student => student.id === ctx.draft?.studentId);
+      if (selected && selected.id !== focusedStudentId) {
+        focusedStudentId = selected.id;
+        activeStep = 2;
+        singleStudentPickerExpanded = false;
+        root.setTimeout?.(() => goTo(2), 0);
+      } else if (!selected) {
+        focusedStudentId = null;
+        activeStep = 1;
+        singleStudentPickerExpanded = false;
+      }
+    } else {
+      focusedStudentId = null;
+      activeStep = 1;
+      singleStudentPickerExpanded = false;
+    }
     return `<div class="enrollment-form${ctx.disabled ? ' is-disabled' : ''}" aria-label="报名办理">${stepNav()}${isBatch(ctx.operation) ? renderBatch(ctx) : renderSingle(ctx)}</div>`;
   }
 
@@ -284,10 +328,10 @@
     return true;
   }
 
-  function reset() { activeStep = 1; selectedStudentSearch.clear(); }
+  function reset() { activeStep = 1; focusedStudentId = null; singleStudentPickerExpanded = false; selectedStudentSearch.clear(); }
 
   root.SiyueBusinessEnrollment = {
-    renderForm, renderPage, renderTabs, initialize, reset, goTo, addRow, removeRow, filterStudents,
+    renderForm, renderPage, renderTabs, initialize, reset, goTo, addRow, removeRow, filterStudents, toggleStudentPicker, chooseStudent,
     refreshValidation, rowIssues, singleIssues
   };
 })(typeof window === 'undefined' ? globalThis : window);

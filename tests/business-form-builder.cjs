@@ -11,7 +11,7 @@ function harness(initial = {}) {
   const calls = [];
   const context = {
     operation: { id: 'form.create' }, draft,
-    data: { campuses: [{ id: 'campus-a', name: '东城校区' }], forms: [] },
+    data: { campuses: [{ id: 'campus-a', name: '东城校区' }], forms: [], classes: [], courses: [], activities: { coupon: [] } },
     disabled: false
   };
   const businessAPI = {
@@ -36,7 +36,7 @@ function harness(initial = {}) {
     target[path.at(-1)] = value;
     context.draft = draft;
   }
-  const window = { businessAPI, document: { querySelector: () => null, querySelectorAll: () => [] } };
+  const window = { businessAPI, SiyueAcademicDictionary: require('../academic-dictionary.js'), document: { querySelector: () => null, querySelectorAll: () => [] } };
   const sandbox = { window, businessAPI, Date, Math, JSON, String, Set, Object, Array };
   vm.runInNewContext(source, sandbox);
   sandbox.SiyueBusinessFormBuilder = window.SiyueBusinessFormBuilder;
@@ -200,4 +200,83 @@ test('markup escapes untrusted content, disabled mode blocks edits, reset only c
   assert.equal(h.calls.length, before);
   assert.doesNotMatch(h.api.render({ operation: h.context.operation, draft: h.draft, data: h.context.data }), /删除字段/);
   assert.doesNotMatch(source, /localStorage|offline/i);
+});
+
+test('reward and trial options use published offers, explicit field bindings and selected future slots', () => {
+  const h = harness({ kind: 'lead', collectLead: true, campusId: 'campus-a', fields: [
+    { id: 'name', type: 'name', title: '学生姓名', required: true },
+    { id: 'phone', type: 'phone', title: '家长手机号', required: true },
+    { id: 'legacy-grade', type: 'dropdown', title: '学生年级', required: false, options: ['旧年级选项'] }
+  ], settings: { quantity: 10, maxPerIdentity: 1, source: '线上咨询' } });
+  h.context.data.campuses.push({ id: 'campus-b', name: '西城校区' });
+  h.context.data.activities.coupon = [
+    { id: 'coupon-live', name: '春季券', published: true, status: '进行中', start: '2026-01-01', end: '2099-12-31' },
+    { id: 'coupon-discount', name: '满减券', template: '满减券', published: true, status: '进行中', start: '2026-01-01', end: '2099-12-31' },
+    { id: 'coupon-voucher', name: '代金券', template: '代金券', published: true, status: '进行中', start: '2026-01-01', end: '2099-12-31' },
+    { id: 'coupon-renewal', name: '续费优惠', template: '续费优惠', published: true, status: '进行中', start: '2026-01-01', end: '2099-12-31' },
+    { id: 'coupon-draft', name: '未发布券', published: false, status: '草稿', start: '2026-01-01', end: '2099-12-31' }
+  ];
+  h.context.data.courses = [{ id: 'course-a', name: '数学启蒙', grade: '小学一年级', subject: '数学' }];
+  h.context.data.classes = [
+    { id: 'class-a', name: '东城数学班', courseId: 'course-a', campusId: 'campus-a', schedule: [{ id: 'future-a', date: '2099-05-01', time: '10:00' }, { id: 'past-a', date: '2020-01-01', time: '10:00' }] }
+  ];
+  h.api.setReward('coupon');
+  assert.deepEqual(JSON.parse(JSON.stringify(h.draft.settings.reward)), { type: 'coupon', promotionId: '' });
+  let html = h.api.render({ operation: h.context.operation, draft: h.draft, data: h.context.data });
+  assert.match(html, /coupon-live/);
+  assert.match(html, /coupon-discount/);
+  assert.match(html, /coupon-voucher/);
+  assert.doesNotMatch(html, /coupon-renewal/);
+  assert.doesNotMatch(html, /coupon-draft/);
+  assert.match(html, /填写奖励与试课/);
+  h.api.setTrialEnabled(true);
+  assert.equal(h.api.addTrialMatchFields(), true);
+  const trial = h.draft.settings.trial;
+  assert.equal(trial.enabled, true);
+  assert.equal(trial.nameFieldId, 'name');
+  assert.equal(trial.phoneFieldId, 'phone');
+  const gradeField = h.draft.fields.find(row => row.id === trial.gradeFieldId);
+  assert.equal(gradeField.id, 'legacy-grade', 'matching reuses the existing stable field id');
+  assert.equal(gradeField.required, true, 'matching repairs the required flag before binding');
+  assert.ok(gradeField.options.includes('小学一年级'));
+  assert.ok(!gradeField.options.includes('旧年级选项'));
+  assert.equal(h.draft.fields.find(row => row.id === trial.phoneFieldId).type, 'phone');
+  assert.equal(h.draft.fields.find(row => row.id === trial.phoneFieldId).required, true);
+  assert.ok(h.draft.fields.find(row => row.id === trial.subjectFieldId).options.includes('数学'));
+  h.api.toggleTrialSlot('class-a', 'future-a', true);
+  const slot = h.draft.settings.trial.slots[0];
+  assert.match(slot.id, /^[A-Za-z0-9_-]{1,80}$/);
+  assert.deepEqual(JSON.parse(JSON.stringify(slot)), { id: slot.id, classId: 'class-a', sessionId: 'future-a', capacity: 10 });
+  h.api.updateTrialSlot(slot.id, 'capacity', 25);
+  assert.deepEqual(JSON.parse(JSON.stringify(h.draft.settings.trial.slots[0])), { id: slot.id, classId: 'class-a', sessionId: 'future-a', capacity: 25 }, 'editing slot capacity preserves the published slot id and schedule binding');
+  html = h.api.render({ operation: h.context.operation, draft: h.draft, data: h.context.data });
+  assert.match(html, /东城数学班/);
+  assert.equal((html.match(/class="sfb-session-row"/g) || []).length, 1, 'only the valid future session is selectable');
+  assert.match(html, /试课预约/);
+  assert.match(html, /绑定字段|年级字段/);
+  h.context.data.classes[0].active = false;
+  html = h.api.render({ operation: h.context.operation, draft: h.draft, data: h.context.data });
+  assert.match(html, /已停用或已过期，请移除后再发布/);
+  assert.match(html, /SiyueBusinessFormBuilder.removeTrialSlot/);
+  assert.equal(h.api.removeTrialSlot(slot.id), true);
+  assert.equal(h.draft.settings.trial.slots.length, 0);
+  h.api.setTrialEnabled(false);
+  assert.equal(h.draft.settings.trial, null);
+  h.api.setReward('none');
+  assert.equal(h.draft.settings.reward, null);
+});
+
+test('form update clears nullable reward and trial without losing expected version', () => {
+  const h = harness({ formId: 'form-edit', expectedVersion: 4, patch: {
+    title: '咨询登记', kind: 'lead', collectLead: true, campusId: 'campus-a',
+    fields: [{ id: 'phone', type: 'phone', title: '手机号', required: true }],
+    settings: { quantity: 10, maxPerIdentity: 1, source: '表单获客', reward: { type: 'material_link', title: '资料', url: 'https://example.test/a' }, trial: { enabled: true, gradeFieldId: 'phone', subjectFieldId: 'phone', nameFieldId: 'phone', phoneFieldId: 'phone', slots: [{ id: 'stable-slot', classId: 'class-a', sessionId: 'session-a', capacity: 3 }] } }
+  } });
+  h.context.operation = { id: 'form.update' };
+  h.api.setReward('none');
+  h.api.setTrialEnabled(false);
+  assert.equal(h.draft.expectedVersion, 4);
+  assert.equal(h.draft.patch.settings.reward, null);
+  assert.equal(h.draft.patch.settings.trial, null);
+  assert.deepEqual(h.calls.slice(-2).map(call => call.path), [['patch', 'settings'], ['patch', 'settings']]);
 });

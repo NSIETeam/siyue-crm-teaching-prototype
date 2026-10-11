@@ -109,3 +109,13 @@ node --test cli/auth.test.cjs
 ```
 
 覆盖真实本机 HTTP/CLI、权限和撤权、CSRF、资料范围、预览/执行/重试、并发 revision、批量回滚、公开表单、发布快照、备份读取，以及前端与真实内存业务处理器的建档→报名→收款联动。测试不操作线上真实业务，不替代实际部署验收、浏览器视觉验收或长期容量验证。
+
+### 表单填写奖励与免费试课
+
+表单设计的“填写奖励与试课”可配置资料 HTTPS 链接，或已发布且有效的通用优惠券、满减券、代金券。家长提交成功后直接在回执页领取；线索仍需发布者审核，试课不会生成付费订单。优惠券领取码在报名结算中使用，校验家长手机号、适用课程、有效期、额度和单次核销；不与另一张优惠券叠加。
+
+`form.create` / `form.update` 的 `settings.reward` 接受 `{type:"material_link",title,url}`、`{type:"coupon",promotionId}` 或 `null`。`settings.trial` 接受显式字段绑定 `gradeFieldId`、`subjectFieldId`、`nameFieldId`、`phoneFieldId`，以及固定表单校区或 `campusFieldId`；每个公开预约时段提供稳定 `id`、`classId`、`sessionId`、`capacity`。发布时验证字段必填、授权范围和未来课次。保存修改会回到草稿，重新发布后生效；失效时段可在编辑页移除。
+
+家长接口 `POST /v1/public/forms/{formId}/submissions` 可附 `trialBooking:{slotId}`；不附即只提交信息并领取奖励。服务端按校区、年级、学科严格匹配，并将所有表单和版本预约计入同一课次容量。重复请求返回原回执。权限过滤后的状态包含 `rewardClaims` 和 `trialBookings` 摘要，发布者可在提交审核页查看；领取码不会出现在员工状态投影或日志明细中。
+
+`siyue-cli describe form.create` 可查看实时输入契约，仍通过 `plan` / `execute` 两步办理。清空奖励或试课时，在 `form.update` 的 `patch.settings` 中传入相应字段的 `null`。
