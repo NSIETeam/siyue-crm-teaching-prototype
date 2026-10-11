@@ -1,0 +1,15 @@
+/* Preserve schedule-caterpillar.css's mature layout; scope only server-specific details. */
+.business-schedule .schedule-view-tabs{gap:24px;border-bottom:1px solid #e1e8f2;flex-wrap:nowrap;overflow-x:auto}
+.business-schedule .schedule-view-tabs>.btn{position:relative;flex:0 0 auto;border:0;border-radius:0;background:transparent;box-shadow:none;color:#7b8ba4;padding:12px 2px;font-weight:600}
+.business-schedule .schedule-view-tabs>.btn::after{content:"";position:absolute;height:3px;background:#315deb;left:0;right:0;bottom:0;transform:scaleX(0);transform-origin:center;transition:transform .18s ease}
+.business-schedule .schedule-view-tabs>.btn.primary{color:#315deb}
+.business-schedule .schedule-view-tabs>.btn.primary::after{transform:scaleX(1)}
+.business-schedule .worm-segment{height:96px;border-radius:0;margin:0;min-width:0;box-sizing:border-box}
+.business-schedule .worm-segment.is-cancelled{background:#f0f2f6;color:#788597;border-color:#cbd4df}
+.business-schedule .worm-segment.is-selected{outline:2px solid #315deb;outline-offset:-2px;z-index:1}
+.business-schedule .table th,.business-schedule .table td{white-space:nowrap;word-break:normal}
+.business-schedule .table .is-selected{background:#f0f5ff}
+.business-schedule .business-session-actions{padding-top:18px;margin-top:18px;border-top:1px solid #e1e8f2}
+.business-schedule .business-session-actions>.actions{margin-top:12px}
+.business-schedule-invalid{display:flex;gap:8px;flex-wrap:wrap;padding:10px}
+@media(prefers-reduced-motion:reduce){.business-schedule .schedule-view-tabs>.btn::after{transition:none}}

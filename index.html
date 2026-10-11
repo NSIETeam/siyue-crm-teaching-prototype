@@ -35,7 +35,13 @@
 <link rel="stylesheet" href="crm-audit.css">
 <link rel="stylesheet" href="finance-audit.css">
 <link rel="stylesheet" href="platform-audit.css">
+<link rel="stylesheet" href="business-decor.css">
+<link rel="stylesheet" href="business-enrollment.css">
+<link rel="stylesheet" href="business-schedule.css">
 <link rel="stylesheet" href="business-api.css">
+<link rel="stylesheet" href="business-presenter.css">
+<link rel="stylesheet" href="business-form-builder.css">
+<link rel="stylesheet" href="business-workbench.css">
 <link rel="stylesheet" href="academic-planner.css">
 </head>
 <body>
@@ -144,6 +150,7 @@ function staffForm(){let s=state.staffEdit===null?null:state.staff[state.staffEd
 function saveStaff(){let name=$('#staff-name').value.trim(),phone=$('#staff-phone').value.trim();if(!name||!phone){toast('请填写姓名和手机号');return}let roles=[...document.querySelectorAll('.role:checked')].map(x=>x.value).join('、')||'未配置';let s={name,phone,gender:$('#staff-gender').value,campus:'全部校区',roles,active:true};if(state.staffEdit===null)state.staff.push(s);else state.staff[state.staffEdit]={...state.staff[state.staffEdit],...s};state.mode='list';render();toast('员工信息已保存')}
 document.querySelectorAll('.menu-item').forEach(e=>e.addEventListener('click',()=>{state.mode='list';state.editing=false;nav(e.dataset.page)}));render();
 </script>
+<script src="page-layouts.js"></script>
 <script src="academic.js"></script>
 <script src="leads.js"></script>
 <script src="shortcuts.js"></script>
@@ -183,6 +190,12 @@ document.querySelectorAll('.menu-item').forEach(e=>e.addEventListener('click',()
 <script src="academic-dictionary.js"></script>
 <script src="academic-planner.js"></script>
 <script src="qrcode-vendor.js"></script>
+<script src="business-presenter.js"></script>
+<script src="business-form-builder.js"></script>
+<script src="business-workbench.js"></script>
+<script src="business-decor.js"></script>
+<script src="business-enrollment.js"></script>
+<script src="business-schedule.js"></script>
 <script src="business-api.js"></script>
 </body>
 </html>

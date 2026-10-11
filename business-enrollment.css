@@ -1,0 +1,18 @@
+.enrollment-section { scroll-margin-top: 20px; }
+.enrollment-section > .section-title { margin: 8px 0 16px; }
+.enrollment-student-table input[type="radio"] { accent-color: #315deb; }
+.enrollment-student-picker { max-height: 300px; overflow: auto; }
+.enrollment-student-search { width: min(100%, 360px); margin: 0 0 10px; }
+.enrollment-feedback { min-height: 18px; margin: 6px 0 12px; color: #a44735; }
+.enrollment-class-summary { margin-top: 14px; }
+.enrollment-batch-row { margin: 14px 0; }
+.enrollment-batch-row.has-errors { border-color: #e8b8ab; background: #fffdfb; }
+.enrollment-batch-row .subcard-head { display: flex; align-items: center; justify-content: space-between; }
+.enrollment-entry .tabs { margin-bottom: 0; }
+.enrollment-form .steps { margin-top: 0; }
+@media (max-width: 700px) {
+  .enrollment-form .steps { gap: 5px; padding: 16px 6px; }
+  .enrollment-form .step-line { width: 22px; }
+  .enrollment-form .step { gap: 5px; font-size: 12px; }
+  .enrollment-student-table { min-width: 520px; }
+}

@@ -1,0 +1,32 @@
+/* Read-only workbench presentation. Server projection and permissions remain authoritative. */
+(function(){
+ 'use strict';
+ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const dateKey=value=>{const d=new Date(value);return Number.isFinite(d.getTime())?new Date(d.getTime()+28800000).toISOString().slice(0,10):''};
+ function render(ctx){
+  const {user,data,operations,permitted,canVisit,setupGuide,leadTiming,leadConverted,leadArchived}=ctx;
+  const rows=key=>Array.isArray(data[key])?data[key]:[],has=p=>user.permissions.includes(p),today=dateKey(Date.now());
+  const manager=user.roleIds.includes('superadmin')||has('report.read')&&user.scope.type!=='own',teacher=user.roleIds.includes('teacher')&&!manager,sales=has('lead.follow')&&!teacher;
+  const navigate=(page,label,extra='')=>canVisit(page)?`<button type="button" class="bw-link ${extra}" onclick="nav('${page}')">${esc(label)}</button>`:'';
+  const operation=(id,label,seed={})=>{const op=operations.find(x=>x.id===id);return permitted(op)?`<button type="button" class="btn small" onclick="businessAPI.open('${id}',${esc(JSON.stringify(seed))})">${esc(label||op.label)}</button>`:''};
+  const mine=rows('leads').filter(l=>l.ownerId===user.id&&!leadArchived(l)&&!leadConverted(l)),todo=mine.filter(l=>{const t=leadTiming(l);return t.first||t.due}),decisions=rows('leads').filter(l=>l.decisionStatus==='pending'&&(l.decisionById||l.ownerId)===user.id);
+  const sessions=rows('classes').flatMap(c=>(c.schedule||[]).filter(s=>s.status!=='cancelled'&&s.date===today).map(s=>({c,s}))).filter(({c,s})=>!teacher||(s.substituteTeacherId||s.teacherId||c.teacherId)===user.id).sort((a,b)=>String(a.s.time).localeCompare(String(b.s.time)));
+  const due=rows('orders').filter(o=>!['cancelled','closed'].includes(o.status)&&Number(o.totalCents??o.amountCents??0)>Number(o.paidCents||0));
+  const pending=rows('rescheduleRequests').filter(r=>r.status==='pending');
+  const stats=[];
+  if(teacher){stats.push(['今日课程',sessions.length,'teacherCourses'],['待登记考勤',sessions.filter(({c,s})=>Date.parse(s.date+'T'+String(s.time).slice(0,5)+':00+08:00')<=Date.now()&&!rows('attendance').some(a=>a.classId===c.id&&a.sessionId===s.id)).length,'teacherCourses'],['待批调课',pending.filter(r=>r.applicantId===user.id).length,'rescheduleRequests']);}
+  else if(sales&&!manager){stats.push(['待跟进',todo.length,'leadTodo'],['待决策',decisions.length,'leadManage'],['我的线索',mine.length,'myLeads']);}
+  else {if(has('lead.read'))stats.push(['待分配线索',rows('leads').filter(l=>!l.ownerId&&l.decisionStatus!=='pending'&&!leadArchived(l)&&!leadConverted(l)).length,'leadManage']);if(has('student.read'))stats.push(['在读学生',new Set(rows('enrollments').filter(e=>['active','在读','已生效'].includes(e.status)).map(e=>e.studentId)).size,'learningActive']);if(has('order.read'))stats.push(['待收款',due.length,'financeArrears']);if(has('schedule.read'))stats.push(['今日课程',sessions.length,'schedule']);}
+  const panels=[];
+  if(sales){panels.push(`<section class="card pad bw-panel"><div class="toolbar"><strong>我的待办</strong>${navigate('leadTodo','查看全部')}</div>${[...decisions.map(l=>({l,reason:'待选择保留、转派或公海'})),...todo.filter(l=>!decisions.some(d=>d.id===l.id)).map(l=>({l,reason:leadTiming(l).first?'首次跟进超时':leadTiming(l).overdue?'预约已逾期':'今日跟进'}))].slice(0,6).map(({l,reason})=>`<button class="home-task bw-task" type="button" onclick="businessAPI.leadDetail(${esc(JSON.stringify(l.id||l.leadId))})"><span><strong>${esc(l.name)}</strong><small>${esc(l.source||'')} · ${esc(reason)}</small></span><span class="badge off">${esc(l.intent||'待跟进')}</span></button>`).join('')||'<p class="empty">当前没有待处理线索</p>'}</section>`);}
+  if(has('schedule.read'))panels.push(`<section class="card pad bw-panel"><div class="toolbar"><strong>${teacher?'我的今日课程':'今日课程'}</strong>${navigate(teacher?'teacherCourses':'schedule','查看课表')}</div>${sessions.slice(0,6).map(({c,s})=>`<div class="home-task bw-task"><span><strong>${esc(c.name)}</strong><small>${esc(s.time)} · ${esc(s.room||c.room||'未设置教室')}</small></span><div class="actions">${teacher&&Date.parse(s.date+'T'+String(s.time).slice(0,5)+':00+08:00')<=Date.now()?operation('session.attendance.exceptions','登记异常',{classId:c.id,sessionId:s.id}):navigate(teacher?'teacherCourses':'schedule','查看')}</div></div>`).join('')||'<p class="empty">今天没有已排课程</p>'}</section>`);
+  if(canVisit('rescheduleApprovals')&&pending.length)panels.push(`<section class="card pad bw-panel"><div class="toolbar"><strong>待批调课申请</strong>${navigate('rescheduleApprovals','处理申请')}</div>${pending.slice(0,5).map(r=>`<div class="home-task bw-task"><span><strong>${esc(r.className)}</strong><small>${esc(r.applicantName)} · ${esc(r.date)} ${esc(r.time)}</small></span><span class="badge off">待审核</span></div>`).join('')}</section>`);
+  if(has('order.read'))panels.push(`<section class="card pad bw-panel"><div class="toolbar"><strong>待收款订单</strong>${navigate('financeArrears','查看全部')}</div>${due.slice(0,5).map(o=>`<div class="home-task bw-task"><span><strong>${esc(rows('students').find(s=>s.id===o.studentId)?.name||'学生资料暂不可见')}</strong><small>${esc(rows('classes').find(c=>c.id===o.classId)?.name||'课程资料暂不可见')}</small></span><strong>¥${((Number(o.totalCents??o.amountCents??0)-Number(o.paidCents||0))/100).toFixed(2)}</strong></div>`).join('')||'<p class="empty">暂无待收款订单</p>'}</section>`);
+  const metric=data.metrics;
+  if(sales&&metric)panels.push(`<section class="card pad bw-panel"><div class="toolbar"><strong>我的销售转化</strong>${navigate('salesMetrics','查看统计')}</div><div class="bw-conversion"><strong>${Number(metric.converted)||0}<small> / ${Number(metric.ownLeads)||0} 条</small></strong><span>${metric.lowSample?'样本不足，暂不计算转化率':((Number(metric.conversionRate)||0)*100).toFixed(1)+'%'}</span></div></section>`);
+  const links=[['quickRegister','线索登记'],['enroll','办理报名'],['course','课程管理'],['classes','班级与排课'],['teacherMetrics','教学业绩'],['marketingForms','表单收集']].map(([p,l])=>navigate(p,l)).filter(Boolean);
+  const metricCards=stats.map(([label,count,page])=>canVisit(page)?`<button type="button" class="card metric" onclick="nav('${page}')"><span>${esc(label)}</span><strong>${count}</strong></button>`:`<div class="card metric"><span>${esc(label)}</span><strong>${count}</strong></div>`).join('');
+  return SiyuePageLayouts.home({actions:'',metrics:metricCards,panels:panels.join('')})+(links.length?`<section class="card pad bw-links"><div class="actions">${links.join('')}</div></section>`:'');
+ }
+ window.SiyueBusinessWorkbench={render};
+})();
