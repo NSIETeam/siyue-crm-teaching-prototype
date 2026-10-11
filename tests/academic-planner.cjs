@@ -13,6 +13,18 @@ test('twelve readable grades, configured subjects, and campus multi-select scope
  assert.match(field('subject',''),/编程/);const html=f.api.field({...f.state,operation:{id:'campus.create'},key:'grades',path:['grades'],schema:{type:'array'},draft:{grades:[]}});assert.equal((html.match(/type="checkbox"/g)||[]).length,12);
  const limited=f.api.field({...f.state,draft:{campusId:'p1'},key:'grade',path:['grade'],schema:{type:'string'}});assert.match(limited,/小学四年级/);assert.doesNotMatch(limited,/高中三年级/);
 });
+test('campus create and update room rows expose virtual seats with the exact accessible hint',()=>{
+ const tip='教室里大概能临时添置几个小椅子';
+ for(const [operation,draft,path] of [
+  ['campus.create',{rooms:[{name:'101',capacity:20}]},['rooms',0]],
+  ['campus.update',{patch:{rooms:[{name:'101',capacity:20,virtualSeats:3}]}},['patch','rooms',0]]
+ ]){
+  const f=setup(operation),html=f.api.field({...f.state,operation:{id:operation},draft,key:'item',path,schema:{type:'object'}});
+  assert.match(html,/虚拟座位/);assert.match(html,/type="number" min="0" max="10000" step="1"/);assert.match(html,/value="(?:0|3)"/);
+  assert.ok(html.includes(`title="${tip}"`));assert.ok(html.includes(`aria-label="${tip}"`));assert.match(html,/M10 6v6M10 15h\.01/);
+  assert.ok(html.includes('&quot;virtualSeats&quot;'));
+ }
+});
 test('price summary uses integer-cent per-lesson split, not duration, and escapes invalid input',()=>{
  const f=setup('course.create'),h=f.api.extra(f.state);assert.match(h,/¥33\.33–¥33\.34/);assert.match(h,/前 2 讲/);assert.match(h,/215 分钟/);assert.match(h,/实收分摊/);f.state.draft.priceCents=9000;assert.match(f.api.extra(f.state),/¥30\.00/);f.state.draft.lessons=[];assert.match(f.api.extra(f.state),/填写课程总价和讲次/);
 });

@@ -43,8 +43,10 @@ node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --
 | `GET /v1/admin/users` | 超级管理员获取账号列表，无密码或密码哈希 |
 | `POST /v1/admin/users` | 超级管理员创建账号；字段见下；仅此次返回 `initialPassword` |
 | `PATCH /v1/admin/users/:id` | 超级管理员修改姓名、角色、权限、数据范围或停用状态；即时撤销目标账号全部会话 |
+| `POST /v1/admin/users/:id/archive` | `{reason?}` 软归档离职员工，返回 `{user,archived:true}`；强制停用并撤销全部会话，保留业务历史关联 |
 | `POST /v1/admin/users/:id/reset-password` | 超级管理员生成新的随机初始密码，立即撤销目标全部会话并要求再次改密 |
 | `GET /v1/admin/audit` | 超级管理员或明确拥有 `audit.read` 的账号可分类检索认证和账号操作日志；共享业务启用后合并业务审计 |
+| `GET /v1/sales/activity` | 按授权范围查询销售活动；`view=activity`（默认）按日期查询，`view=followups` 按时间倒序读取历史跟进并使用 `cursor` 分页，不受 `from/to` 限制 |
 
 浏览器使用 `HttpOnly; Secure; SameSite=Strict` Cookie，JavaScript 无法读取会话令牌。所有浏览器写请求还需正确 `Origin` 及 `X-CSRF-Token`。登录请求需要正确 `Origin` 和一次性图片验证码，尚未有会话时不要求 CSRF。携带 `Origin`、`Sec-Fetch-Site` 或本站认证/验证码 Cookie 的请求不能把 `client` 写成 `cli` 来跳过验证码，返回 `BROWSER_CLIENT_REQUIRED`。CLI 使用 `Authorization: Bearer <token>`，不接受角色请求头，不可将浏览器 Cookie 当成 CLI 令牌。
 
@@ -98,7 +100,9 @@ node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --
 
 `username` 可以由超级管理员显式指定；缺省优先根据工号生成（如 `sy-e010`），没有工号时用姓名中的拉丁字符，纯中文姓名转换为稳定 Unicode 编码，并自动避免重名。不依赖在线拼音服务。账号创建后固定，姓名和权限仍可修改。初始密码不进入审计，列表接口不再次返回。
 
-`user` 返回 `id / username / name / employeeNo / roleIds / permissions / additionalPermissions / deniedPermissions / scope / mustChangePassword / disabled / version / createdAt / updatedAt`。`permissions` 是最终生效结果：角色权限并集 + 额外授权 − 禁止权限。拒绝未知权限。`employee.create / account.update / role.grant` 为保留管理权限，不能通过额外授权伪造超级管理员；只有明确的 `superadmin` 身份可以管理账号。
+`user` 返回 `id / username / name / employeeNo / roleIds / permissions / additionalPermissions / deniedPermissions / scope / mustChangePassword / disabled / version / createdAt / updatedAt / archivedAt / archivedBy / archiveReason`。未归档账号的归档字段为 `null`。`permissions` 是最终生效结果：角色权限并集 + 额外授权 − 禁止权限。拒绝未知权限。`employee.create / account.update / role.grant` 为保留管理权限，不能通过额外授权伪造超级管理员；只有明确的 `superadmin` 身份可以管理账号。
+
+归档是不可通过普通账号编辑撤销的软归档：归档账号被停用、版本递增、所有会话撤销；历史报名、课次、订单和审计仍保留原用户 ID。不能归档当前登录账号、最后一名有效超级管理员或重复归档账号；归档账号不能再次启用或重置密码。可选 `reason` 最长 200 字，保存在归档档案中。`account.archive` 审计返回目标员工姓名以及安全摘要 `{archived:true,archiveReason?}`，不会投影原始详情或 IP。
 
 | 角色 | 默认范围 | 默认职责与边界 |
 | --- | --- | --- |
@@ -115,7 +119,7 @@ node backend/src/bootstrap-auth.cjs --store /var/lib/siyue-crm-auth/auth.json --
 
 ## 审计与验证
 
-审计记录：初始化、成功/失败登录、账号列表读取、创建、重置密码、改密、改权限、停用、退出、日志查询，以及未接通接口的操作尝试。启用共享业务后，业务预览、成功/失败执行和变更另记于 SQLite，并统一检索。拒绝操作记录已确认的操作者。审计不包含明文密码、Bearer 令牌或业务请求体。
+审计记录：初始化、成功/失败登录、账号列表读取、创建、重置密码、改密、改权限、停用、归档、退出、日志查询，以及未接通接口的操作尝试。启用共享业务后，业务预览、成功/失败执行和变更另记于 SQLite，并统一检索。拒绝操作记录已确认的操作者。审计不包含明文密码、Bearer 令牌或业务请求体。
 
 检索参数：`actor` 或 `actorId`、`action`、`outcome`、`from`、`to`、`limit`（1–500），`before` 使用上一页返回的 `nextBefore` 事件 ID。以事件 ID 分页避免同一毫秒的多条记录丢失。单文件达到 32 MiB 时停止继续写入并报错；需先将审计归档到受控存储，不自动删除历史记录。
 

@@ -9,6 +9,12 @@ test('CSV parser preserves quoted commas, embedded newlines and physical line nu
  const p=quick.csv('\uFEFF姓名,备注\r\n张同学,"第一行,内容\n第二行"\r\n李同学,无\r\n');assert.equal(p.rows[0].cells[1],'第一行,内容\n第二行');assert.equal(p.rows[1].line,4);
  assert.throws(()=>quick.csv('姓名,姓名\na,b'),/重复/);assert.throws(()=>quick.csv('姓名,电话\na'),/列/);assert.throws(()=>quick.csv('姓名\n"a'),/未闭合/);
 });
+test('campus room CSV and nested --set carry virtualSeats through the normal schema',t=>{
+ const file=path.join(temp(t),'rooms.csv');fs.writeFileSync(file,'教室名称,容量,虚拟座位\nA101,20,3\n');
+ const csvResult=quick.prepare(op('campus.create'),options({name:'校区',rows:file}),{});assert.equal(csvResult.errors.length,0);assert.deepEqual(JSON.parse(JSON.stringify(csvResult.input.rooms)),[{name:'A101',capacity:20,virtualSeats:3}]);
+ const setResult=quick.prepare(op('campus.create'),options({name:'校区',set:['rooms.0.name=A102','rooms.0.capacity=25','rooms.0.virtualSeats=2']}),{});assert.equal(setResult.errors.length,0);assert.equal(setResult.input.rooms[0].virtualSeats,2);
+ const invalid=quick.prepare(op('campus.create'),options({name:'校区',set:['rooms.0.name=A103','rooms.0.capacity=25','rooms.0.virtualSeats=10001']}),{});assert.ok(invalid.errors.some(e=>e.path==='rooms.0.virtualSeats'));
+});
 test('name resolution uses exact authorized candidates, rejects ambiguity and never chooses a near spelling',()=>{
  const state={students:[{id:'s1',name:'小明',campus:'城中'},{id:'s2',name:'小明',campus:'园区'}],classes:[{id:'c1',name:'四年级数学'}]};
  let r=quick.prepare(op('enrollment.create'),options({class:'四年级数学',student:'小明'}),state);assert.equal(r.errors[0].code,'AMBIGUOUS_REFERENCE');assert.equal(r.errors[0].candidates.length,2);
@@ -56,9 +62,9 @@ async function fixture(t){
 test('CLI quick fill creates actual shared campus/course/class/schedule/enrollment via preview, then idempotent execute',async t=>{
  const f=await fixture(t);let sequence=0;
  const commit=async(id,args=[])=>{const file=path.join(f.dir,`plan-${++sequence}.json`),planned=await f.run(['fill',id,...args,'--out',file]);assert.equal(planned.commit,false);assert.equal(planned.valid,true);assert.equal(fs.statSync(file).mode&0o777,0o600);const r=await f.run(['execute','--plan',file]);return {planned,result:r.result,file};};
- const template=path.join(f.dir,'template.csv');await f.run(['template','批量报名','--format','csv','--out',template]);assert.equal(fs.statSync(template).mode&0o777,0o600);assert.match(fs.readFileSync(template,'utf8'),/姓名,手机号/);
+ const template=path.join(f.dir,'template.csv');await f.run(['template','批量报名','--format','csv','--out',template]);assert.equal(fs.statSync(template).mode&0o777,0o600);assert.match(fs.readFileSync(template,'utf8'),/姓名,手机号/);const campusTemplate=path.join(f.dir,'campuses.csv');await f.run(['template','校区','--format','csv','--out',campusTemplate]);assert.match(fs.readFileSync(campusTemplate,'utf8'),/教室名称,容量,虚拟座位/);
  const invalid=await f.run(['check','线索','--name','小明'],2);assert.equal(invalid.valid,false);assert.ok(invalid.errors.some(e=>e.path==='phone'));assert.equal((await f.call('/v1/state')).body.revision,0);
- await commit('校区',['--name','快填校区','--set','rooms.0.name=教室01','--set','rooms.0.capacity=20']);
+ await commit('校区',['--name','快填校区','--set','rooms.0.name=教室01','--set','rooms.0.capacity=20','--set','rooms.0.virtualSeats=2']);assert.equal((await f.call('/v1/state')).body.state.campuses[0].roomDetails[0].virtualSeats,2);
  const teacher=await f.call('/v1/admin/users','POST',{name:'快填老师',employeeNo:'QF-T01',roleIds:['teacher'],scope:{type:'assigned'}});assert.equal(teacher.status,201);
  await commit('课程',['--name','四年级数学','--campus','快填校区','--grade','四年级','--subject','数学','--price','1200.29','--set','lessons.0.title=分数','--set','lessons.0.durationMinutes=90']);
  const klass=await commit('建班',['--name','数学一班','--course','四年级数学','--campus','快填校区','--teacher','快填老师','--room','教室01','--capacity','20']);assert.equal(klass.result.class.teacherId,teacher.body.user.id);

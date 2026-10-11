@@ -118,6 +118,22 @@ function createAuthService(options){
     const result=selectAuditPage(store.state.audit.slice().reverse(),store.state.users.map(user=>expose(user)),query,store.state);
     writeAudit(req,action,'success',actor,null,{resultCount:result.events.length});return respond(200,result);
    }
+   const archiveMatch=pathname.match(/^\/v1\/admin\/users\/([a-z0-9-]+)\/archive$/);
+   if(archiveMatch&&req.method==='POST'){
+    targetId=archiveMatch[1];action='account.archive';
+    const body=await jsonBody(req);({user:actor,session}=reauthenticate(req,{adminOnly:true}));fields(body,['reason']);if(body.reason!==undefined&&typeof body.reason!=='string')reject(400,'INVALID_INPUT','归档原因无效');
+    const reason=body.reason===undefined?'':text(body.reason,'归档原因',200,false);
+    const result=store.transact(state=>{
+     const target=state.users.find(user=>user.id===targetId);if(!target)reject(404,'USER_NOT_FOUND','账号不存在');
+     if(target.id===actor.id)reject(409,'CANNOT_ARCHIVE_SELF','不能归档当前登录账号');
+     if(target.archivedAt)reject(409,'ACCOUNT_ARCHIVED','该员工账号已归档');
+     const candidate={...target,disabled:true};if(target.roleIds.includes('superadmin'))guardLastAdmin(state,candidate);
+     target.disabled=true;target.archivedAt=new Date().toISOString();target.archivedBy=actor.id;target.archiveReason=reason||null;revoke(state,target);
+     audit(state,req,action,'success',actor,targetId,{archiveReason:target.archiveReason,archived:true});
+     return {user:expose(target),archived:true};
+    });
+    return respond(200,result);
+   }
    const roleMatch=pathname.match(/^\/v1\/admin\/roles\/([a-z0-9-]+)$/);
    if(roleMatch&&req.method==='PATCH'){
     const roleId=roleMatch[1];action='role.update';targetId='role:'+roleId;
@@ -152,8 +168,8 @@ function createAuthService(options){
    }
    const match=pathname.match(/^\/v1\/admin\/users\/([a-z0-9-]+)(\/reset-password)?$/);
    if(match){targetId=match[1];action=match[2]?'account.resetPassword':'account.update';admin(actor);let found=store.state.users.find(u=>u.id===targetId);if(!found)reject(404,'USER_NOT_FOUND','账号不存在');
-    if(match[2]&&req.method==='POST'){const body=await jsonBody(req);({user:actor,session}=reauthenticate(req,{adminOnly:true}));fields(body,[]);const password=initialPassword(),passwordHash=hashPassword(password);const user=store.transact(s=>{const target=s.users.find(u=>u.id===targetId);target.passwordHash=passwordHash;target.mustChangePassword=true;revoke(s,target);audit(s,req,action,'success',actor,targetId);return expose(target);});return respond(200,{user,initialPassword:password});}
-    if(!match[2]&&req.method==='PATCH'){const body=await jsonBody(req);({user:actor,session}=reauthenticate(req,{adminOnly:true}));found=store.state.users.find(u=>u.id===targetId);if(!found)reject(404,'USER_NOT_FOUND','账号不存在');fields(body,['name','roleIds','scope','disabled','additionalPermissions','deniedPermissions']);if(!Object.keys(body).length)reject(400,'NO_CHANGES','请指定修改内容');if(body.disabled!==undefined&&typeof body.disabled!=='boolean')reject(400,'INVALID_INPUT','停用状态无效');const changes={...normalizePolicy(body,found),...(body.name===undefined?{}:{name:text(body.name,'姓名')}),...(body.disabled===undefined?{}:{disabled:body.disabled})};const user=store.transact(s=>{const target=s.users.find(u=>u.id===targetId);const candidate={...target,...changes};if(target.roleIds.includes('superadmin'))guardLastAdmin(s,candidate);Object.assign(target,changes);revoke(s,target);audit(s,req,action,'success',actor,targetId,{roleIds:target.roleIds,scope:target.scope,additionalPermissions:target.additionalPermissions,deniedPermissions:target.deniedPermissions,disabled:target.disabled});return expose(target);});return respond(200,{user});}
+    if(match[2]&&req.method==='POST'){const body=await jsonBody(req);({user:actor,session}=reauthenticate(req,{adminOnly:true}));fields(body,[]);found=store.state.users.find(u=>u.id===targetId);if(found?.archivedAt)reject(409,'ACCOUNT_ARCHIVED','该员工账号已归档');const password=initialPassword(),passwordHash=hashPassword(password);const user=store.transact(s=>{const target=s.users.find(u=>u.id===targetId);target.passwordHash=passwordHash;target.mustChangePassword=true;revoke(s,target);audit(s,req,action,'success',actor,targetId);return expose(target);});return respond(200,{user,initialPassword:password});}
+    if(!match[2]&&req.method==='PATCH'){const body=await jsonBody(req);({user:actor,session}=reauthenticate(req,{adminOnly:true}));found=store.state.users.find(u=>u.id===targetId);if(!found)reject(404,'USER_NOT_FOUND','账号不存在');fields(body,['name','roleIds','scope','disabled','additionalPermissions','deniedPermissions']);if(!Object.keys(body).length)reject(400,'NO_CHANGES','请指定修改内容');if(body.disabled!==undefined&&typeof body.disabled!=='boolean')reject(400,'INVALID_INPUT','停用状态无效');if(found.archivedAt)reject(409,'ACCOUNT_ARCHIVED','已归档账号只可查看，不能修改或重新启用');const changes={...normalizePolicy(body,found),...(body.name===undefined?{}:{name:text(body.name,'姓名')}),...(body.disabled===undefined?{}:{disabled:body.disabled})};const user=store.transact(s=>{const target=s.users.find(u=>u.id===targetId);const candidate={...target,...changes};if(target.roleIds.includes('superadmin'))guardLastAdmin(s,candidate);Object.assign(target,changes);revoke(s,target);audit(s,req,action,'success',actor,targetId,{roleIds:target.roleIds,scope:target.scope,additionalPermissions:target.additionalPermissions,deniedPermissions:target.deniedPermissions,disabled:target.disabled});return expose(target);});return respond(200,{user});}
    }
    const operationMatch=pathname.match(/^\/v1\/operations\/([a-zA-Z]+\.[a-zA-Z]+)\/(preview|execute)$/);
    if(operationMatch){action=operationMatch[1];const operation=catalog.operations.find(x=>x.id===action);if(!operation)reject(404,'NOT_FOUND','未登记此操作');if(!currentPermissions(actor).includes(operation.permission))reject(403,'FORBIDDEN','没有此操作权限');}

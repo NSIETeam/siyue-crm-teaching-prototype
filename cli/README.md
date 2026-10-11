@@ -75,7 +75,7 @@ node cli/siyue-cli.cjs execute --plan /private/path/enroll.plan.json
 ```json
 {
   "name": "新校区",
-  "rooms": [{"name": "教室一", "capacity": 20}]
+  "rooms": [{"name": "教室一", "capacity": 20, "virtualSeats": 2}]
 }
 ```
 
@@ -87,6 +87,8 @@ node cli/siyue-cli.cjs plan campus.create \
 node cli/siyue-cli.cjs execute \
   --plan /private/path/campus-new.siyue-plan.json
 ```
+
+`virtualSeats` 是独立的非负整数，省略时按0处理；仅表示可临时增加的试课座位，不增加正式班级容量。CSV 校区模板也包含“虚拟座位”列。
 
 `plan` 读取当前 revision，在服务器上校验权限、输入与业务规则，输出计算结果并生成 `commit:false` 的计划文件，不提交业务。计划含操作、输入、操作者、服务器、revision、短时预览凭据及固定幂等键；文件按 0600 新建，拒绝覆盖。计划与输入最多 1 MB，不接受符号链接文件。
 

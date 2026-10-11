@@ -40,7 +40,7 @@ function parseAuditQuery(query){
 const lower=value=>String(value||'').toLowerCase();
 function systemRead(event){
  const action=lower(event.action);
- return ['audit.query','account.list','report.sales','report.teachers','sales.activity','makeup.candidates','session.attendance.roster'].includes(action)||/^(?:read|directory|staff\.directory|employee\.directory)\./.test(action);
+ return ['audit.query','account.list','report.sales','report.teachers','sales.activity','sales.followups','makeup.candidates','session.attendance.roster'].includes(action)||/^(?:read|directory|staff\.directory|employee\.directory)\./.test(action);
 }
 function attentionEvent(event){
  const outcome=lower(event.outcome),action=lower(event.action);
@@ -63,6 +63,7 @@ function outcomeLabel(value){
  return ({success:'成功',preview:'预览 · 未提交',replayed:'已去重',denied:'已拒绝',rejected:'已拒绝',failed:'失败',failure:'失败',error:'失败'})[outcome]||'已记录/未知';
 }
 function safeName(value){return typeof value==='string'&&value.trim()&&value.trim().length<=120?value.trim():undefined;}
+function safeReason(value){return typeof value==='string'&&value.trim()&&value.trim().length<=200&&!/[\u0000-\u001f\u007f]/.test(value)?value.trim():undefined;}
 function safePermissionList(value){if(!Array.isArray(value)||value.length>200)return undefined;const clean=value.filter(item=>typeof item==='string'&&item.length<=100&&/^[a-z][a-zA-Z0-9]*(?:\.[a-zA-Z0-9]+)+$/.test(item));return clean.length===value.length?[...new Set(clean)].sort():undefined;}
 function businessName(change,changes,state){
  if(change.collection==='orders'){
@@ -121,7 +122,9 @@ function selectAuditPage(events,directory,query,businessState){
    const permissionsAdded=event.action==='role.update'?safePermissionList(event.details?.permissionsAdded):undefined;
    const permissionsRemoved=event.action==='role.update'?safePermissionList(event.details?.permissionsRemoved):undefined;
    const affectedUsers=event.action==='role.update'&&Number.isSafeInteger(event.details?.affectedUsers)&&event.details.affectedUsers>=0?event.details.affectedUsers:undefined;
-   return {id:event.id,at:event.at,actorId:event.actorId??null,actorName:event.actorName||user?.name||null,...(targetId?{targetId,...(targetName?{targetName}:{})}:{}),action:event.action,outcome:event.outcome,outcomeLabel:outcomeLabel(event.outcome),category:category(event),attention:needsAttention,requestId:event.requestId,summary:{...(rawChanges.length?{changes}:{}),...(resultCount!==undefined?{resultCount}:{}),...(permissionsAdded?{permissionsAdded}:{}),...(permissionsRemoved?{permissionsRemoved}:{}),...(affectedUsers!==undefined?{affectedUsers}:{})}};
+   const archived=event.action==='account.archive'&&event.details?.archived===true?true:undefined;
+   const archiveReason=event.action==='account.archive'?safeReason(event.details?.archiveReason):undefined;
+   return {id:event.id,at:event.at,actorId:event.actorId??null,actorName:event.actorName||user?.name||null,...(targetId?{targetId,...(targetName?{targetName}:{})}:{}),action:event.action,outcome:event.outcome,outcomeLabel:outcomeLabel(event.outcome),category:category(event),attention:needsAttention,requestId:event.requestId,summary:{...(rawChanges.length?{changes}:{}),...(resultCount!==undefined?{resultCount}:{}),...(permissionsAdded?{permissionsAdded}:{}),...(permissionsRemoved?{permissionsRemoved}:{}),...(affectedUsers!==undefined?{affectedUsers}:{}),...(archived!==undefined?{archived}:{}),...(archiveReason?{archiveReason}:{})}};
   }),
   hasMore:rows.length>filters.count,
   nextBefore:rows.length>filters.count?page.at(-1)?.id||null:null,

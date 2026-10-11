@@ -96,6 +96,7 @@ test('audit views keep previews in all, suppress read noise, and flag relevant a
   {id:'list-ok',at:'2026-10-11T00:00:09.000Z',action:'account.list',outcome:'success'},
   {id:'report-ok',at:'2026-10-11T00:00:08.000Z',action:'report.sales',outcome:'success'},
   {id:'activity-ok',at:'2026-10-11T00:00:07.000Z',action:'sales.activity',outcome:'success'},
+  {id:'followups-ok',at:'2026-10-11T00:00:06.500Z',action:'sales.followups',outcome:'success'},
   {id:'roster-ok',at:'2026-10-11T00:00:06.000Z',action:'session.attendance.roster',outcome:'success'},
   {id:'makeup-ok',at:'2026-10-11T00:00:05.500Z',action:'makeup.candidates',outcome:'success'},
   {id:'refund-preview',at:'2026-10-11T00:00:05.000Z',action:'refund.submit',outcome:'preview'},
@@ -118,7 +119,7 @@ test('audit views keep previews in all, suppress read noise, and flag relevant a
  assert.equal(all.find(e=>e.id==='account-change').attention,true);
  assert.equal(all.find(e=>e.id==='account-change').category,'account');
  assert.equal(all.find(e=>e.id==='list-ok').attention,false);
- assert.equal(all.find(e=>e.id==='list-ok').category,'system');
+ assert.equal(all.find(e=>e.id==='list-ok').category,'system');assert.equal(all.find(e=>e.id==='followups-ok').attention,false);assert.equal(all.find(e=>e.id==='followups-ok').category,'system');
  for(const id of ['report-ok','activity-ok','roster-ok','makeup-ok']){assert.equal(all.find(e=>e.id===id).attention,false);assert.equal(all.find(e=>e.id===id).category,'system');}
 });
 test('audit business summaries expose historical names and order student name without other changed fields',()=>{

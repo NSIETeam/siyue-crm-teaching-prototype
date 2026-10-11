@@ -46,3 +46,4 @@
 #view [data-plan-draft] :is(.checkrow,.form-actions)>.btn{min-height:40px}
 #view [data-plan-draft] .table :is(input.input,select.select){min-width:160px}
 #view :is(.academic-edit-form,[data-plan-draft]) input[type=date]::-webkit-date-and-time-value{text-align:left}
+.room-virtual-help-icon{display:inline-grid;place-items:center;width:18px;height:18px;margin-left:3px;vertical-align:middle;color:#77879b;cursor:help}.room-virtual-help-icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}.room-virtual-help-icon:focus-visible{outline:2px solid #315deb;border-radius:50%;outline-offset:2px}

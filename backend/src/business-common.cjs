@@ -59,5 +59,11 @@ function getRecord(state,actor,collection,recordId,options={}){
  const row=state[collection]?.find(x=>x.id===recordId||collection==='leads'&&x.leadId===recordId);
  assert(row&&canAccess(state,actor,row,collection,options),'记录不存在或不在授权范围','NOT_FOUND',404);return row;
 }
+function canReadFormSubmission(actor,form,submission){
+ if(!actor||actor.disabled)return false;
+ if(actor.roleIds?.includes('superadmin')||submission.publisherId===actor.id)return true;
+ if(['pending','rejected'].includes(submission.status))return false;
+ return form.createdBy===actor.id||form.publishedBy===actor.id||form.settings?.ownerId===actor.id;
+}
 function context(state,actor,directory=[],extra={}){return {actor,now:new Date().toISOString(),id,require:p=>requirePermission(actor,p),get:(c,i,o)=>getRecord(state,actor,c,i,o),can:(r,k,o)=>canAccess(state,actor,r,k,o),assert,directory,...extra};}
-module.exports={fail,assert,id,requirePermission,emptyState,moneyMinor,canAccess,getRecord,context};
+module.exports={fail,assert,id,requirePermission,emptyState,moneyMinor,canAccess,getRecord,context,canReadFormSubmission};

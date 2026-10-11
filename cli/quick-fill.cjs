@@ -8,14 +8,14 @@ const aliases={
  '排课':'class.schedule','报名':'enrollment.create','批量报名':'enrollment.batchCreate','课程':'course.create','校区':'campus.create'
 };
 const flags={name:'name',phone:'phone',source:'source',grade:'grade',subject:'subject',campus:'campusId',course:'courseId',class:'classId',student:'studentId',teacher:'teacherId',owner:'ownerId',room:'room',capacity:'capacity',price:'priceYuan',reason:'reason'};
-const names={'班级名称':'name','教室名称':'name','姓名':'name','学生姓名':'name','手机号':'phone','家长手机号':'phone','年级':'grade','学科':'subject','来源':'source','备注':'note','校区':'campusId','课程':'courseId','课程名称':'courseId','班级':'classId','教室':'room','老师':'teacherId','容量':'capacity','学生':'studentId','优惠':'couponId','推荐人':'referrerStudentId','讲次':'lessonId','日期':'date','时间':'time','标题':'title','时长分钟':'durationMinutes'};
+const names={'班级名称':'name','教室名称':'name','姓名':'name','学生姓名':'name','手机号':'phone','家长手机号':'phone','年级':'grade','学科':'subject','来源':'source','备注':'note','校区':'campusId','课程':'courseId','课程名称':'courseId','班级':'classId','教室':'room','老师':'teacherId','容量':'capacity','虚拟座位':'virtualSeats','学生':'studentId','优惠':'couponId','推荐人':'referrerStudentId','讲次':'lessonId','日期':'date','时间':'time','标题':'title','时长分钟':'durationMinutes'};
 const batch={
  'enrollment.batchCreate':{key:'rows',columns:['学生','姓名','手机号','年级']},
  'class.batchCreate':{key:'items',columns:['班级名称','课程','校区','教室','老师','容量']},
  'class.schedule':{key:'sessions',columns:['讲次','日期','时间']},
  'lead.import':{key:'items',columns:['姓名','手机号','来源','校区','年级','学科']},
  'course.create':{key:'lessons',columns:['标题','时长分钟']},
- 'campus.create':{key:'rooms',columns:['教室名称','容量']}
+ 'campus.create':{key:'rooms',columns:['教室名称','容量','虚拟座位']}
 };
 const refs={campusId:'campuses',courseId:'courses',classId:'classes',targetClassId:'classes',studentId:'students',referrerStudentId:'students',originLeadId:'leads',leadId:'leads',teacherId:'directory',ownerId:'directory',staffId:'directory',employeeId:'directory',orderId:'orders',enrollmentId:'enrollments',refundId:'refunds',formId:'forms',couponId:'coupon'};
 function parseArguments(args){
