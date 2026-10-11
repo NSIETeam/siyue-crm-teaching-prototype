@@ -80,7 +80,88 @@
  function errorText(e){return String(e.message||'请求未完成').replace(/[A-Za-z][A-Za-z0-9]*/g,k=>labels[k]||k)}
  async function preview(){if(ui.busy||ui.uncertain||!ui.operation||!ui.data)return false;collectForm();const epoch=ui.epoch,op=ui.operation;if(op.id==='form.submit'&&!ui.draft.submissionId)ui.draft.submissionId=globalThis.crypto?.randomUUID?.()||'submission-'+Date.now()+'-'+Math.random().toString(36).slice(2);const input=clean(inputSchema(),ui.draft),errors=validate(inputSchema(),input);if(errors.length){ui.error=[...new Set(errors)].join('；');draw();return false}ui.busy=true;ui.error='';ui.preview=null;draw();try{if(op.id==='session.attendance.exceptions'&&(!ui.attendanceRoster||ui.attendanceRosterFor!==ui.draft.classId+'|'+ui.draft.sessionId)){ui.error='请先成功读取服务器当前名单，再预览异常考勤。';return false}const expectedRevision=ui.revision,result=await employeeAuth.request('v1/operations/'+encodeURIComponent(op.id)+'/preview',{method:'POST',body:{input,expectedRevision}});if(epoch!==ui.epoch)return false;if(!result.previewToken||!Number.isInteger(result.revision))throw Error('服务未返回有效预览，请重试');if(op.id==='session.attendance.exceptions'&&!Array.isArray(result.result?.roster))throw Error('服务器未返回当前名单预览，请刷新名单后重试');ui.preview={input,token:result.previewToken,revision:result.revision,result:result.result};ui.key=null;return true}catch(e){if(epoch!==ui.epoch)return false;ui.error=errorText(e);if(['REVISION_CONFLICT','STALE_REVISION'].includes(e.code))await refreshForRetry(epoch);return false}finally{if(epoch===ui.epoch){ui.busy=false;draw()}}}
  async function refreshForRetry(epoch){try{const r=await employeeAuth.request('v1/state');if(epoch===ui.epoch)hydrate(r)}catch{}}
- async function execute(){if(ui.busy||!ui.operation)return false;if(ui.preview&&!ui.uncertain){collectForm();if(JSON.stringify(clean(inputSchema(),ui.draft))!==JSON.stringify(ui.preview.input)){ui.preview=null;ui.key=null}}if(!ui.preview){ui.error='请先检查并预览，核对办理内容后再确认提交。';draw();return false}const epoch=ui.epoch,op=ui.operation,p=clone(ui.preview);let followupStudentId=null,committedAndHydrated=false;if(!ui.key)ui.key=globalThis.crypto?.randomUUID?.()||'web-'+Date.now()+'-'+Math.random().toString(36).slice(2);const key=ui.key;ui.busy=true;ui.error='';draw();try{const result=await employeeAuth.request('v1/operations/'+encodeURIComponent(op.id)+'/execute',{method:'POST',headers:{'Idempotency-Key':key},body:{input:p.input,previewToken:p.token,expectedRevision:p.revision}});if(epoch!==ui.epoch)return false;if(result.state)hydrate({...result,capabilities:ui.capabilities});else {const next=await employeeAuth.request('v1/state');if(epoch!==ui.epoch)return false;hydrate(next)}if(op.id==='student.create'){const reported=result.result?.student?.id;const matches=(ui.data?.students||[]).filter(student=>student.name===p.input.name&&student.phone===p.input.phone);followupStudentId=reported||(matches.length===1?matches[0].id:null) }ui.preview=null;ui.key=null;ui.uncertain=false;ui.operation=null;ui.draft={};const previous=ui.history.pop();restoreView(previous);state.page=previous?.page&&previous.page!=='businessOperation'?previous.page:'home';employeeAuth.restoreRoute?.(previous?.account);prepareEnrollmentPage();renderRoute();if(op.id!=='student.create')toast('已保存，平台数据已同步');if(op.id==='student.create')committedAndHydrated=true;return true}catch(e){if(epoch!==ui.epoch)return false;ui.error=errorText(e);ui.uncertain=!e.status||e.status>=500;if(ui.uncertain)ui.error+='；请重试确认提交结果，系统会使用同一办理编号避免重复。';if(['REVISION_CONFLICT','STALE_REVISION','PREVIEW_EXPIRED','INVALID_PREVIEW'].includes(e.code)){ui.preview=null;ui.key=null;ui.uncertain=false;await refreshForRetry(epoch)}return false}finally{if(epoch===ui.epoch){ui.busy=false;draw();if(committedAndHydrated&&op.id==='student.create'){const enrollment=ui.operations.find(item=>item.id==='enrollment.create');if(followupStudentId){if(permitted(enrollment)){if(open('enrollment.create',{studentId:followupStudentId}))toast('学生档案已创建，已打开报名分班');else toast('学生档案已创建，请到学生列表继续办理分班')}else toast('学生档案已创建；当前账号没有报名权限，请联系有权限的工作人员办理分班')}else toast(permitted(enrollment)?'学生档案已创建，请在学生列表继续办理分班':'学生档案已创建；当前账号没有报名权限，请联系有权限的工作人员办理分班')}}}}
+ function enrollmentCompletion(result,input,before){
+  const created=result?.result||{},students=ui.data?.students||[],orders=ui.data?.orders||[];
+  let studentId=created.student?.id||created.enrollment?.studentId||created.order?.studentId||input.studentId||null;
+  if(!studentId&&input.studentDraft){const matches=students.filter(row=>row.name===input.studentDraft.name&&row.phone===input.studentDraft.phone);if(matches.length===1)studentId=matches[0].id}
+  const student=students.find(row=>String(row.id)===String(studentId))||created.student||null;
+  studentId=student?.id||studentId;
+  const enrollmentId=created.enrollment?.id||created.enrollmentId||null;
+  const requestedOrderId=created.order?.id||created.orderId||null;
+  let order=requestedOrderId?orders.find(row=>String(row.id)===String(requestedOrderId))||null:null;
+  const matchesOrder=row=>String(row.studentId)===String(studentId)&&String(row.classId)===String(input.classId)&&(!enrollmentId||String(row.enrollmentId)===String(enrollmentId));
+  if(order&&!matchesOrder(order))order=null;
+  if(!order&&studentId&&input.classId){
+   const priorIds=new Set((before?.orders||[]).map(row=>String(row.id)));
+   const candidates=orders.filter(matchesOrder),newCandidates=candidates.filter(row=>!priorIds.has(String(row.id)));
+   const exact=newCandidates.length?newCandidates:candidates;
+   if(exact.length===1)order=exact[0];
+  }
+  return {student,studentId,order};
+ }
+ function routeAfterEnrollment(completion){
+  const {student,studentId,order}=completion||{};
+  const orderIndex=order&&ui.data?.orders?.findIndex(row=>String(row.id)===String(order.id)&&String(row.studentId)===String(studentId)&&String(row.classId)===String(order.classId));
+  const canReadOrders=typeof permissionCanVisit==='function'&&permissionCanVisit('financeArrears')&&employeeAuth.has?.('order.read');
+  const orderPage=Number.isInteger(orderIndex)&&orderIndex>=0&&canReadOrders?(outstandingOrder(order)?'financeArrears':permissionCanVisit('orders')?'orders':null):null;
+  ui.operation=null;ui.draft={};ui.preview=null;ui.key=null;ui.uncertain=false;ui.error='';
+  if(orderPage&&go(orderPage)){
+   ui.query=student?.name||'';ui.expanded='orders:'+orderIndex;draw();
+   toast(orderPage==='financeArrears'?'报名已完成，已定位待收款订单':Number(order.totalCents??order.amountCents??0)===0?'报名已完成，已定位0元订单，请按流程确认后激活':'报名已完成，已定位报名订单');return true;
+  }
+  if(studentId&&student&&typeof permissionCanVisit==='function'&&permissionCanVisit('studentDetail')&&window.businessAPI?.showStudent?.(studentId)){
+   if(order&&window.SiyueBusinessPresenter?.studentTab)window.SiyueBusinessPresenter.studentTab(studentId,'orders');
+   toast(order?'报名已完成；当前账号无法查看收费订单，已打开学生档案':'报名已完成，已打开学生档案');return true;
+  }
+  const page=['enroll','quickEnroll'].find(candidate=>typeof permissionCanVisit==='function'&&permissionCanVisit(candidate));
+  if(page&&go(page)){toast('报名已完成；当前账号无法查看订单或学生档案，已返回报名页');return true;}
+  toast('报名已完成；当前账号无法查看订单、学生档案或报名页');return false;
+ }
+ async function execute(){
+  if(ui.busy||!ui.operation)return false;
+  if(ui.preview&&!ui.uncertain){collectForm();if(JSON.stringify(clean(inputSchema(),ui.draft))!==JSON.stringify(ui.preview.input)){ui.preview=null;ui.key=null}}
+  if(!ui.preview){ui.error='请先检查并预览，核对办理内容后再确认提交。';draw();return false}
+  const epoch=ui.epoch,op=ui.operation,p=clone(ui.preview),before=op.id==='enrollment.create'?clone(ui.data):null;
+  let followupStudentId=null,committedAndHydrated=false,enrollmentFollowup=null;
+  if(!ui.key)ui.key=globalThis.crypto?.randomUUID?.()||'web-'+Date.now()+'-'+Math.random().toString(36).slice(2);
+  const key=ui.key;ui.busy=true;ui.error='';draw();
+  try{
+   const result=await employeeAuth.request('v1/operations/'+encodeURIComponent(op.id)+'/execute',{method:'POST',headers:{'Idempotency-Key':key},body:{input:p.input,previewToken:p.token,expectedRevision:p.revision}});
+   if(epoch!==ui.epoch)return false;
+   if(result.state)hydrate({...result,capabilities:ui.capabilities});
+   else {const next=await employeeAuth.request('v1/state');if(epoch!==ui.epoch)return false;hydrate(next)}
+   if(op.id==='student.create'){
+    const reported=result.result?.student?.id;
+    const matches=(ui.data?.students||[]).filter(student=>student.name===p.input.name&&student.phone===p.input.phone);
+    followupStudentId=reported||(matches.length===1?matches[0].id:null);
+   }
+   if(op.id==='enrollment.create')enrollmentFollowup=enrollmentCompletion(result,p.input,before);
+   ui.preview=null;ui.key=null;ui.uncertain=false;ui.operation=null;ui.draft={};
+   const previous=ui.history.pop();restoreView(previous);
+   state.page=previous?.page&&previous.page!=='businessOperation'?previous.page:'home';
+   employeeAuth.restoreRoute?.(previous?.account);prepareEnrollmentPage();renderRoute();
+   if(!['student.create','enrollment.create'].includes(op.id))toast('已保存，平台数据已同步');
+   if(['student.create','enrollment.create'].includes(op.id))committedAndHydrated=true;
+   return true;
+  }catch(e){
+   if(epoch!==ui.epoch)return false;
+   ui.error=errorText(e);ui.uncertain=!e.status||e.status>=500;
+   if(ui.uncertain)ui.error+='；请重试确认提交结果，系统会使用同一办理编号避免重复。';
+   if(['REVISION_CONFLICT','STALE_REVISION','PREVIEW_EXPIRED','INVALID_PREVIEW'].includes(e.code)){ui.preview=null;ui.key=null;ui.uncertain=false;await refreshForRetry(epoch)}
+   return false;
+  }finally{
+   if(epoch===ui.epoch){
+    ui.busy=false;draw();
+    if(committedAndHydrated&&op.id==='student.create'){
+     const enrollment=ui.operations.find(item=>item.id==='enrollment.create');
+     if(followupStudentId){
+      if(permitted(enrollment)){if(open('enrollment.create',{studentId:followupStudentId}))toast('学生档案已创建，已打开报名分班');else toast('学生档案已创建，请到学生列表继续办理分班')}
+      else toast('学生档案已创建；当前账号没有报名权限，请联系有权限的工作人员办理分班');
+     }else toast(permitted(enrollment)?'学生档案已创建，请在学生列表继续办理分班':'学生档案已创建；当前账号没有报名权限，请联系有权限的工作人员办理分班');
+    }else if(committedAndHydrated&&op.id==='enrollment.create')routeAfterEnrollment(enrollmentFollowup);
+   }
+  }
+ }
  function attendancePreviewHtml(){const result=ui.preview?.result||{},roster=result.roster||[],attendance=Array.isArray(result.attendance)?result.attendance:result.attendance?.rows||[],statusById=new Map(attendance.map(x=>[x.studentId,x.status])),fallback=new Map((ui.preview?.input?.exceptions||[]).map(x=>[x.studentId,x.status]));return `<p class="notice">服务器预览确认的当前课次名单，共 ${roster.length} 人；未列异常的学生按正常到课记录。</p><div class="table-wrap"><table class="table business-table"><thead><tr><th>学生</th><th>预览考勤</th></tr></thead><tbody>${roster.map(row=>{const id=row.studentId||row.id,status=statusById.get(id)||fallback.get(id)||'attended';return `<tr><td>${html(row.name||nameOf('students',id))}</td><td>${html(({attended:'正常到课',leave:'请假',absent:'旷课'})[status]||status)}</td></tr>`}).join('')||'<tr><td colspan="2" class="empty">当前名单为空</td></tr>'}</tbody></table></div>${result.summary?resultHtml(result.summary):''}`}
  function formHtml(){const schema=inputSchema(),op=ui.operation,builder=window.SiyueBusinessFormBuilder?.render?.(academicContext({html}))??window.SiyueBusinessDecor?.renderForm?.(academicContext({html}))??window.SiyueBusinessEnrollment?.renderForm?.(academicContext({html}));return `<section class="card pad business-form ${op.id.startsWith('store.design')?(window.SiyueBusinessDecor?'business-decor-mature':'business-decor-form'):''}">${op.id.startsWith('store.design')&&!window.SiyueBusinessDecor?`<aside id="business-phone">${phoneHtml(ui.draft.decor)}</aside>`:''}<div class="toolbar"><strong>${html(op.label)}</strong><button type="button" class="btn" onclick="businessAPI.back()" ${ui.busy||ui.uncertain?'disabled':''}>取消</button></div>${['order.confirmReceipt','refund.submit'].includes(op.id)?'<p class="notice">仅在已核实实际线下收付凭据后确认。本操作记录人工到账结果，不会调用支付渠道。</p>':''}<form id="business-form" onsubmit="event.preventDefault();businessAPI.preview()">${['enrollment.create','enrollment.batchCreate'].includes(op.id)?window.SiyueBusinessEnrollment?.renderTabs?.({...academicContext(),permitted:id=>permitted(ui.operations.find(op=>op.id===id))})||'':''}${op.id==='enrollment.batchCreate'&&!window.SiyueBusinessEnrollment?`<div class="business-tabs"><button type="button" class="${!ui.batchEnrollRows?'active':''}" onclick="businessAPI.batchMode(false)">选择已有学生</button><button type="button" class="${ui.batchEnrollRows?'active':''}" onclick="businessAPI.batchMode(true)">逐人填写报名</button></div>`:''}${builder??`<div class="business-form-grid">${Object.entries(schema.properties||{}).map(([k,s])=>field(k,s,[k],(schema.required||[]).includes(k))).join('')}</div>`}${window.SiyueAcademicPlanner?.extra?.({operation:ui.operation,draft:ui.draft,data:ui.data,disabled:ui.busy||ui.uncertain})||''}<p class="business-error" role="alert">${html(ui.error)}</p><div id="business-preview">${ui.preview?`<section class="business-preview"><h3>确认办理内容</h3>${ui.operation.id==='session.attendance.exceptions'?attendancePreviewHtml():resultHtml(ui.preview.result||ui.preview.input)||'<p>内容已检查，请确认提交。</p>'}</section>`:''}</div><p id="business-preview-hint" class="help">${ui.preview?'请核对办理内容，再确认提交。':'请先检查并预览，核对后确认提交。'}</p><div class="form-actions business-submit-actions"><button type="submit" class="btn" ${ui.busy||ui.uncertain?'disabled':''}>${ui.busy?'正在处理…':'检查并预览'}</button><button type="button" id="business-confirm" class="btn primary" ${!ui.preview||ui.busy?'disabled':''} onclick="businessAPI.execute()">${ui.uncertain?'重试确认提交结果':'确认提交'}</button><button type="button" class="btn" onclick="businessAPI.reloadOptions()" ${ui.busy||ui.uncertain?'disabled':''}>刷新可选数据</button>${op.id.startsWith('store.design')?'<button type="button" class="btn" onclick="businessAPI.restoreDecor()">恢复已保存草稿</button>':''}</div></form></section>`}
  function seedFor(kind,row,op){const seed={};if(idFields[kind]){seed[idFields[kind]]=row.id||row.leadId;const plural=idFields[kind].replace(/Id$/,'Ids');if(op.inputSchema?.properties?.[plural])seed[plural]=[row.id||row.leadId]}if(op.id==='class.schedule')seed.sessions=clone(row.schedule||[]);if(op.id==='order.confirmReceipt')seed.amountCents=Math.max(0,Number(row.amountCents||0)-Number(row.paidCents||0));if(['coupon','group','joint'].includes(kind))seed.type=kind;if(op.id.endsWith('.update')){seed.patch={};const props=op.inputSchema?.properties?.patch?.properties;if(props)for(const k of Object.keys(props))if(row[k]!==undefined)seed.patch[k]=clone(row[k]);else {}else for(const k of Object.keys(op.inputSchema?.properties||{}))if(row[k]!==undefined)seed[k]=clone(row[k]);if(kind==='campuses'&&seed.patch)seed.patch.rooms=clone(row.roomDetails||[]);if(op.inputSchema?.properties?.expectedVersion)seed.expectedVersion=row.version;}return seed}

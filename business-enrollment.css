@@ -17,6 +17,7 @@
 .enrollment-batch-row .subcard-head { display: flex; align-items: center; justify-content: space-between; }
 .enrollment-entry .tabs { margin-bottom: 0; }
 .enrollment-form .steps { margin-top: 0; }
+.enrollment-form .select { box-sizing: border-box; width: 100%; min-width: 0; height: 40px; min-height: 40px; padding-right: 36px; -webkit-appearance: none; appearance: none; background-color: #fff; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2364778b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3 6 5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 11px center; background-size: 14px 14px; }
 @media (max-width: 700px) {
   .enrollment-form .steps { justify-content: flex-start; gap: 5px; max-width: 100%; overflow-x: auto; overflow-y: hidden; padding: 16px 6px; overscroll-behavior-x: contain; }
   .enrollment-form .step-line { width: 22px; flex: 0 0 22px; }

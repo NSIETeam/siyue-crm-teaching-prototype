@@ -178,6 +178,95 @@ test('existing student radio selection survives form collection and enrolls only
 
 test('navigation and opening another operation retain DOM-only enrollment autofill in back history',async()=>{const b=await enrollmentFormFixture();try{let dom=mountBusinessControls(b);dom.find(['studentDraft','name']).value='返回仍保留';dom.find(['studentDraft','phone']).value='13800000321';b.run("nav('course')");b.lists.set('#business-form [data-business-path]',[]);b.run('businessAPI.back()');dom=mountBusinessControls(b);assert.equal(dom.find(['studentDraft','name']).value,'返回仍保留');assert.equal(dom.find(['studentDraft','phone']).value,'13800000321');dom.find(['studentDraft','name']).value='切换操作仍保留';b.run("businessAPI.open('lead.create')");mountBusinessControls(b);b.run('businessAPI.back()');dom=mountBusinessControls(b);assert.equal(dom.find(['studentDraft','name']).value,'切换操作仍保留');assert.equal(dom.find(['studentDraft','phone']).value,'13800000321');assert.equal(await b.run('businessAPI.preview()'),true,b.run('businessAPI.status().error'));mountBusinessControls(b);assert.equal(await b.run('businessAPI.execute()'),true);assert.equal(b.store.snapshot().state.students[0].name,'切换操作仍保留')}finally{b.store.close()}});
 
+async function prepareEnrollmentRecords(b,prefix='报名完成'){
+ let state=await b.commit('campus.create',{name:prefix+'校区',rooms:[{name:'A教室',capacity:20}]});
+ const campusId=state.campuses[0].id;
+ state=await b.commit('course.create',{name:prefix+'数学',grade:'4年级',subject:'数学',priceCents:12800,lessons:[{title:'第一讲',durationMinutes:60}]});
+ state=await b.commit('class.create',{name:prefix+'班',courseId:state.courses[0].id,campusId,teacherId:b.teacher.id,room:'A教室',capacity:20});
+ state=await b.commit('student.create',{name:prefix+'学生',phone:'13800000771',grade:'4年级',campusId});
+ return {classId:state.classes.at(-1).id,studentId:state.students.at(-1).id,studentName:state.students.at(-1).name};
+}
+function restrictedEnrollmentPermissions({studentRead=false,orderRead=false}={}){
+ const registry=['academic','crm','commerce'].flatMap(name=>require('../backend/src/business-'+name+'.cjs').operations);
+ return [...new Set([...registry.map(op=>op.permission).filter(permission=>permission&&permission!=='student.archive'),'settings.read','course.read','class.read','schedule.read',...(studentRead?['student.read']:[]),...(orderRead?['order.read']:[])])];
+}
+test('single enrollment success locates only its own outstanding order and back skips the submitted draft',async()=>{
+ const b=await realBusiness();
+ try{
+  const unrelated=await prepareEnrollmentRecords(b,'其他');
+  await b.commit('enrollment.create',{studentId:unrelated.studentId,classId:unrelated.classId});
+  const target=await prepareEnrollmentRecords(b,'目标');
+  b.run("nav('students');businessAPI.open('enrollment.create',"+JSON.stringify({studentId:target.studentId,classId:target.classId})+")");
+  assert.equal(await b.run('businessAPI.preview()'),true,b.run('businessAPI.status().error'));
+  assert.equal(await b.run('businessAPI.execute()'),true,b.run('businessAPI.status().error'));
+  assert.equal(b.run('state.page'),'financeArrears');
+  const expanded=b.elements.get('#view').innerHTML.match(/<tr class="business-expanded"[\s\S]*?<\/tr>/g)||[];
+  assert.equal(expanded.length,1,'only one order is expanded');
+  assert.match(expanded[0],/目标学生/);
+  assert.match(b.elements.get('#view').innerHTML,/目标学生/);
+  assert.match(b.elements.get('#view').innerHTML,/business-expanded/);
+  assert.match(expanded[0],/获取在线收款入口/);
+  assert.match(expanded[0],/确认线下收款/);
+  const targetOrder=b.store.snapshot().state.orders.find(row=>row.studentId===target.studentId&&row.classId===target.classId);
+  assert.equal(targetOrder.paidCents,0,'navigation does not confirm payment');
+  assert.equal(b.run('businessAPI.status().operation'),null);
+  b.run('businessAPI.back()');
+  assert.equal(b.run('state.page'),'students');
+  assert.equal(b.run('businessAPI.status().operation'),null,'back does not restore the submitted enrollment form');
+  assert.doesNotMatch(b.elements.get('#view').innerHTML,/id="business-form"/);
+ }finally{b.store.close()}
+});
+
+test('idempotent enrollment replay resolves the committed order from fresh state',async()=>{
+ const b=await realBusiness();
+ try{
+  const target=await prepareEnrollmentRecords(b,'重放');
+  b.run("businessAPI.open('enrollment.create',"+JSON.stringify({studentId:target.studentId,classId:target.classId})+")");
+  assert.equal(await b.run('businessAPI.preview()'),true,b.run('businessAPI.status().error'));
+  const originalFetch=b.ctx.fetch,keys=[];let failStateOnce=false;
+  b.respond(async(url,options={})=>{
+   const path=String(url);
+   if(path.includes('/operations/enrollment.create/execute'))keys.push(options.headers?.['Idempotency-Key']);
+   if(failStateOnce&&path.endsWith('/v1/state')){failStateOnce=false;return response({code:'TEMPORARY_STATE_FAILURE',message:'temporary state read failure'},503)}
+   return originalFetch(url,options);
+  });
+  failStateOnce=true;
+  assert.equal(await b.run('businessAPI.execute()'),false);
+  assert.equal(b.store.snapshot().state.orders.length,1,'first request committed once before state refresh failed');
+  assert.equal(await b.run('businessAPI.execute()'),true,b.run('businessAPI.status().error'));
+  assert.deepEqual(keys,[keys[0],keys[0]],'replay reused the same idempotency key');
+  assert.equal(b.run('state.page'),'financeArrears');
+  const expanded=b.elements.get('#view').innerHTML.match(/<tr class="business-expanded"[\s\S]*?<\/tr>/g)||[];
+  assert.equal(expanded.length,1);
+  assert.match(expanded[0],/重放学生/);
+  assert.match(b.elements.get('#view').innerHTML,/重放学生/);
+  assert.match(b.messages.at(-1),/已定位待收款订单/);
+ }finally{b.store.close()}
+});
+
+test('enrollment completion falls back to the student archive or enrollment page by view permission',async()=>{
+ const archived=await realBusiness({permissions:restrictedEnrollmentPermissions({studentRead:true})});
+ try{
+  const target=await prepareEnrollmentRecords(archived,'档案回退');
+  archived.run("businessAPI.open('enrollment.create',"+JSON.stringify({studentId:target.studentId,classId:target.classId})+")");
+  assert.equal(await archived.run('businessAPI.preview()'),true,archived.run('businessAPI.status().error'));
+  assert.equal(await archived.run('businessAPI.execute()'),true,archived.run('businessAPI.status().error'));
+  assert.equal(archived.run('state.page'),'studentDetail');
+  assert.match(archived.elements.get('#view').innerHTML,/档案回退学生/);
+  assert.match(archived.messages.at(-1),/无法查看收费订单/);
+ }finally{archived.store.close()}
+ const enrollment=await realBusiness({permissions:restrictedEnrollmentPermissions()});
+ try{
+  const target=await prepareEnrollmentRecords(enrollment,'报名页回退');
+  enrollment.run("businessAPI.open('enrollment.create',"+JSON.stringify({studentId:target.studentId,classId:target.classId})+")");
+  assert.equal(await enrollment.run('businessAPI.preview()'),true,enrollment.run('businessAPI.status().error'));
+  assert.equal(await enrollment.run('businessAPI.execute()'),true,enrollment.run('businessAPI.status().error'));
+  assert.equal(enrollment.run('state.page'),'enroll');
+  assert.match(enrollment.messages.at(-1),/无法查看订单或学生档案，已返回报名页/);
+  assert.doesNotMatch(enrollment.elements.get('#view').innerHTML,new RegExp(`value="${target.studentId}"[^>]*checked`),'fallback does not restore the submitted student selection');
+ }finally{enrollment.store.close()}
+});
+
 test('student creation opens the existing enrollment form with the committed server student id and preserves back history across idempotent retry',async()=>{
  const b=await realBusiness();
  try{
