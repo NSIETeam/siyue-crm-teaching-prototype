@@ -48,10 +48,23 @@ function canAccess(state,actor,record,kind,options={}){
   if(k==='forms')return record.createdBy===actor.id||record.publishedBy===actor.id||read&&record.published===true;
   const assigned=c=>c&&(c.teacherId===actor.id||c.teacherIds?.includes(actor.id)||c.schedule?.some(s=>s.teacherId===actor.id||s.substituteTeacherId===actor.id));
   if(k==='staff')return record.id===actor.id;
-  if(assigned(klass)||record.teacherId===actor.id||record.substituteTeacherId===actor.id)return true;
-  const studentId=k==='students'?record.id:record.studentId;
-  if(studentId&&state.classes.some(c=>assigned(c)&&(c.studentIds?.includes(studentId)||state.enrollments.some(e=>e.studentId===studentId&&e.classId===c.id&&e.status!=='withdrawn'))))return true;
-  return !!(studentId&&state.sessionAdjustments.some(a=>['active','completed'].includes(a.status)&&(a.studentId===studentId||state.enrollments.some(e=>e.id===a.enrollmentId&&e.studentId===studentId))&&state.classes.some(c=>c.id===a.targetClassId&&(c.schedule||[]).some(s=>s.id===a.targetSessionId&&(s.substituteTeacherId||s.teacherId||c.teacherId)===actor.id))));
+  // A shared student grants access to the student profile, not to every course
+  // that student attends. Academic and financial records keep their own scope.
+  if(k==='students'){
+   const studentId=record.id;
+   if(state.classes.some(c=>assigned(c)&&(c.studentIds?.includes(studentId)||state.enrollments.some(e=>e.studentId===studentId&&e.classId===c.id&&['active','pending'].includes(e.status)))))return true;
+   return state.sessionAdjustments.some(a=>['active','completed'].includes(a.status)&&(a.studentId===studentId||state.enrollments.some(e=>e.id===a.enrollmentId&&e.studentId===studentId))&&state.classes.some(c=>c.id===a.targetClassId&&(c.schedule||[]).some(s=>s.id===a.targetSessionId&&(s.substituteTeacherId||s.teacherId||c.teacherId)===actor.id)));
+  }
+  const sessionAssigned=(classId,sessionId)=>{const c=state.classes.find(c=>c.id===classId),s=c?.schedule?.find(s=>s.id===sessionId);return !!(c&&(sessionId?s&&(s.substituteTeacherId||s.teacherId||c.teacherId)===actor.id:assigned(c)));};
+  if(k==='sessionAdjustments')return sessionAssigned(record.sourceClassId,record.sourceSessionId)||sessionAssigned(record.targetClassId,record.targetSessionId);
+  if(['attendance','consumptions'].includes(k)){
+   // Preserve historical attribution when the teacher or class later changes.
+   if(record.substituteTeacherId||record.teacherId)return (record.substituteTeacherId||record.teacherId)===actor.id;
+   return sessionAssigned(record.classId,record.sessionId);
+  }
+  const enrollment=record.enrollmentId&&state.enrollments.find(e=>e.id===record.enrollmentId);
+  const related=klass||(order&&state.classes.find(c=>c.id===order.classId))||(enrollment&&state.classes.find(c=>c.id===enrollment.classId));
+  return !!assigned(related);
  }
  return false;
 }

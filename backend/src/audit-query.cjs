@@ -83,6 +83,37 @@ function businessName(change,changes,state){
  if(current)return {name:current};
  return {};
 }
+// Apply data scope before search and pagination. Audit permission never expands
+// the employee's record scope, including when an all-campus actor made the change.
+function scopedAuditEvents(events,actor,directory=[],businessState){
+ if(!actor||actor.disabled)return [];
+ if(actor.scope?.type==='all')return events;
+ const {canAccess}=require('./business-common.cjs');
+ const users=new Map(directory.map(user=>[user.id,user]));
+ const withinUser=id=>{
+  if(id===actor.id)return true;
+  if(actor.scope?.type!=='campus')return false;
+  const user=users.get(id),ids=user?.scope?.campusIds;
+  return user?.scope?.type==='campus'&&Array.isArray(ids)&&ids.length>0&&ids.every(id=>actor.scope.campusIds.includes(id));
+ };
+ return events.flatMap(event=>{
+  const raw=Array.isArray(event.details?.changes)?event.details.changes:[];
+  const changes=raw.filter(change=>{
+   if(!change||typeof change.id!=='string'||!Array.isArray(businessState?.[change.collection]))return false;
+   const row=businessState[change.collection].find(row=>row.id===change.id||row.leadId===change.id)||change.after||change.before;
+   return !!row&&canAccess(businessState,actor,row,change.collection,{access:'read'});
+  });
+  if(raw.length){
+   // Retain an employee's own operation metadata, but no hidden target or counts.
+   if(!changes.length&&event.actorId!==actor.id)return [];
+   const details={...event.details,changes};
+   if(changes.length!==raw.length)delete details.resultCount;
+   return [{...event,details}];
+  }
+  if(event.targetId?!withinUser(event.targetId):!withinUser(event.actorId))return [];
+  return [event];
+ });
+}
 function selectAuditPage(events,directory,query,businessState){
  const filters=parseAuditQuery(query);
  const users=new Map((directory||[]).filter(x=>x&&x.id).map(x=>[x.id,x]));
@@ -131,4 +162,4 @@ function selectAuditPage(events,directory,query,businessState){
  };
 }
 
-module.exports={AuditQueryError,parseAuditQuery,selectAuditPage};
+module.exports={AuditQueryError,parseAuditQuery,selectAuditPage,scopedAuditEvents};

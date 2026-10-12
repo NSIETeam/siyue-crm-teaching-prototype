@@ -4,7 +4,7 @@ const {AuthStore}=require('./auth-store.cjs');
 const {createCaptchaService}=require('./auth-captcha.cjs');
 const {hashPassword,verifyPassword,initialPassword,strongPassword,tokenHash,generateUsername}=require('./auth-credentials.cjs');
 const {roles,permissions,reserved,normalizePolicy,publicUser,effectivePermissions,publicRoles,normalizeRolePermissions}=require('./auth-policy.cjs');
-const {selectAuditPage}=require('./audit-query.cjs');
+const {selectAuditPage,scopedAuditEvents}=require('./audit-query.cjs');
 const catalog=require('../contracts/operations.json');
 const frontend=require('../../cli/operations.json');
 class HttpError extends Error{constructor(status,code,message){super(message);this.status=status;this.code=code;}}
@@ -115,7 +115,7 @@ function createAuthService(options){
    if(pathname==='/v1/admin/audit'&&req.method==='GET'){
     action='audit.query';if(!actor.roleIds.includes('superadmin')&&!currentPermissions(actor).includes('audit.read'))reject(403,'FORBIDDEN','无操作日志查看权限');
     const query=new URL(req.url,'http://local').searchParams;
-    const result=selectAuditPage(store.state.audit.slice().reverse(),store.state.users.map(user=>expose(user)),query,store.state);
+    const result=selectAuditPage(scopedAuditEvents(store.state.audit.slice().reverse(),expose(actor),store.state.users.map(user=>expose(user))),store.state.users.map(user=>expose(user)),query,store.state);
     writeAudit(req,action,'success',actor,null,{resultCount:result.events.length});return respond(200,result);
    }
    const archiveMatch=pathname.match(/^\/v1\/admin\/users\/([a-z0-9-]+)\/archive$/);

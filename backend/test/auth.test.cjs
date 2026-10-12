@@ -62,7 +62,8 @@ test('audit supports bounded actor and action-prefix search with safe projection
  const listAll=await call(new URLSearchParams({view:'all',action:'account.list'}).toString());
  const listActivity=await call(new URLSearchParams({view:'activity',action:'account.list'}).toString());
  const listAttention=await call(new URLSearchParams({view:'attention',action:'account.list'}).toString());
- assert.ok(listAll.body.events.length>=1);assert.equal(listActivity.body.events.length,0);assert.equal(listAttention.body.events.length,0);
+ assert.equal(listAll.body.events.length,0);assert.equal(listActivity.body.events.length,0);assert.equal(listAttention.body.events.length,0);
+ const adminList=await f.call(admin,'/v1/admin/audit?view=all&action=account.list');assert.ok(adminList.body.events.length>=1);
  const accountUpdate=accountPrefix.body.events.find(e=>e.action==='account.update'&&e.targetId===created.user.id);
  assert.ok(accountUpdate);assert.equal(accountUpdate.targetName,'审计姓名检索');
  const event=first.body.events[0];assert.deepEqual(Object.keys(event).sort(),['action','actorId','actorName','at','attention','category','id','outcome','outcomeLabel','requestId','summary','targetId','targetName'].sort());
@@ -234,6 +235,26 @@ test('role permission edits immediately affect live sessions and preserve user o
  const plainMe=await f.call(plainToken,'/v1/auth/me');assert.equal(plainMe.status,200);assert.ok(!plainMe.body.user.permissions.includes('lead.follow'));assert.ok(plainMe.body.user.permissions.includes('order.confirmReceipt'));
  assert.equal((await f.call(token,'/v1/operations/lead.follow/execute','POST',{})).status,403);assert.equal((await f.call(plainToken,'/v1/operations/order.confirmReceipt/execute','POST',{})).status,501);
  const audit=await f.call(admin,'/v1/admin/audit?action=role.update&view=all');assert.equal(audit.status,200);const event=audit.body.events[0];assert.equal(event.targetId,'role:sales');assert.equal(event.targetName,'销售');assert.equal(event.attention,true);assert.deepEqual(event.summary.permissionsAdded,['order.confirmReceipt']);assert.deepEqual(event.summary.permissionsRemoved,['lead.follow']);assert.equal(event.summary.affectedUsers,2);assert.equal(event.details,undefined);assert.equal(event.ip,undefined);
+});
+test('role edits do not revive an expired session by advancing its version',async t=>{
+ const f=await fixture(t),admin=await adminReady(f);
+ const remembered=await browserSignIn(f,newPassword,true);assert.equal(remembered.status,200);
+ const adminHeaders=browserHeaders(remembered),created=await employee(f,admin),token=await activate(f,created);
+ const tokenHash=require('../src/auth-credentials.cjs').tokenHash;
+ const before=JSON.parse(fs.readFileSync(f.file,'utf8'));
+ const originalSession=before.sessions.find(session=>session.tokenHash===tokenHash(token));assert.ok(originalSession);
+ const now=Date.now;
+ try{
+  Date.now=()=>now()+9*60*60*1000;
+  const roles=await request(f.server,'/v1/roles','GET',undefined,adminHeaders);assert.equal(roles.status,200);
+  const sales=roles.body.roles.find(role=>role.id==='sales');
+  const updated=await request(f.server,'/v1/admin/roles/sales','PATCH',{permissions:sales.permissions.filter(value=>value!=='lead.follow'),expectedVersion:sales.version},adminHeaders);
+  assert.equal(updated.status,200,JSON.stringify(updated.body));
+  const after=JSON.parse(fs.readFileSync(f.file,'utf8'));
+  const storedSession=after.sessions.find(session=>session.tokenHash===tokenHash(token));
+  assert.equal(storedSession.version,originalSession.version);assert.equal(storedSession.expiresAt,originalSession.expiresAt);
+ }finally{Date.now=now;}
+ assert.equal((await f.call(token,'/v1/auth/me')).status,401);
 });
 test('role edits enforce admin and CSRF, reserved permission and version checks, and no-op writes nothing',async t=>{
  const f=await fixture(t),admin=await adminReady(f),created=await employee(f,admin),token=await activate(f,created),rolesResponse=await f.call(admin,'/v1/roles'),sales=rolesResponse.body.roles.find(item=>item.id==='sales');
