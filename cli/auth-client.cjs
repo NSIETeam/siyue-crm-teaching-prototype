@@ -14,4 +14,15 @@ function sameSessionOnDisk(expected,env){try{const current=readSession(env);retu
 function clearSessionIfCurrent(expected,env){if(sameSessionOnDisk(expected,env))clearSession(env)}
 async function request(server,endpoint,{token,method='GET',body,idempotencyKey}={}){const base=serverURL(server),url=new URL(endpoint.replace(/^\//,''),base);if(url.origin!==new URL(base).origin||!url.pathname.startsWith(new URL(base).pathname))throw failure('INVALID_ENDPOINT','接口不属于登录服务器');let r;try{r=await fetch(url,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers:{Accept:'application/json',...(body?{'Content-Type':'application/json'}:{}),...(token?{Authorization:'Bearer '+token}:{}),...(idempotencyKey?{'Idempotency-Key':idempotencyKey}:{})},...(body?{body:JSON.stringify(body)}:{})})}catch{throw failure('CONNECTION_FAILED','无法安全连接服务器；若提交结果不明，请用原幂等键重试')}let data;try{data=await r.json()}catch{throw failure('INVALID_RESPONSE','服务器未返回有效 JSON')}if(!r.ok){const code=typeof data.error==='string'?data.error:data.error?.code||data.code||'REQUEST_FAILED';const message=({SESSION_EXPIRED:'会话已失效，请重新登录',UNAUTHENTICATED:'账号、密码或会话无效，请重新登录',INVALID_CREDENTIALS:'账号或密码错误',PASSWORD_CHANGE_REQUIRED:'请先运行 siyue-cli passwd 修改初始密码',FORBIDDEN:'当前账号无此权限',RATE_LIMITED:'请求过于频繁，请稍后重试'})[code]||(typeof data.message==='string'?data.message.slice(0,600):'请求被服务器拒绝');throw Object.assign(failure(code,message),{status:r.status})}return data;}
 async function authenticated(endpoint,options={},env=process.env){const s=readSession(env),configKey=path.resolve(configDirectory(env)),fingerprint=sessionFingerprint(s),bound=invocationSessions.get(configKey);if(bound&&bound!==fingerprint)throw failure('SESSION_CHANGED','登录账号或服务器已更换，请重新运行当前命令');if(!bound)invocationSessions.set(configKey,fingerprint);try{const result=await request(s.server,endpoint,{...options,token:s.token});if(!sameSessionOnDisk(s,env))throw failure('SESSION_CHANGED','请求期间登录账号或服务器已更换，请重新运行当前命令');return result}catch(e){if((e.status===401||e.code==='UNAUTHENTICATED')&&sameSessionOnDisk(s,env)){clearSession(env);invocationSessions.delete(configKey)}throw e}}
-module.exports={DEFAULT_SERVER,serverURL,configDirectory,readSession,writeSession,clearSession,clearSessionIfCurrent,request,authenticated,failure};
+// A long-lived MCP process creates one client per tool call. Each call pins its
+// identity across every await, without freezing all future calls to that account.
+function sessionClient(env=process.env){
+ const session=readSession(env);
+ const check=()=>{if(!sameSessionOnDisk(session,env))throw failure('SESSION_CHANGED','请求期间登录账号或服务器已更换，请重新运行当前操作')};
+ return {server:session.server,async request(endpoint,options={}){
+  check();
+  try{const result=await request(session.server,endpoint,{...options,token:session.token});check();return result;}
+  catch(error){if(error.status===401&&sameSessionOnDisk(session,env))clearSessionIfCurrent(session,env);throw error;}
+ }};
+}
+module.exports={DEFAULT_SERVER,serverURL,configDirectory,readSession,writeSession,clearSession,clearSessionIfCurrent,request,authenticated,sessionClient,failure};

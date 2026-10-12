@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "siyue": {
+      "command": "/ABSOLUTE/PATH/TO/node",
+      "args": ["/ABSOLUTE/PATH/TO/install/node_modules/siyue-platform-tools/mcp/server.cjs"],
+      "env": {
+        "SIYUE_CONFIG_DIR": "/ABSOLUTE/PRIVATE/PATH/siyue-cli"
+      }
+    }
+  }
+}

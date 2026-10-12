@@ -1,4 +1,6 @@
-# siyue-cli：员工认证、共享业务与隔离模拟
+# siyue-cli 与 MCP：员工认证和共享业务
+
+已提供可安装工具包及 MCP stdio 服务。完整安装、MCP配置和所有新增查询/管理用法见 [工具说明](../docs/siyue-cli-mcp.md)，操作覆盖见 [覆盖清单](../docs/siyue-operation-coverage.md)。
 
 CLI 和正式网页使用同一员工账号、授权目录及业务处理器。正式业务的读取、预览和执行访问服务器 SQLite 数据；`simulate` 仍是完全独立的离线演示。使用 Node.js ≥24.20，与后端运行时保持一致。
 
@@ -20,7 +22,7 @@ node cli/siyue-cli.cjs logout
 
 会话存于 `~/.config/siyue-cli/session.json`，目录 0700、文件 0600；可用 `SIYUE_CONFIG_DIR` 指定独立私有目录。拒绝符号链接目录/会话文件，令牌不输出。改密、管理员重置、停用、权限或范围修改均撤销旧会话，必须重新登录。
 
-超级管理员可用 `accounts list` 查看员工账号；`accounts create` 当前支持内置教师与销售角色，分别固定为 `assigned` 与 `own` 范围，不接受自定义权限、范围或角色。每次创建须提供唯一姓名、用户名和工号，并用 `--out` 指向一个不存在的私有凭据文件；目录会收紧到 0700，凭据文件为 0600。一次性初始密码只保存在该文件，不写终端。命令创建的账号仍须首次登录改密。账号创建接口没有服务端幂等键，若创建响应不明确，命令会保留空凭据标记并停止；先用 `accounts list` 核对，不要盲目重试或重置密码。完全匹配的现有员工可复用，任何身份、授权或范围冲突都会停止。
+超级管理员可用 `accounts list` 查看员工账号；`accounts create --input JSON --out 私有文件` 支持全部后端角色、范围及允许/禁止权限。旧参数 `--role teacher|sales` 分别固定为 `assigned` 与 `own` 范围。JSON创建只要求姓名和角色，用户名可自动生成；旧参数方式须提供姓名、用户名和工号，并用 `--out` 指向一个不存在的私有凭据文件；目录会收紧到 0700，凭据文件为 0600。一次性初始密码只保存在该文件，不写终端。命令创建的账号仍须首次登录改密。账号创建接口没有服务端幂等键，若创建响应不明确，命令会保留空凭据标记并停止；先用 `accounts list` 核对，不要盲目重试或重置密码。完全匹配的现有员工可复用，任何身份、授权或范围冲突都会停止。
 
 ```sh
 node cli/siyue-cli.cjs accounts list
@@ -44,7 +46,7 @@ node cli/siyue-cli.cjs get audit-events
 node cli/siyue-cli.cjs get activity --view followups --employee <员工ID> --limit 50
 ```
 
-`get` 支持 `state / students / employees / leads / orders / schedule / reports / sales-report / teacher-report / activity / audit-events`。`get activity --view followups` 可按时间倒序读取所选员工的全部历史跟进并用 `--cursor` 翻页；统计日期不限制此视图。其他活动可使用日期、线索、员工和动作过滤。这些输出包含实际授权业务数据；如需保存，使用仓库外的私有路径，不要把学生、订单或员工资料提交公开 GitHub。
+`get` 与 `query` 支持全部 48 类命名查询；使用 `query list` 查看课程、班级、校区、报名、考勤、表单、报表等完整字段说明。`get activity --view followups` 可按时间倒序读取所选员工的全部历史跟进并用 `--cursor` 翻页；统计日期不限制此视图。其他活动可使用日期、线索、员工和动作过滤。这些输出包含实际授权业务数据；如需保存，使用仓库外的私有路径，不要把学生、订单或员工资料提交公开 GitHub。
 
 `list/describe` 每次检查会话并读取服务器授权目录，不根据本地角色猜测权限。登录后的 `inputSchema`、操作名与权限才是当前运行依据。`cli/operations.json` 是旧页面入口目录；仓库 `backend/contracts/operations.json` 的37项与 `backend/contracts/openapi.json` 是早期设计契约。启用共享业务后，线上 `/crm-api/openapi.json` 动态生成当前运行契约；未启用业务时才返回旧设计契约。
 
