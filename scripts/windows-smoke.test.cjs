@@ -41,6 +41,7 @@ test('portable CLI and MCP: encrypted login, Unicode paths, private output, prev
   const result=execFileSync(process.env.ComSpec||'C:\\Windows\\System32\\cmd.exe',['/d','/s','/c','""'+launcher+'" --version"'],{encoding:'utf8',windowsVerbatimArguments:true});
   assert.equal(result.trim(),'1.2.0');
  }
+ auth.configDirectory(env); // Diagnose directory protection before protocol error sanitization.
  const rpc=mcp(env,t);const initialized=await rpc.call('initialize',{protocolVersion:'2025-11-25',capabilities:{},clientInfo:{name:'windows-test',version:'1'}});assert.equal(initialized.serverInfo.version,'1.2.0');rpc.notify('notifications/initialized');
  assert.deepEqual((await rpc.call('tools/list',{})).tools.map(x=>x.name),['siyue_status']);
  assert.equal((await rpc.call('tools/call',{name:'siyue_status',arguments:{}})).structuredContent.authenticated,false);

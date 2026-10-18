@@ -49,7 +49,7 @@ if($p.action -eq 'encrypt' -or $p.action -eq 'decrypt'){
 function win(action,file,data){
  const executable=path.join(process.env.SystemRoot||'C:\\Windows','System32','WindowsPowerShell','v1.0','powershell.exe');
  try{return execFileSync(executable,['-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',Buffer.from(script,'utf16le').toString('base64')],{input:JSON.stringify({action,path:file,data}),encoding:'utf8',windowsHide:true,timeout:30000,stdio:['pipe','pipe','pipe']}).trim();}
- catch{throw Object.assign(new Error('Windows 私有文件保护失败；请使用本机 NTFS 用户目录，并检查系统 PowerShell 可用。'),{code:'PRIVATE_FILE_PROTECTION_FAILED'});}
+ catch(cause){throw Object.assign(new Error('Windows 私有文件保护失败；请使用本机 NTFS 用户目录，并检查系统 PowerShell 可用。',{cause}),{code:'PRIVATE_FILE_PROTECTION_FAILED'});}
 }
 function regularPath(target){
  const absolute=path.resolve(target);let current=path.parse(absolute).root;
