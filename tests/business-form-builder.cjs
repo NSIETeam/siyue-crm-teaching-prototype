@@ -55,7 +55,7 @@ function renderedInput(html, path) {
   assert.fail(`rendered input path ${JSON.stringify(path)}`);
 }
 
-test('only create/update render and create initializes schema-safe lead defaults', () => {
+test('only create/update render and create initializes schema-safe custom defaults', () => {
   const h = harness();
   const beforeRender = h.calls.length;
   h.api.render({ operation: h.context.operation, draft: h.draft, data: h.context.data });
@@ -64,7 +64,7 @@ test('only create/update render and create initializes schema-safe lead defaults
   h.api.initialize({ operation: h.context.operation, draft: h.draft, data: h.context.data });
   const html = h.api.render({ operation: h.context.operation, draft: h.draft, data: h.context.data });
   assert.match(html, /sfb-palette/);
-  assert.match(html, /公开填写预览/);
+  assert.match(html, /aria-label="iPhone 17 表单预览"/);
   assert.match(html, /字段设置|基本信息/);
   assert.equal(h.draft.kind, 'custom');
   assert.equal(h.draft.collectLead, false);
