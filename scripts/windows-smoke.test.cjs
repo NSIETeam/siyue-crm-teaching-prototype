@@ -18,6 +18,7 @@ test('portable CLI and MCP: encrypted login, Unicode paths, private output, prev
  t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
  const token='FAKE_WINDOWS_SESSION_NEVER_PRINT',user={id:'windows-test-user',username:'windows-test',roleIds:['sales'],mustChangePassword:false};let active=false,denied=false,commits=0;const seen=new Set();
  const server=http.createServer(async(req,res)=>{
+  if(process.platform==='win32')assert.equal(req.headers.connection,'close');
   let body='';for await(const chunk of req)body+=chunk;body=body?JSON.parse(body):{};
   const send=(code,data)=>{res.writeHead(code,{'Content-Type':'application/json'});res.end(JSON.stringify(data));};
   if(req.url==='/v1/auth/login'){if(body.password!=='Fake-Local-Only-123!')return send(401,{error:'INVALID_CREDENTIALS'});active=true;return send(200,{token,user});}
@@ -32,7 +33,7 @@ test('portable CLI and MCP: encrypted login, Unicode paths, private output, prev
    if(!seen.has(key)){seen.add(key);commits++;}return send(200,{commits});
   }
   send(404,{error:'NOT_FOUND'});
- });await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));t.after(()=>server.close());
+ });if(process.platform==='win32')server.keepAliveTimeout=1;await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));t.after(()=>server.close());
  const url='http://127.0.0.1:'+server.address().port+'/';
  assert.equal((await command(['--version'],env)).stdout.trim(),'1.2.0');
  const configuration=await ok(['mcp-config'],env);assert.equal(configuration.mcpServers.siyue.command,process.execPath);assert.equal(configuration.mcpServers.siyue.args[0],path.join(root,'mcp/server.cjs'));assert.equal(fs.existsSync(config),false);
