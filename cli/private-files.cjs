@@ -4,16 +4,18 @@ const windows=process.platform==='win32';
 // Fixed PowerShell code only. Paths and secret material travel over stdin, never argv.
 const script=String.raw`
 $ErrorActionPreference='Stop'
+$ProgressPreference='SilentlyContinue'
 [Console]::InputEncoding=New-Object System.Text.UTF8Encoding($false)
 [Console]::OutputEncoding=New-Object System.Text.UTF8Encoding($false)
 $p=[Console]::In.ReadToEnd() | ConvertFrom-Json
 $me=[System.Security.Principal.WindowsIdentity]::GetCurrent().User
 $system=New-Object System.Security.Principal.SecurityIdentifier('S-1-5-18')
 if($p.path){
- $item=Get-Item -LiteralPath $p.path -Force
- if(($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0){throw 'Reparse points are forbidden'}
+ $attributes=[IO.File]::GetAttributes($p.path)
+ $directory=($attributes -band [IO.FileAttributes]::Directory) -ne 0
+ if(($attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0){throw 'Reparse points are forbidden'}
  if($p.action -eq 'secure'){
-  if($item.PSIsContainer){
+  if($directory){
    $acl=New-Object System.Security.AccessControl.DirectorySecurity
    $inherit=[System.Security.AccessControl.InheritanceFlags]'ContainerInherit,ObjectInherit'
   }else{$acl=New-Object System.Security.AccessControl.FileSecurity;$inherit=[System.Security.AccessControl.InheritanceFlags]::None}
@@ -23,9 +25,9 @@ if($p.path){
    $rule=New-Object System.Security.AccessControl.FileSystemAccessRule($sid,'FullControl',$inherit,'None','Allow')
    $acl.AddAccessRule($rule)
   }
-  Set-Acl -LiteralPath $p.path -AclObject $acl
+  if($directory){[IO.Directory]::SetAccessControl($p.path,$acl)}else{[IO.File]::SetAccessControl($p.path,$acl)}
  }
- $acl=Get-Acl -LiteralPath $p.path
+ if($directory){$acl=[IO.Directory]::GetAccessControl($p.path)}else{$acl=[IO.File]::GetAccessControl($p.path)}
  if($acl.GetOwner([System.Security.Principal.SecurityIdentifier]).Value -ne $me.Value){throw 'Owner must be the current user'}
  if(-not $acl.AreAccessRulesProtected){throw 'Inherited access is forbidden'}
  $own=$false
@@ -48,7 +50,8 @@ if($p.action -eq 'encrypt' -or $p.action -eq 'decrypt'){
 `;
 function win(action,file,data){
  const executable=path.join(process.env.SystemRoot||'C:\\Windows','System32','WindowsPowerShell','v1.0','powershell.exe');
- try{return execFileSync(executable,['-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',Buffer.from(script,'utf16le').toString('base64')],{input:JSON.stringify({action,path:file,data}),encoding:'utf8',windowsHide:true,timeout:30000,stdio:['pipe','pipe','pipe']}).trim();}
+ const env={...process.env};for(const key of Object.keys(env))if(key.toLowerCase()==='psmodulepath')delete env[key];env.PSModulePath=path.join(path.dirname(executable),'Modules');
+ try{return execFileSync(executable,['-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',Buffer.from(script,'utf16le').toString('base64')],{env,input:JSON.stringify({action,path:file,data}),encoding:'utf8',windowsHide:true,timeout:30000,stdio:['pipe','pipe','pipe']}).trim();}
  catch(cause){throw Object.assign(new Error('Windows 私有文件保护失败；请使用本机 NTFS 用户目录，并检查系统 PowerShell 可用。',{cause}),{code:'PRIVATE_FILE_PROTECTION_FAILED'});}
 }
 function regularPath(target){

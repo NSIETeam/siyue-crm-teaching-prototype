@@ -32,7 +32,7 @@ def build(out, arch):
         for source, target in [('node.exe', 'runtime/node.exe'), ('LICENSE', 'runtime/LICENSE')]:
             files[target] = z.read(prefix + source)
     for command, entry in [('siyue-cli', 'cli\\siyue-cli.cjs'), ('siyue-mcp', 'mcp\\server.cjs')]:
-        files[command + '.cmd'] = ('@echo off\r\n"%~dp0runtime\\node.exe" "%~dp0' + entry + '" %*\r\nexit /b %errorlevel%\r\n').encode()
+        files[command + '.cmd'] = ('@echo off\r\nsetlocal DisableDelayedExpansion\r\n"%~dp0runtime\\node.exe" "%~dp0' + entry + '" %*\r\nexit /b %errorlevel%\r\n').encode()
     files['Open-CLI.cmd'] = b'@echo off\r\nchcp 65001 >nul\r\nset "PATH=%~dp0;%PATH%"\r\ncd /d "%~dp0"\r\necho Siyue CLI - type: siyue-cli help\r\ncmd /K\r\n'
     files['README.txt'] = files['docs/windows-tools.md']
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()

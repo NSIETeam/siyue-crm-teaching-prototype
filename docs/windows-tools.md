@@ -18,7 +18,7 @@ siyue-cli query list
 
 输入密码时屏幕不显示字符，按 Enter 提交。新账号首次登录后运行 `siyue-cli passwd`，完成初始密码修改后重新登录。默认连接 `https://www.siyuejn.com/crm-api/`，账号权限与网页端一致。
 
-PowerShell 中也可在解压目录运行 ` .\siyue-cli.cmd help`（移除开头空格）。无需改变 PowerShell 执行策略。没有全局 PATH 或注册表改动；每次使用可双击 `Open-CLI.cmd`。
+PowerShell 中也可在解压目录运行 `.\siyue-cli.cmd help`。无需改变 PowerShell 执行策略。没有全局 PATH 或注册表改动；每次使用可双击 `Open-CLI.cmd`。
 
 ## MCP 客户端连接
 
