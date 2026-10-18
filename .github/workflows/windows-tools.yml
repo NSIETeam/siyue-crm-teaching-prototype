@@ -1,0 +1,57 @@
+name: Windows CLI and MCP
+on:
+  push:
+    branches: [main]
+    paths: ['cli/**', 'mcp/**', 'scripts/*tools*', 'scripts/windows-smoke.test.cjs', 'docs/*tools*', 'docs/siyue-cli-mcp.md', 'package.json', '.github/workflows/windows-tools.yml']
+  pull_request:
+    paths: ['cli/**', 'mcp/**', 'scripts/*tools*', 'scripts/windows-smoke.test.cjs', 'docs/*tools*', 'docs/siyue-cli-mcp.md', 'package.json', '.github/workflows/windows-tools.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  portable:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            arch: x64
+          - os: windows-11-arm
+            arch: arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.21.0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build portable ZIP from pinned official runtime
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory "$env:RUNNER_TEMP\siyue-artifacts"
+          python scripts/build-windows-tools.py --arch ${{ matrix.arch }} --out "$env:RUNNER_TEMP\siyue-artifacts"
+      - name: Test extracted package with its bundled Node
+        shell: pwsh
+        run: |
+          $zip = Get-ChildItem "$env:RUNNER_TEMP\siyue-artifacts\*.zip" | Select-Object -First 1
+          $destination = "$env:RUNNER_TEMP\思跃 Windows Tools"
+          Expand-Archive -LiteralPath $zip.FullName -DestinationPath $destination
+          $package = (Get-ChildItem -Directory $destination | Select-Object -First 1).FullName
+          $env:SIYUE_TEST_PACKAGE = $package
+          & "$package\runtime\node.exe" --test scripts/windows-smoke.test.cjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: siyue-windows-${{ matrix.arch }}
+          path: ${{ runner.temp }}/siyue-artifacts/*
+          if-no-files-found: error
+  posix-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.21.0'
+      - run: node --test cli/auth.test.cjs cli/auth-client-isolation.test.cjs cli/admin-service.test.cjs mcp/server.test.cjs scripts/build-tools.test.cjs

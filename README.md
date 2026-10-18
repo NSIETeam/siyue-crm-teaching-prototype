@@ -1,5 +1,8 @@
 # 思跃 CRM 与教务综合系统
 
+Windows CLI 与 MCP：查看[免安装工具说明](docs/windows-tools.md)，或在 Releases 下载 Windows x64 / ARM64 压缩包。
+
+
 ## 当前生产源码（2026-10-18 同步）
 
 本仓库已按线上 `20261018-trial-lead-picker` 前端和 `auth-trial-lead-picker-20261018` 后端同步，195 个生产文件逐一校验。正式入口仍使用同源 Node 认证与业务接口；没有将本地待发布的 Java 切换配置混入本次同步。运行数据、账号、密钥、日志和备份不在仓库中。

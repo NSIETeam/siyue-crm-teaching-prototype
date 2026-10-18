@@ -1,9 +1,11 @@
 {
   "name": "siyue-platform-tools",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "思跃教务平台员工命令行及 MCP 工具",
   "private": true,
-  "engines": { "node": ">=24.20.0" },
+  "engines": {
+    "node": ">=24.20.0"
+  },
   "bin": {
     "siyue-cli": "cli/siyue-cli.cjs",
     "siyue-mcp": "mcp/server.cjs"
@@ -20,7 +22,10 @@
     "mcp/server.cjs",
     "mcp/bridge.cjs",
     "mcp/config.example.json",
-    "docs/siyue-cli-mcp.md"
+    "docs/siyue-cli-mcp.md",
+    "cli/private-files.cjs",
+    "cli/desktop-config.cjs",
+    "docs/windows-tools.md"
   ],
   "scripts": {
     "build:tools": "node scripts/build-tools.cjs",

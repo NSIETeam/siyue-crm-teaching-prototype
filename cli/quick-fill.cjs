@@ -46,7 +46,7 @@ function guard(value){
  if(value&&typeof value==='object')for(const [key,child]of Object.entries(value)){if(prohibited.has(key))throw auth.failure('INVALID_FIELD','不允许的字段名');guard(child);}
 }
 function readText(file){let fd;try{fd=fs.openSync(path.resolve(file),fs.constants.O_RDONLY|fs.constants.O_NOFOLLOW);const st=fs.fstatSync(fd);if(!st.isFile()||st.size>1048576)throw auth.failure('INVALID_INPUT_FILE','填写文件必须小于 1 MB');return new TextDecoder('utf-8',{fatal:true}).decode(fs.readFileSync(fd));}finally{if(fd!==undefined)fs.closeSync(fd);}}
-function writeText(file,text){const fd=fs.openSync(path.resolve(file),fs.constants.O_WRONLY|fs.constants.O_CREAT|fs.constants.O_EXCL|fs.constants.O_NOFOLLOW,0o600);try{fs.writeFileSync(fd,text);fs.fsyncSync(fd);}finally{fs.closeSync(fd);}}
+function writeText(file,text){const fd=require('./private-files.cjs').openNew(path.resolve(file));try{fs.writeFileSync(fd,text);fs.fsyncSync(fd);}finally{fs.closeSync(fd);}}
 function csv(text){
  text=text.replace(/^\uFEFF/,'');let rows=[],cells=[],cell='',quoted=false,closed=false,line=1,start=1;
  const pushCell=()=>{cells.push(cell);cell='';closed=false;};

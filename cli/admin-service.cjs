@@ -52,9 +52,9 @@ function safeOutputPath(value){
 }
 function reserve(file){
  let fd;try{
-  fd=fs.openSync(file,fs.constants.O_WRONLY|fs.constants.O_CREAT|fs.constants.O_EXCL|fs.constants.O_NOFOLLOW,0o600);
+  fd=require('./private-files.cjs').openNew(file);
   const stat=fs.fstatSync(fd);
-  if(!stat.isFile()||(stat.mode&0o077)!==0||process.getuid&&stat.uid!==process.getuid())throw auth.failure('UNSAFE_OUTPUT','凭据文件必须为当前用户私有文件');
+  if(!stat.isFile()||process.platform!=='win32'&&(stat.mode&0o077)!==0||process.getuid&&stat.uid!==process.getuid())throw auth.failure('UNSAFE_OUTPUT','凭据文件必须为当前用户私有文件');
   return fd;
  }catch(error){if(fd!==undefined)fs.closeSync(fd);if(error.code==='EEXIST')throw auth.failure('OUTPUT_EXISTS','凭据文件已经存在；不会覆盖或重新签发密码，请核对已有文件');throw error;}
 }

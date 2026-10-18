@@ -44,6 +44,7 @@
   "cli/java-admin.cjs",
   "cli/java-query-client.cjs",
   "cli/operations.json",
+  "cli/private-files.cjs",
   "cli/query-client.cjs",
   "deploy/aliyun/activate-business.sh",
   "deploy/aliyun/auth-api.nginx.conf",

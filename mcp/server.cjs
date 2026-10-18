@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 const {createBridge,errorResult}=require('./bridge.cjs');
-const VERSION='1.1.0',PROTOCOLS=['2025-11-25','2025-06-18','2025-03-26','2024-11-05'];
+const VERSION=require('../package.json').version,PROTOCOLS=['2025-11-25','2025-06-18','2025-03-26','2024-11-05'];
 function serve({input=process.stdin,output=process.stdout,env=process.env,bridge=createBridge({env})}={}){
  let phase='new',buffer=Buffer.alloc(0),queue=Promise.resolve(),pending=0,closed=false;
  const send=value=>{if(!closed)output.write(JSON.stringify(value)+'\n');};

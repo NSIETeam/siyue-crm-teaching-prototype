@@ -1,20 +1,22 @@
+Windows 用户可直接使用[免安装 CLI/MCP 压缩包](windows-tools.md)，无需安装 Node/npm。
+
 # siyue-cli 与 siyue-mcp 使用说明
 
-版本：1.1.0。需要 Node.js ≥24.20；没有外部 npm 运行依赖。
+版本：1.2.0。需要 Node.js ≥24.20；没有外部 npm 运行依赖。
 
 命令行、MCP 和网页使用同一套服务器业务处理器。每次请求均核验员工身份、角色和数据范围；安装工具不会增加权限。平台已经接入的业务操作由服务器目录实时提供，新增操作不需要给 CLI 再写一个入口。
 
 ## 安装本地工具包
 
-获取 `siyue-platform-tools-1.1.0.tgz`、同名 `.tgz.sha256` 和 `.manifest.json`。校验后安装到自己选择的位置；不需要全局安装。
+获取 `siyue-platform-tools-1.2.0.tgz`、同名 `.tgz.sha256` 和 `.manifest.json`。校验后安装到自己选择的位置；不需要全局安装。
 
 ```sh
 # 在下载目录内校验；三份文件应放在一起。
-shasum -a 256 -c siyue-platform-tools-1.1.0.tgz.sha256
+shasum -a 256 -c siyue-platform-tools-1.2.0.tgz.sha256
 
 npm install --prefix /absolute/path/siyue-tools \
   --offline --ignore-scripts --no-package-lock --omit=dev \
-  /absolute/path/siyue-platform-tools-1.1.0.tgz
+  /absolute/path/siyue-platform-tools-1.2.0.tgz
 
 export PATH="/absolute/path/siyue-tools/node_modules/.bin:$PATH"
 siyue-cli help

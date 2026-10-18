@@ -9,6 +9,7 @@ const { execFileSync } = require('node:child_process');
 // Exact names only. Adding a runtime module requires an explicit packaging change.
 const FILES = Object.freeze([
   'package.json',
+  'cli/private-files.cjs', 'cli/desktop-config.cjs', 'docs/windows-tools.md',
   'cli/siyue-cli.cjs', 'cli/auth-client.cjs', 'cli/business-client.cjs',
   'cli/quick-fill.cjs', 'cli/account-admin.cjs', 'cli/report-query.cjs',
   'cli/admin-service.cjs', 'cli/query-client.cjs',
