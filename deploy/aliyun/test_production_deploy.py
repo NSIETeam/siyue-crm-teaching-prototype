@@ -1,5 +1,6 @@
 import fcntl, importlib.util, io, json, os, sqlite3, tarfile, tempfile, unittest
 from pathlib import Path
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location('production_deploy', Path(__file__).with_name('production-deploy.py'))
 module = importlib.util.module_from_spec(spec)
@@ -250,6 +251,32 @@ class DeploymentTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'changed after planning'):
             self.deploy.activate(self.stage, bundle, plan)
         self.assertEqual(self.services.events, [])
+
+    def test_runner_interruption_recovers_code_without_restoring_data(self):
+        bundle = self.package()
+        before = self.deploy.data_digest()
+        self.services.concurrent = lambda: module.interrupted(module.signal.SIGTERM, None)
+        with patch.object(module.signal, 'signal'), self.assertRaisesRegex(RuntimeError, 'Deployment interrupted'):
+            self.deploy.activate(self.stage, bundle, self.deploy.plan(bundle))
+        self.assertEqual((self.root / 'current').resolve(), self.front)
+        self.assertEqual((self.root / 'auth-current').resolve(), self.back)
+        self.assertEqual(self.deploy.data_digest(), before)
+
+    def test_failure_immediately_after_atomic_frontend_switch_is_recovered(self):
+        bundle = self.package(backend=False)
+        original = self.deploy.switch
+        failed = False
+        def switching(name, target):
+            nonlocal failed
+            original(name, target)
+            if name == 'current' and not failed:
+                failed = True
+                raise RuntimeError('after-rename fixture')
+        self.deploy.switch = switching
+        with self.assertRaisesRegex(RuntimeError, 'after-rename fixture'):
+            self.deploy.activate(self.stage, bundle, self.deploy.plan(bundle))
+        self.assertEqual((self.root / 'current').resolve(), self.front)
+        self.assertNotIn('stop', self.services.events)
 
 
 if __name__ == '__main__':

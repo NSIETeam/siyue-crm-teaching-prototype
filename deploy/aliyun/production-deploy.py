@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Receiver for an existing Node production installation; no account bootstrap."""
-import argparse, fcntl, hashlib, json, os, re, shutil, sqlite3, subprocess, tarfile, tempfile, time, urllib.error, urllib.request
+import argparse, fcntl, hashlib, json, os, re, shutil, signal, sqlite3, subprocess, tarfile, tempfile, time, urllib.error, urllib.request
 from pathlib import Path, PurePosixPath
 
 ORIGIN = 'https://www.siyuejn.com'
@@ -14,6 +14,13 @@ def sha(data):
 
 def fingerprint(value):
     return sha(json.dumps(value, sort_keys=True, separators=(',', ':')).encode())
+
+
+def interrupted(signum, frame):
+    # Finish recovery even if SSH disconnects or the runner is cancelled.
+    for item in (signal.SIGHUP, signal.SIGTERM, signal.SIGINT):
+        signal.signal(item, signal.SIG_IGN)
+    raise RuntimeError('Deployment interrupted; recovering the existing version')
 
 
 def atomic_json(target, value, private=False):
@@ -309,7 +316,7 @@ class Deployment:
                 back_owned = (self.root / 'auth-current').resolve() in (original_back, targets['backend'])
                 if not (front_owned and back_owned):
                     raise RuntimeError('Concurrent activation detected; no unrelated release or service was rolled back') from error
-                if switched_front:
+                if (self.root / 'current').resolve() == targets['frontend']:
                     self.switch('current', original_front)
                 if back_owned and plan['backendChanged']:
                     if switched_back or not stopped:
@@ -326,6 +333,8 @@ class Deployment:
 
 
 def main():
+    for item in (signal.SIGHUP, signal.SIGTERM, signal.SIGINT):
+        signal.signal(item, interrupted)
     parser = argparse.ArgumentParser()
     parser.add_argument('action', choices=['plan', 'activate'])
     parser.add_argument('--stage', required=True, type=Path)
