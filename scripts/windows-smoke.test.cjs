@@ -38,7 +38,7 @@ test('portable CLI and MCP: encrypted login, Unicode paths, private output, prev
  const configuration=await ok(['mcp-config'],env);assert.equal(configuration.mcpServers.siyue.command,process.execPath);assert.equal(configuration.mcpServers.siyue.args[0],path.join(root,'mcp/server.cjs'));assert.equal(fs.existsSync(config),false);
  if(process.platform==='win32'){
   const launcher=path.join(root,'siyue-cli.cmd');
-  const result=execFileSync(process.env.ComSpec||'C:\\Windows\\System32\\cmd.exe',['/d','/s','/c','""'+launcher+'" --version"'],{encoding:'utf8'});
+  const result=execFileSync(process.env.ComSpec||'C:\\Windows\\System32\\cmd.exe',['/d','/s','/c','""'+launcher+'" --version"'],{encoding:'utf8',windowsVerbatimArguments:true});
   assert.equal(result.trim(),'1.2.0');
  }
  const rpc=mcp(env,t);const initialized=await rpc.call('initialize',{protocolVersion:'2025-11-25',capabilities:{},clientInfo:{name:'windows-test',version:'1'}});assert.equal(initialized.serverInfo.version,'1.2.0');rpc.notify('notifications/initialized');

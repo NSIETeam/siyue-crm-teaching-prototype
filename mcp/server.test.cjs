@@ -17,6 +17,7 @@ async function fixture(t){
 }
 function rpcClient(t,env){
  const child=spawn(process.execPath,[path.join(__dirname,'server.cjs')],{env,stdio:['pipe','pipe','pipe']});let seq=0,buffer='',stderr='';const waiting=new Map();
+ child.stdout.setEncoding('utf8'); // Keep Chinese characters intact across pipe chunk boundaries.
  child.stderr.on('data',b=>stderr+=b);child.stdout.on('data',b=>{buffer+=b;while(buffer.includes('\n')){const i=buffer.indexOf('\n'),line=buffer.slice(0,i);buffer=buffer.slice(i+1);let msg;try{msg=JSON.parse(line)}catch(e){for(const waiter of waiting.values())waiter.reject(e);waiting.clear();return;}const waiter=waiting.get(msg.id);if(waiter){waiting.delete(msg.id);waiter.resolve(msg);}}});
  child.on('exit',(code)=>{for(const waiter of waiting.values())waiter.reject(Error('MCP exited '+code+' '+stderr));waiting.clear();});
  t.after(()=>child.kill());
