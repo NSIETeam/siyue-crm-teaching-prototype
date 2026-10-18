@@ -11,6 +11,7 @@ class FakeServices:
         self.data, self.events = data, []
         self.fail_health, self.fail_public, self.change_on_start, self.change_on_stop = 0, False, False, False
         self.concurrent = None
+        self.during_health = None
 
     def stop(self):
         self.events.append('stop')
@@ -27,6 +28,9 @@ class FakeServices:
 
     def healthy(self):
         self.events.append('health')
+        if self.during_health:
+            callback, self.during_health = self.during_health, None
+            callback()
         if self.fail_health:
             self.fail_health -= 1
             raise RuntimeError('unhealthy fixture')
@@ -215,6 +219,17 @@ class DeploymentTests(unittest.TestCase):
             with self.assertRaises(BlockingIOError):
                 self.deploy.activate(self.stage, bundle, plan)
         self.assertEqual(self.services.events, [])
+
+    def test_foreign_backend_activation_before_frontend_switch_is_preserved(self):
+        bundle = self.package()
+        other = self.root / 'auth-releases/foreign-backend'
+        other.mkdir(parents=True)
+        self.services.during_health = lambda: self.deploy.switch('auth-current', other)
+        with self.assertRaisesRegex(RuntimeError, 'Concurrent activation'):
+            self.deploy.activate(self.stage, bundle, self.deploy.plan(bundle))
+        self.assertEqual((self.root / 'current').resolve(), self.front)
+        self.assertEqual((self.root / 'auth-current').resolve(), other)
+        self.assertNotIn('public', self.services.events)
 
     def test_backup_failure_restarts_original_service_without_switching(self):
         bundle = self.package()

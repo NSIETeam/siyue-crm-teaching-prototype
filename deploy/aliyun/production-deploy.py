@@ -289,6 +289,9 @@ class Deployment:
                     self.services.healthy()
                 else:
                     self.services.healthy()
+                expected_backend = targets['backend'] if switched_back else original_back
+                if (self.root / 'auth-current').resolve() != expected_backend:
+                    raise ValueError('Concurrent backend activation')
                 if (self.root / 'current').resolve() != original_front:
                     raise ValueError('Concurrent frontend activation')
                 self.switch('current', targets['frontend'])
