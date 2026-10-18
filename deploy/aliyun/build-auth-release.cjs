@@ -7,7 +7,7 @@ function build(outParent,releaseId,snapshotPath){
  if(!outParent||!path.isAbsolute(outParent))throw Error('--out must be an existing absolute directory');
  const out=fs.realpathSync(outParent);if(out===root||out.startsWith(root+path.sep))throw Error('Write authentication release artifacts outside the repository');
  const files=JSON.parse(fs.readFileSync(path.join(__dirname,'auth-files.json'),'utf8'));
- for(const file of files)if(!/^(?:contracts\.cjs|(?:backend\/src|cli)\/[A-Za-z0-9_-]+\.cjs|backend\/contracts\/(?:operations|openapi)\.json|cli\/operations\.json|academic-dictionary\.js|deploy\/aliyun\/[A-Za-z0-9_.-]+\.(?:sh|service|timer|conf))$/.test(file))throw Error('Disallowed service path: '+file);
+ for(const file of files)if(!/^(?:contracts\.cjs|(?:backend\/src|cli)\/[A-Za-z0-9_-]+\.cjs|backend\/contracts\/(?:build\.cjs|(?:operations|openapi)\.json)|cli\/operations\.json|academic-dictionary\.js|deploy\/aliyun\/[A-Za-z0-9_.-]+\.(?:sh|service|timer|conf))$/.test(file))throw Error('Disallowed service path: '+file);
  const context=sourceContext(files,snapshotPath),{revision,source,buffers}=context;
  const identity=revision?revision.slice(0,12):'snapshot-'+source.snapshotId.slice(0,12);
  const id=releaseId||'auth-'+new Date().toISOString().replace(/[-:TZ.]/g,'').slice(0,14)+'-'+identity;

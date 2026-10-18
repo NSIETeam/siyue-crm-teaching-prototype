@@ -19,3 +19,7 @@ session.json
 business-data/
 backups/
 *.siyue-plan.json
+
+# Python deployment check caches.
+__pycache__/
+*.py[cod]

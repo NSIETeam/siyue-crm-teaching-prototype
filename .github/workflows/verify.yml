@@ -18,6 +18,7 @@ jobs:
       - run: node --test backend/test/*.test.cjs
       - run: node --test frontend-tests/*.test.cjs frontend-tests/*.test.mts
       - run: node --test deploy/aliyun/test.cjs
+      - run: python3 -m unittest discover -s deploy/aliyun -p 'test_production*.py' -v
   legacy-demo-compatibility:
     # The original offline demo harness lacks DOM APIs used by the live UI.
     # Keep its result visible until the harness is migrated; never use it as

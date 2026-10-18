@@ -2,9 +2,11 @@
 
 ## 当前生产源码（2026-10-18 同步）
 
-本仓库已按线上 `20261018-academic-trial-intake` 前端和 `auth-academic-trial-intake-20261018` 后端同步，195 个生产文件逐一校验。正式入口仍使用同源 Node 认证与业务接口；没有将本地待发布的 Java 切换配置混入本次同步。运行数据、账号、密钥、日志和备份不在仓库中。
+本仓库已按线上 `20261018-trial-lead-picker` 前端和 `auth-trial-lead-picker-20261018` 后端同步，195 个生产文件逐一校验。正式入口仍使用同源 Node 认证与业务接口；没有将本地待发布的 Java 切换配置混入本次同步。运行数据、账号、密钥、日志和备份不在仓库中。
 
 生产文件清单与 SHA-256 见 [production-version.json](production-version.json)，可运行 `node scripts/verify-production-snapshot.cjs` 核对本次快照。后续开发改动不应直接覆盖线上文件；完成发布后再更新快照记录。测试结果和旧演示测试的兼容性限制见 [同步记录](docs/production-sync-2026-10-18.md)。
+
+生产部署工作流已入库：检查通过后自动构建发布包，实际发布由 `production` 环境保护和部署开关控制，默认关闭。SSH 密钥与主机公钥通过环境 Secrets 配置，详见 [生产自动化部署](docs/production-deployment.md)。
 
 [员工入口](https://www.siyuejn.com/crm/) · [GitHub Pages 演示](https://nsieteam.github.io/siyue-crm-teaching-prototype/) · [项目计划与原始逻辑图](docs/siyue-project-plan.html) · [2026-10-11 共享后端报告](docs/backend-deployment-2026-10-11.html)
 

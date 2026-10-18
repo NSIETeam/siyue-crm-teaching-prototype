@@ -1,5 +1,6 @@
 [
   "academic-dictionary.js",
+  "backend/contracts/build.cjs",
   "backend/contracts/openapi.json",
   "backend/contracts/operations.json",
   "backend/src/audit-query.cjs",

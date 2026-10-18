@@ -1,0 +1,105 @@
+name: Production deployment
+
+on:
+  workflow_run:
+    workflows: [Platform checks]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Build a reviewable package, or deploy it after production approval
+        type: choice
+        options: [verify, deploy]
+        default: verify
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+
+jobs:
+  build:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+      - name: Verify source and production regressions
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          node scripts/check-syntax.cjs
+          node --test backend/test/*.test.cjs
+          node --test frontend-tests/*.test.cjs frontend-tests/*.test.mts
+          node --test deploy/aliyun/test.cjs
+          python3 -m unittest discover -s deploy/aliyun -p 'test_production*.py' -v
+      - name: Build immutable frontend and backend packages
+        run: python3 deploy/aliyun/production-bundle.py --out "$RUNNER_TEMP/production-package" --run-id "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: production-package
+          path: |
+            ${{ runner.temp }}/production-package/*.tar.gz
+            ${{ runner.temp }}/production-package/deployment.json
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    needs: build
+    if: >-
+      needs.build.result == 'success' &&
+      vars.PRODUCTION_DEPLOY_ENABLED == 'true' &&
+      ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.action == 'deploy') ||
+       (github.event_name == 'workflow_run' && vars.PRODUCTION_AUTO_DEPLOY == 'true'))
+    environment:
+      name: production
+      url: https://www.siyuejn.com/crm/
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: production-package
+          path: ${{ runner.temp }}/production-package
+      - name: Plan, guard against drift, back up and deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRODUCTION_SSH_HOST: ${{ secrets.PRODUCTION_SSH_HOST }}
+          PRODUCTION_SSH_USER: ${{ secrets.PRODUCTION_SSH_USER }}
+          PRODUCTION_SSH_PORT: ${{ secrets.PRODUCTION_SSH_PORT }}
+          PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+          PRODUCTION_SSH_KNOWN_HOSTS: ${{ secrets.PRODUCTION_SSH_KNOWN_HOSTS }}
+        run: python3 deploy/aliyun/production-transport.py --bundle "$RUNNER_TEMP/production-package" --receiver deploy/aliyun/production-deploy.py
+      - name: Save source-only deployment evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: production-deployment-evidence
+          path: |
+            ${{ runner.temp }}/production-package/deployment-plan.json
+            ${{ runner.temp }}/production-package/deployment-result.json
+          if-no-files-found: ignore
+          retention-days: 30
