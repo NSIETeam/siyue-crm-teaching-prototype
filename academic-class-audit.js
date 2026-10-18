@@ -37,6 +37,10 @@ courseForm=function(){
  const c=a.selectedClass===null?null:a.courses[a.selectedClass];let html=academicCourseFormBase().replace('<div class="card pad">','<div class="card pad academic-edit-form">');
  const year=String(c?.year||new Date().getFullYear());html=academicReplaceSelect(html,'course-year',[...new Set([String(new Date().getFullYear()),String(new Date().getFullYear()+1),year])],year);
  for(const [id,key,type] of [['course-subject','subject','学科'],['course-grade','grade','年级'],['course-term','term','学期'],['course-class-type','classType','班型']])html=academicReplaceSelect(html,id,academicConfigChoices(type,c?.[key]),c?.[key]||'');
+ html=html.replace(/<div class="field" style="max-width:440px;margin:0 0 18px"><label>适龄范围<\/label>[\s\S]*?<\/div>/,'');
+ html=html.replace(/<div class="field"><label>课时（分钟）<\/label>[\s\S]*?<\/div>/,'');
+ html=html.replace('<div class="form-grid">','<div class="form-grid">'+aField('授课方式',`<select class="select" id="course-nature"><option value="onsite" ${(c?.courseNature||'onsite')==='onsite'?'selected':''}>面授课</option><option value="live" ${c?.courseNature==='live'?'selected':''}>直播课</option></select>`,true));
+ html=html.replace(/<label[^>]*>[^<]*适龄范围[\s\S]*?<\/label>/,'');
  html=academicReplaceSelect(html,'course-charge',['整期'],c?.chargeMode||'整期');
  html=html.replace('创建课程</button>',`${c?'保存课程':'创建课程'}</button>`);
  if(c&&academicCourseReferences(c).used)html=html.replace('<div id="session-list">','<p class="help">已排课或报名的讲次保留原内容；教学内容调整请创建新课程版本。</p><div id="session-list">');
@@ -58,9 +62,9 @@ saveCourse=auditAtomic(function(){
  if(!feeText||!Number.isFinite(fee)||fee<0||!Number.isFinite(material)||material<0)errors.push('请填写非负课程费和教辅费');
  const id=old?.id||academicEntityId('CRS',a.courses),rows=[...document.querySelectorAll('.workflow-lesson')],seen=new Set(),lessons=[];
  rows.forEach((row,i)=>{
-  const read=key=>academicText(row.querySelector(key)?.value),lessonId=academicText(row.dataset.id)||academicEntityId('LESSON',lessons),title=read('.lesson-title'),duration=Number(read('.lesson-duration'));
+  const read=key=>academicText(row.querySelector(key)?.value),lessonId=academicText(row.dataset.id)||academicEntityId('LESSON',lessons),title=read('.lesson-title'),duration=Number(read('.lesson-duration'))||120;
   if(seen.has(lessonId)||a.courses.some(c=>c!==old&&(c.lessons||[]).some(l=>l.id===lessonId)))errors.push(`第${i+1}讲的标识重复，请重新添加该讲次`);seen.add(lessonId);
-  if(!title)errors.push(`请填写第${i+1}讲标题`);if(!Number.isInteger(duration)||duration<=0||duration>1440)errors.push(`第${i+1}讲时长须为1至1440分钟的整数`);
+  if(!title)errors.push(`请填写第${i+1}讲标题`);if(row.querySelector('.lesson-duration')&&(!Number.isInteger(duration)||duration<=0||duration>1440))errors.push(`第${i+1}讲时长须为1至1440分钟的整数`);
   lessons.push({id:lessonId,sequence:i+1,title,objective:read('.lesson-objective'),duration,publicMaterials:read('.lesson-public').split(/[，,]/).map(academicText).filter(Boolean),internalMaterials:read('.lesson-internal').split(/[，,]/).map(academicText).filter(Boolean)});
  });
  if(!lessons.length)errors.push('请至少添加一讲教学内容');
@@ -71,8 +75,8 @@ saveCourse=auditAtomic(function(){
  }
  if(old?.id&&a.courses.filter(c=>c.id===old.id).length!==1)errors.push('课程标识重复，请先核对数据');
  if(errors.length){toast([...new Set(errors)].join('；'));return false}
- const curriculumChanged=old&&(old.subject!==values.subject||old.grade!==values.grade||(old.lessons||[]).length>0&&JSON.stringify(old.lessons.map(l=>[l.id,academicLessonContent(l)]))!==JSON.stringify(lessons.map(l=>[l.id,academicLessonContent(l)]))),curriculumVersion=old?academicClassCourseVersion(old)+(curriculumChanged?1:0):1,ageRange=academicValue('course-age-range');
- const course={...old,id,name,...values,fee,materialFee:material,ageRange,timeLabel:academicValue('course-time-label'),lessons,curriculumVersion,version:curriculumVersion,active:old?.active??true,product:{...old?.product,title:name,summary:`${ageRange||values.grade} · ${values.subject} · ${values.term}`,outline:lessons.map(l=>l.title),price:fee,chargeMode:values.chargeMode,version:(Number(old?.product?.version)||0)+1,publicMaterials:lessons.flatMap(l=>l.publicMaterials)}};
+ const curriculumChanged=old&&(old.subject!==values.subject||old.grade!==values.grade||(old.lessons||[]).length>0&&JSON.stringify(old.lessons.map(l=>[l.id,academicLessonContent(l)]))!==JSON.stringify(lessons.map(l=>[l.id,academicLessonContent(l)]))),curriculumVersion=old?academicClassCourseVersion(old)+(curriculumChanged?1:0):1;
+ const course={...old,id,name,...values,courseNature:academicValue('course-nature')==='live'?'live':'onsite',fee,materialFee:material,ageRange:'',timeLabel:academicValue('course-time-label'),lessons,curriculumVersion,version:curriculumVersion,active:old?.active??true,product:{...old?.product,title:name,summary:`${values.grade} · ${values.subject} · ${values.term}`,outline:lessons.map(l=>l.title),price:fee,chargeMode:values.chargeMode,version:(Number(old?.product?.version)||0)+1,publicMaterials:lessons.flatMap(l=>l.publicMaterials)}};
  if(old)a.courses[index]=course;else a.courses.push(course);
  (refs?.classes||[]).forEach(c=>{c.courseId=id;c.course=name});
  a.selectedClass=null;a.classDraftCourse=null;workflowPersist();nav('course');toast('课程与商城商品草稿已同步保存');return true;
@@ -82,7 +86,7 @@ function academicClassChangeCampus(){const value=academicValue('class-campus-for
 function academicClassPrice(){const course=academicClassCourse(academicValue('class-course')),el=document.querySelector('#class-course-price');if(el)el.textContent=course?`整期课程费 ¥${Number(course.product?.price??course.fee??0).toFixed(2)}，沿用课程设置`:'请先选择课程'}
 classForm=function(){
  const c=a.selectedClass===null?null:a.classes[a.selectedClass],course=c?academicClassCourse(c.courseId||c.course):a.courses[a.classDraftCourse],campus=c?.campus||'',scheduled=!!c?.schedule?.length,input=(id,value,type='text',extra='')=>`<input class="input" id="${id}" type="${type}" value="${academicHTML(value??'')}" ${extra}>`;
- return `<section class="card pad academic-edit-form"><div class="form-grid">${aField('课程名称',academicSelect('class-course',a.courses.filter(x=>x.active!==false||x===course).map(x=>[x.id,x.name]),course?.id||'','onchange="academicClassPrice()"'),true)}${aField('班级名称',input('class-name',c?.name),true)}${aField('校区',academicSelect('class-campus-form',state.campuses.filter(x=>x.active!==false).map(x=>x.name),campus,'onchange="academicClassChangeCampus()"'),true)}${aField('教室',academicSelect('class-room',academicClassRooms(campus),c?.room||''),true)}${aField('学生人数上限',input('class-capacity',c?.capacity||20,'number','min="1" step="1"'),true)}${aField('面授老师',academicSelect('class-teacher-form',academicClassTeachers(),c?.teacher||''),true)}${aField(scheduled?'首讲日期（在排课页调整）':'首讲日期',input('class-date',c?.date,'date',scheduled?'readonly':''),true)}${aField(scheduled?'首讲时间（在排课页调整）':'首讲时间',input('class-time',c?.time||'','text',scheduled?'readonly':'placeholder="09:00–11:00"'),true)}</div><p id="class-course-price" class="help">${course?`整期课程费 ¥${Number(course.product?.price??course.fee??0).toFixed(2)}，沿用课程设置`:'请先选择课程'}</p><p class="help">保存班级后可按课程讲次批量排课。</p>${aActions('classes','saveClass()','保存班级')}</section>`;
+ return `<section class="card pad academic-edit-form"><div class="form-grid">${aField('课程名称',academicSelect('class-course',a.courses.filter(x=>x.active!==false||x===course).map(x=>[x.id,x.name]),course?.id||'','onchange="academicClassPrice()"'),true)}${aField('班级名称',input('class-name',c?.name),true)}${aField('校区',academicSelect('class-campus-form',state.campuses.filter(x=>x.active!==false).map(x=>x.name),campus,'onchange="academicClassChangeCampus()"'),true)}${aField('教室',academicSelect('class-room',academicClassRooms(campus),c?.room||''),true)}${aField('学生人数上限',input('class-capacity',c?.capacity||20,'number','min="1" step="1"'),true)}${aField('每讲时长（分钟）',input('class-duration',c?.duration||120,'number','min="1" max="1440" step="1"'),true)}${aField('面授老师',academicSelect('class-teacher-form',academicClassTeachers(),c?.teacher||''),true)}${aField(scheduled?'首讲日期（在排课页调整）':'首讲日期',input('class-date',c?.date,'date',scheduled?'readonly':''),true)}${aField(scheduled?'首讲时间（在排课页调整）':'首讲时间',input('class-time',c?.time||'','text',scheduled?'readonly':'placeholder="09:00–11:00"'),true)}</div><p id="class-course-price" class="help">${course?`整期课程费 ¥${Number(course.product?.price??course.fee??0).toFixed(2)}，沿用课程设置`:'请先选择课程'}</p><p class="help">保存班级后可按课程讲次批量排课。</p>${aActions('classes','saveClass()','保存班级')}</section>`;
 };
 function academicClassCandidateErrors(candidate,old){
  const errors=[],time=scTimeParts(candidate),roster=old?academicRosterIds(old):[];
@@ -104,12 +108,13 @@ function academicClassCandidateErrors(candidate,old){
 saveClass=auditAtomic(function(){
  if(!workflowGuard('classes'))return false;
  const index=a.selectedClass,old=index===null?null:a.classes[index];if(index!==null&&!old){toast('班级已不存在，请重新选择');return false}
- const course=academicClassCourse(academicValue('class-course')),candidate={...old,name:academicValue('class-name'),course:course?.name||'',courseId:course?.id||'',teacher:academicValue('class-teacher-form'),campus:academicValue('class-campus-form'),room:academicValue('class-room'),date:academicValue('class-date'),time:academicValue('class-time'),capacity:Number(academicValue('class-capacity'))},locationChanged=old&&['campus','room'].some(k=>old[k]!==candidate[k]);
+ const course=academicClassCourse(academicValue('class-course')),candidate={...old,name:academicValue('class-name'),course:course?.name||'',courseId:course?.id||'',teacher:academicValue('class-teacher-form'),campus:academicValue('class-campus-form'),room:academicValue('class-room'),date:academicValue('class-date'),time:academicValue('class-time'),duration:Number(academicValue('class-duration')),capacity:Number(academicValue('class-capacity'))},locationChanged=old&&['campus','room'].some(k=>old[k]!==candidate[k]);
  // Project the actual scheduled locations before checking conflicts. A previous
  // campus move may have given every lesson its own location snapshot.
  if(locationChanged&&old.schedule?.length)candidate.schedule=batchCampusProjection(old,candidate.campus,candidate.room).schedule;
  const errors=academicClassCandidateErrors(candidate,old),campus=academicCampus(candidate.campus);
  if(!candidate.name)errors.push('请输入班级名称');if(a.classes.some(c=>c!==old&&academicNameKey(c.name)===academicNameKey(candidate.name)))errors.push('班级名称已存在，请使用不同名称');
+ if(!Number.isInteger(candidate.duration)||candidate.duration<1||candidate.duration>1440)errors.push('每讲时长须为1至1440分钟的整数');
  if(!course?.id||course.active===false)errors.push('请选择有效且已启用的课程');else if(!course.lessons?.length)errors.push('所选课程尚未配置讲次，请先编辑课程');
  if(!campus||campus.active===false)errors.push('请选择有效且已启用的校区');
  if(!academicClassTeachers().includes(candidate.teacher))errors.push(`请选择在职老师${candidate.teacher?'（'+candidate.teacher+' 无有效教师档案）':''}`);

@@ -1,0 +1,14 @@
+.java-crm-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.java-crm-count{display:flex;align-items:center;justify-content:space-between;min-height:104px;color:#52647b;text-align:left;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.java-crm-count:hover{transform:translateY(-2px);box-shadow:0 8px 24px #1c385012}
+.java-crm-count strong{font-size:30px;color:#426C84}
+.sidebar-menu [hidden]{display:none!important}
+.java-crm-resource-search[hidden]{display:none!important}
+body .topbar:has(>.java-crm-resource-search:not([hidden])){grid-template-columns:minmax(100px,1fr) minmax(420px,620px) auto}
+body .topbar:has(>.java-crm-resource-search:not([hidden]))>.user{grid-column:3}
+body .topbar>.java-crm-resource-search{grid-column:2;grid-row:1;display:grid;grid-template-columns:auto minmax(112px,1fr) minmax(140px,1.6fr) auto;align-items:center;gap:8px;min-width:0;margin:0}
+.java-crm-resource-search>label{font-size:12px;color:#63738a;white-space:nowrap}
+.java-crm-resource-search .input,.java-crm-resource-search .select,.java-crm-resource-search .btn{width:100%;height:40px;min-height:40px;padding:8px 10px}
+.java-crm-resource-search>p{grid-column:1/-1;margin:0;color:#b42318;font-size:12px}
+@media(max-width:1200px){body .topbar:has(>.java-crm-resource-search:not([hidden])){grid-template-columns:minmax(0,1fr) auto}body .topbar:has(>.java-crm-resource-search:not([hidden]))>.user{grid-column:2}body .topbar>.java-crm-resource-search{grid-column:1/-1;grid-row:2}body .topbar:has(>.java-crm-resource-search:not([hidden]))>.global-action{grid-row:3}}
+@media(max-width:620px){body .topbar>.java-crm-resource-search{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.java-crm-resource-search>label{grid-column:1/-1}.java-crm-resource-search>.btn{grid-column:1/-1}}

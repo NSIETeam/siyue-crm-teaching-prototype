@@ -1,0 +1,84 @@
+/* Shared phone workspace. Desktop presentation and business rules are unchanged. */
+.mobile-nav-backdrop[hidden]{display:none!important}
+.mobile-nav-backdrop{display:none}
+@media(max-width:760px){
+ html,body{max-width:100%;min-width:0}
+ body .app,body .main{width:100%;max-width:100%;min-width:0}
+ body .sidebar,body .sidebar.is-collapsed{position:sticky;top:0;width:100%!important;height:48px;min-height:48px;max-height:48px;padding:4px 12px;z-index:110;background:#F5F8FA}
+ body .sidebar .sidebar-glass-header{height:40px;margin:0}
+ body .sidebar .sidebar-fold{width:40px;height:40px;flex-basis:40px}
+ body .sidebar .sidebar-menu{top:48px;width:min(320px,calc(100vw - 32px));max-height:calc(100dvh - 48px);overscroll-behavior:contain;padding-bottom:max(16px,env(safe-area-inset-bottom))}
+ body .sidebar :is(.menu-item,.nav-toggle){min-height:44px}
+ body.mobile-nav-open{overflow:hidden}
+ body.mobile-nav-open .mobile-nav-backdrop{display:block;position:fixed;inset:48px 0 0;z-index:100;border:0;background:#17294555;backdrop-filter:blur(2px);padding:0}
+ body .topbar{position:sticky;top:48px;z-index:80;min-height:56px;height:auto;padding:6px 12px;gap:8px;grid-template-columns:32px minmax(0,1fr) auto;background:#fff}
+ body .topbar .user{gap:6px;min-width:0}
+ body .topbar .global-action>.input{font-size:16px;min-height:44px;height:44px;padding-left:32px}
+ body .topbar #ui-annotation-desk{font-size:11px;padding:8px;min-height:36px;white-space:nowrap}
+ body #workspace-tabs .work-tabs-track{scrollbar-width:none;overscroll-behavior-x:contain;scroll-padding-inline:8px}
+ body .main>#workspace-tabs{margin:8px 8px 0}
+ body #workspace-tabs .work-tab-item{flex:0 0 148px;min-width:120px;width:148px;height:44px}
+ body #workspace-tabs .work-tab-label{min-height:44px;height:44px;padding-left:10px}
+ body #workspace-tabs .work-tab-close{width:32px;height:36px;flex-basis:32px;margin-right:2px}
+ body .main>#workspace-tabs:not([hidden])~#view.content{width:calc(100% - 16px);max-width:100%;margin:0 8px 12px;padding:12px 10px 24px;min-height:calc(100dvh - 164px)}
+ body #view.content>.card>.pad{padding:0}
+ body #view.content>.card{min-width:0;max-width:100%}
+ body #view.content :is(.heading,.toolbar,.actions,.toolbar-left,.toolbar-right,.business-submit-actions){min-width:0;max-width:100%;white-space:normal;flex-wrap:wrap;gap:8px}
+ body #view.content :is(.toolbar,.heading){margin-bottom:12px}
+ body #view.content :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),select,textarea){font-size:16px!important}
+ body #view.content :is(.input,.select,.btn){min-height:44px;height:auto}
+ body #view.content select{appearance:none;-webkit-appearance:none;height:44px!important;min-height:44px;padding:10px 30px 10px 12px;background-image:linear-gradient(45deg,transparent 50%,#758799 50%),linear-gradient(135deg,#758799 50%,transparent 50%);background-position:calc(100% - 16px) 19px,calc(100% - 12px) 19px;background-size:4px 4px;background-repeat:no-repeat}
+ body #view.content :is(.business-form-grid,.business-fieldset,.business-array-fields,.form-grid,.academic-grid,.scrm-followup-fields){grid-template-columns:minmax(0,1fr);gap:14px;min-width:0}
+ body #view.content :is(.business-field,.field,.ap-room-control){min-width:0;max-width:100%}
+ body #view.content .business-submit-actions>.btn{flex:1 1 130px}
+ body #view.content :is(.business-result>div,.bp-profile-fields,.scrm-facts){grid-template-columns:minmax(0,1fr);gap:6px}
+ body #view.content :is(.business-result dd,.scrm-note,.notice,.help,.business-error){overflow-wrap:anywhere}
+ body #view.content :is(.bp-filters,.scrm-filters,.business-lead-filters,.scrm-import-mapping,.ap-selectors,.schedule-filters){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:end;overflow:visible;min-width:0;margin:0 0 14px;padding:0}
+ body #view.content :is(.bp-filters,.scrm-filters)>.bp-filter:first-child,body #view.content .scrm-filters>.scrm-search{grid-column:1/-1}
+ body #view.content .bp-filters>.bp-filter{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;margin:0;font-size:12px;min-width:0;white-space:normal}
+ body #view.content :is(.bp-filters,.scrm-filters,.schedule-filters)>label>:is(input,select){width:100%;max-width:none;min-width:0;height:44px!important}
+ body #view.content .bp-student-filters>.bp-student-filter-actions{grid-column:1/-1;display:flex;width:100%;flex-wrap:wrap;gap:8px;margin:0}
+ body #view.content .bp-student-filter-actions>.btn{flex:1 1 auto;min-height:44px;height:44px;padding-inline:10px;font-size:13px}
+ body #view.content .scrm-filter-actions{gap:8px;padding-top:8px}
+ body #view.content .scrm-filter-actions .scrm-saved-views{margin-left:0;max-width:100%;width:100%;flex-wrap:wrap}
+ body #view.content .scrm-filter-actions .scrm-saved-views>.select{width:100%;flex:1;min-width:0}
+ body #view.content .scrm-list-header{grid-template-columns:minmax(0,1fr);gap:8px;margin-bottom:12px}
+ body #view.content .scrm-list-header .scrm-scope{grid-row:auto;justify-self:start}
+ body #view.content .scrm-status-strip>.business-tabs{gap:16px}
+ body #view.content .scrm-status-arrow{width:32px;flex-basis:32px;min-height:40px}
+ body #view.content :is(.tabs,.business-tabs,.bp-profile-tabs){gap:16px;max-width:100%;overflow-x:auto;white-space:nowrap;overscroll-behavior-x:contain}
+ body #view.content :is(.tabs,.business-tabs) button{min-height:44px;flex-shrink:0}
+ body #view.content :is(.table-wrap,.bp-table-wrap){max-width:100%;min-width:0;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+ body #view.content table.table.sy-mobile-cards{display:block;position:relative;min-width:0!important;width:100%!important;max-width:100%;border:0;table-layout:auto!important;background:transparent}
+ body #view.content .sy-mobile-cards thead{display:block;margin-bottom:8px}
+ body #view.content .sy-mobile-cards thead:not(:has(.sy-mobile-selection-heading)){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+ body #view.content .sy-mobile-cards thead tr{display:flex;align-items:center}
+ body #view.content .sy-mobile-cards th:not(.sy-mobile-selection-heading){position:absolute;overflow:hidden;clip-path:inset(50%);width:1px!important;height:1px;padding:0}
+ body #view.content .sy-mobile-cards th.sy-mobile-selection-heading{display:flex;align-items:center;gap:8px;width:auto!important;padding:8px 0;border:0;background:transparent;font-size:12px}
+ body #view.content .sy-mobile-selection-heading:after{content:'选择当前页'}
+ body #view.content .sy-mobile-cards tbody{display:grid;gap:12px;width:100%}
+ body #view.content .sy-mobile-cards .sy-mobile-record{display:grid;position:relative;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:14px;border:1px solid var(--line,#CBDDE7);border-radius:10px;background:#fff;width:100%;min-width:0}
+ body #view.content .sy-mobile-cards .sy-mobile-record>td{display:block;position:static!important;min-width:0!important;width:auto!important;max-width:100%;padding:0!important;white-space:normal!important;overflow-wrap:anywhere;border:0;box-shadow:none!important;background:transparent!important;font-size:13px;text-align:left!important}
+ body #view.content .sy-mobile-cards .sy-mobile-record>td:before{content:attr(data-mobile-label);display:block;margin-bottom:4px;color:#758799;font-size:11px;font-weight:400}
+ body #view.content .sy-mobile-cards .sy-mobile-record>td.sy-mobile-primary{grid-column:1/-1;font-size:15px;font-weight:600;padding-right:26px!important}
+ body #view.content .sy-mobile-cards .sy-mobile-record>td.sy-mobile-primary:before{display:none}
+ body #view.content .sy-mobile-cards .sy-mobile-record>td.sy-mobile-selection{position:absolute!important;right:12px;top:12px;width:24px!important;padding:0!important}
+ body #view.content .sy-mobile-cards .sy-mobile-selection:before{display:none}
+ body #view.content .sy-mobile-cards input[type="checkbox"]{width:20px;height:20px}
+ body #view.content .sy-mobile-cards tr:has(>td[colspan]){display:block;width:100%;min-width:0}
+ body #view.content .sy-mobile-cards tr>td[colspan]{display:block;width:100%;min-width:0;padding:12px!important;white-space:normal!important}
+ body #view.content .sy-mobile-cards tr[hidden]{display:none!important}
+ body #view.content .sy-mobile-cards .sy-mobile-record.sy-row-action-trigger:after,body #view.content .sy-mobile-cards .sy-mobile-record.bp-data-row:after,body #view.content .sy-mobile-cards .sy-mobile-record[aria-label="打开线索详情"]:after{content:'查看详情与操作 ›';grid-column:1/-1;color:var(--primary,#426C84);font-size:12px;padding-top:8px;border-top:1px solid #edf2f5}
+ body #view.content .sy-mobile-cards .sy-mobile-record>td[data-mobile-label="ID"]{display:none}
+ body #view.content .sy-mobile-cards .sy-row-action-content .btn{min-height:44px}
+ body #view.content .sy-mobile-cards .scrm-record-head{display:block}
+ body #view.content .scrm-pagination{align-items:stretch;gap:10px;padding-top:12px}
+ body #view.content .scrm-pagination .btn{min-height:44px}
+ body :is(dialog,.modal,.drawer){max-width:calc(100vw - 16px);max-height:calc(100dvh - 24px);overflow:auto}
+ body .modal-backdrop .modal,body .drawer{width:calc(100vw - 16px)}
+ body #ui-annotation-dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 24px)}
+ body .uia-head{position:sticky;top:0;background:#fff;z-index:1;padding:12px}
+ body #ui-annotation-pencil{width:32px;height:32px}
+ body .toast{left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));max-width:calc(100vw - 24px)}
+}
+@media(max-width:360px){body #view.content :is(.bp-filters,.scrm-filters,.business-lead-filters){grid-template-columns:minmax(0,1fr)}body .topbar #ui-annotation-desk{max-width:68px;white-space:normal;font-size:10px}}

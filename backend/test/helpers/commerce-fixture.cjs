@@ -1,0 +1,11 @@
+'use strict';
+const {fixture}=require('./remaining-http.cjs');
+async function setup(t,{capacity=10,price=10001}={}){
+ const f=await fixture(t),teacher=await f.employee(),peer=await f.employee({name:'商城第二教师'}),course=await f.course({priceCents:price}),published=(await f.execute('course.publish',{courseId:course.id})).result.course,klass=await f.klass(published,teacher,{capacity}),excluded=await f.klass(published,peer,{room:'教室2',schedule:published.lessons.map((l,i)=>({lessonId:l.id,date:i?'2026-11-01':'2026-10-31',time:'11:00–12:00'}))});await f.execute('product.publish',{courseId:published.id,classIds:[klass.id],expectedVersion:published.version});
+ const secondCourse=await f.course({priceCents:20002,subject:'语文'}),secondPublished=(await f.execute('course.publish',{courseId:secondCourse.id})).result.course,second=await f.klass(secondPublished,teacher,{room:'教室3',capacity,schedule:secondPublished.lessons.map((l,i)=>({lessonId:l.id,date:i?'2026-11-01':'2026-10-31',time:'13:00–14:00'}))});await f.execute('product.publish',{courseId:secondPublished.id,classIds:[second.id]});
+ const students=[];for(let i=0;i<4;i++)students.push((await f.execute('student.create',{name:'商城学生'+i,phone:'1390000010'+i,grade:'小四',campusId:'A'})).result.student);
+ const promotion=async(type,extra={})=>{const input={type,name:'真实'+type+'活动',start:'2026-10-30',end:'2026-11-30',discountMinor:type==='group'?1001:10000,thresholdMinor:0,courseIds:type==='group'?[published.id]:[published.id,secondPublished.id],...(type==='group'?{groupSize:2,validHours:24}:{}),...extra},record=(await f.execute('promotion.create',input)).result.record;return (await f.execute('promotion.publish',{type,promotionId:record.id,expectedVersion:record.version})).result.record};
+ const cart=(type,offer,indices=[0,1])=>({type,...(offer?{promotionId:offer.id}:{}),buyers:(type==='joint'?[students[0]]:indices.map(i=>students[i])).map(s=>({studentId:s.id})),items:type==='joint'?[{buyerIndex:0,classId:klass.id},{buyerIndex:0,classId:second.id}]:indices.map((_,i)=>({buyerIndex:i,classId:klass.id}))});
+ return {f,teacher,course:published,klass,excluded,secondCourse:secondPublished,second,students,promotion,cart};
+}
+module.exports={setup};

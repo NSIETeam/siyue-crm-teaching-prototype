@@ -1,0 +1,4 @@
+ 'use strict';
+const test=require('node:test'),assert=require('node:assert/strict');
+const {fixture}=require('./helpers/remaining-http.cjs');
+test('authenticated sales cannot bypass trial-only reception through the retired endpoint',async t=>{const f=await fixture(t);const sales=await f.employee({roleIds:['sales'],scope:{type:'own'}});f.seed(s=>{s.leads.push({id:'hidden-other',name:'PRIVATE_NAME',ownerId:'other',history:[{note:'PRIVATE_HISTORY'}]});});const r=await f.call(sales,'/v1/crm/reception?search=PRIVATE');assert.equal(r.status,410);assert.equal(r.body.code,'RECEPTION_LOOKUP_RETIRED');assert(!JSON.stringify(r.body).includes('PRIVATE_'));const anon=await require('./helpers/remaining-http.cjs').request(f.server,'/v1/crm/reception?search=PRIVATE');assert.equal(anon.status,401);const trials=await f.call(sales,'/v1/crm/trials/requests?status=approved&page=1&pageSize=25');assert.equal(trials.status,200);});

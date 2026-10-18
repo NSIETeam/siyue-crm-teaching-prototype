@@ -15,6 +15,11 @@
       },
       "frontendAliases": [
         "action.quickRegister.f299e5f6"
+      ],
+      "rules": [
+        "followChoice 未提供时保留旧的去向决策流程；有跟进权限者进入待决策，无跟进权限者进入公海",
+        "followChoice=self 需要 lead.follow 并由当前员工本人跟进；followChoice=public 直接进入公海",
+        "显式 followChoice 不得同时提交 ownerId；无 followChoice 时指定 ownerId 仍需要 lead.assign"
       ]
     },
     {
@@ -67,6 +72,10 @@
       },
       "frontendAliases": [
         "action.myLeads.b7fe9ead"
+      ],
+      "rules": [
+        "lost_cold 必须提供非空 note；已报名或已收款线索不可标记为流失",
+        "lost_cold 会清除下次跟进时间并将阶段设为已流失"
       ]
     },
     {
@@ -991,7 +1000,13 @@
             "minLength": 1,
             "maxLength": 100
           },
-          "contact": {
+          "phone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "接受规范手机号及旧系统支持的+86格式"
+          },
+          "source": {
             "type": "string",
             "minLength": 1,
             "maxLength": 100
@@ -1000,29 +1015,37 @@
             "type": "string",
             "format": "uuid"
           },
-          "source": {
+          "ownerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "guardian": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "grade": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 5000
+          },
+          "followChoice": {
             "type": "string",
             "enum": [
-              "sales",
-              "operations",
-              "street",
-              "private",
-              "event",
-              "other"
+              "self",
+              "public"
             ]
-          },
-          "sourceRef": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
-          },
-          "retainForSelf": {
-            "type": "boolean"
           }
         },
         "required": [
           "name",
-          "contact",
+          "phone",
           "source"
         ],
         "additionalProperties": false
@@ -1119,28 +1142,37 @@
             "type": "string",
             "format": "uuid"
           },
-          "content": {
+          "note": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 10000
+            "maxLength": 5000
           },
           "nextFollowAt": {
             "type": "string",
             "format": "date-time"
           },
-          "intent": {
+          "channel": {
+            "type": "string",
+            "enum": [
+              "电话",
+              "线上会议",
+              "现场沟通"
+            ]
+          },
+          "disposition": {
             "type": "string",
             "enum": [
               "high",
               "medium",
               "low",
-              "unknown"
+              "lost_cold"
             ]
           }
         },
         "required": [
           "leadId",
-          "content"
+          "note",
+          "channel"
         ],
         "additionalProperties": false
       },

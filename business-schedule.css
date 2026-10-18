@@ -1,15 +1,51 @@
 /* Preserve schedule-caterpillar.css's mature layout; scope only server-specific details. */
-.business-schedule .schedule-view-tabs{gap:24px;border-bottom:1px solid #e1e8f2;flex-wrap:nowrap;overflow-x:auto}
+.business-schedule .schedule-view-tabs{gap:24px;border-bottom:1px solid #CBDDE7;flex-wrap:nowrap;overflow-x:auto}
 .business-schedule .schedule-view-tabs>.btn{position:relative;flex:0 0 auto;border:0;border-radius:0;background:transparent;box-shadow:none;color:#7b8ba4;padding:12px 2px;font-weight:600}
-.business-schedule .schedule-view-tabs>.btn::after{content:"";position:absolute;height:3px;background:#315deb;left:0;right:0;bottom:0;transform:scaleX(0);transform-origin:center;transition:transform .18s ease}
-.business-schedule .schedule-view-tabs>.btn.primary{color:#315deb}
+.business-schedule .schedule-view-tabs>.btn::after{content:"";position:absolute;height:3px;background:#426C84;left:0;right:0;bottom:0;transform:scaleX(0);transform-origin:center;transition:transform .18s ease}
+.business-schedule .schedule-view-tabs>.btn.primary{color:#426C84}
 .business-schedule .schedule-view-tabs>.btn.primary::after{transform:scaleX(1)}
 .business-schedule .worm-segment{height:96px;border-radius:0;margin:0;min-width:0;box-sizing:border-box}
 .business-schedule .worm-segment.is-cancelled{background:#f0f2f6;color:#788597;border-color:#cbd4df}
-.business-schedule .worm-segment.is-selected{outline:2px solid #315deb;outline-offset:-2px;z-index:1}
+.business-schedule .worm-segment.is-selected{outline:2px solid #426C84;outline-offset:-2px;z-index:1}
 .business-schedule .table th,.business-schedule .table td{white-space:nowrap;word-break:normal}
-.business-schedule .table .is-selected{background:#f0f5ff}
-.business-schedule .business-session-actions{padding-top:18px;margin-top:18px;border-top:1px solid #e1e8f2}
+.business-schedule .table .is-selected{background:#EAF2F6}
+.business-schedule .business-session-actions{padding-top:18px;margin-top:18px;border-top:1px solid #CBDDE7}
 .business-schedule .business-session-actions>.actions{margin-top:12px}
 .business-schedule-invalid{display:flex;gap:8px;flex-wrap:wrap;padding:10px}
+.business-schedule .schedule-week-nav{display:flex;align-items:center;gap:8px;margin:14px 0 10px}
+.business-schedule .schedule-week-nav strong{min-width:190px;text-align:center;color:#334155;font-size:14px}
+.business-schedule .schedule-week-nav .btn{min-width:36px}
+.business-schedule .schedule-filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.business-schedule .schedule-filters .select,.business-schedule .schedule-filters input{min-width:145px;max-width:220px}
+.business-schedule .schedule-date-separator{color:#64748b}
+.business-schedule .schedule-time-table{min-width:1180px}
+.business-schedule .schedule-time-table td{vertical-align:middle}
+.business-schedule .schedule-time-table td:nth-child(3){min-width:220px;white-space:normal}
+.business-schedule .schedule-week-wrap{overflow:auto}
+.business-schedule .schedule-week-table{width:100%;min-width:1120px;table-layout:fixed;border-collapse:separate;border-spacing:0}
+.business-schedule .schedule-week-table th,.business-schedule .schedule-week-table td{width:calc((100% - 190px)/7);min-width:128px;vertical-align:top;white-space:normal;border-right:1px solid #e5eaf1}
+.business-schedule .schedule-week-table thead th{position:sticky;top:0;z-index:2;background:#EAF2F6;text-align:center;padding:12px 8px}
+.business-schedule .schedule-week-table thead th:first-child{left:0;z-index:3;width:190px;min-width:190px}
+.business-schedule .schedule-week-table .schedule-entity{position:sticky;left:0;z-index:1;width:190px;min-width:190px;background:#fff;color:#334155;font-weight:650}
+.business-schedule .schedule-week-table td{height:116px;padding:8px;background:#fff}
+.business-schedule .schedule-legend{display:flex;align-items:center;gap:16px;margin:12px 0;color:#64748b;font-size:12px}
+.business-schedule .schedule-legend span{display:inline-flex;align-items:center;gap:6px}
+.business-schedule .schedule-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;background:#426C84}
+.business-schedule .schedule-legend i.is-conflict{background:#ef4444}
+.business-schedule .schedule-legend i.is-free{background:#10b981}
+.business-schedule .schedule-day-events{display:grid;gap:7px}
+.business-schedule .schedule-event{display:grid;width:100%;gap:4px;padding:8px;border:1px solid #CBDDE7;border-radius:7px;background:#EAF2F6;color:#426C84;text-align:left;cursor:pointer;line-height:1.35}
+.business-schedule .schedule-event strong{font-size:12px}
+.business-schedule .schedule-event span{font-size:12px;font-weight:650;overflow-wrap:anywhere}
+.business-schedule .schedule-event small{color:#475569;font-size:10px;overflow-wrap:anywhere}
+.business-schedule .schedule-event em{color:#b91c1c;font-size:10px;font-style:normal;font-weight:700}
+.business-schedule .schedule-event.is-conflict{border-color:#fecaca;background:#fff1f2;color:#991b1b}
+.business-schedule .schedule-event.is-done{border-color:#bbf7d0;background:#f0fdf4;color:#166534}
+.business-schedule .schedule-event.is-selected{outline:2px solid #426C84;outline-offset:1px}
+.business-schedule .schedule-free{display:inline-block;margin:12px 4px;color:#94a3b8;font-size:12px}
+@media(max-width:760px){.business-schedule .schedule-week-nav{flex-wrap:wrap}.business-schedule .schedule-week-nav strong{min-width:0;flex:1}.business-schedule .schedule-filters{align-items:stretch}.business-schedule .schedule-filters .select,.business-schedule .schedule-filters input{max-width:none;flex:1 1 140px}}
 @media(prefers-reduced-motion:reduce){.business-schedule .schedule-view-tabs>.btn::after{transition:none}}
+.business-schedule .schedule-week-nav label{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:13px;color:#64748b}
+.business-schedule .schedule-week-nav .input{width:160px}
+.business-schedule .schedule-event.is-cancelled{border-color:#d1d5db;background:#f3f4f6;color:#6b7280}
+.business-schedule .schedule-event.is-conflict.is-done{border-color:#fecaca;background:#fff1f2;color:#991b1b}

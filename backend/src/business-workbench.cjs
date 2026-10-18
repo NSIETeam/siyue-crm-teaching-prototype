@@ -1,0 +1,48 @@
+'use strict';
+const {assert}=require('./business-common.cjs');
+const queries=require('./business-scrm-query.cjs');
+const {scopedAuditEvents}=require('./audit-query.cjs');
+const {scrub}=require('./business-reception.cjs');
+const workViews=require('./business-work-views.cjs');
+const has=(actor,...ps)=>ps.some(p=>actor.permissions?.includes(p));
+const isManager=actor=>['all','campus'].includes(actor.scope?.type)&&has(actor,'report.read');
+const stamp=v=>{const t=Date.parse(v);return Number.isFinite(t)?t:null;};
+const day=t=>new Date(t+28800000).toISOString().slice(0,10);
+function compare(a,b){return a.urgency-b.urgency||(stamp(a.at)??Infinity)-(stamp(b.at)??Infinity)||a.id.localeCompare(b.id);}
+function overview(snapshot,actor,directory,projection,events=[],operations=[],now=Date.now(),requestedView){
+ assert(actor&&!actor.disabled&&has(actor,'dashboard.read'),'没有工作台权限','FORBIDDEN',403);
+ const {view,views}=workViews.select(actor,requestedView),mode=view.id;
+ const state=snapshot.state,today=day(now),items=new Map(),manager=isManager(actor)&&['superadmin','principal','auditor'].includes(mode),rows=k=>projection[k]||[];
+ const inView=(...ids)=>ids.includes(mode),scopeLabel=actor.scope.type==='all'?'全部授权范围':actor.scope.type==='campus'?'授权校区':actor.scope.type==='assigned'?'本人授课范围':'本人负责范围';
+ const list=(resource,queue='all',scope='mine')=>has(actor,...(queries.permissions[resource]||[]))?queries.rowsFor(state,actor,queries.filters({resource,queue,scope},actor),projection,now):[];
+ const add=(id,type,title,detail,at,action,urgent=false,timed=true)=>{const t=stamp(at);const urgency=urgent||timed&&t!==null&&t<now?0:timed&&t!==null&&t<=now+3600000?1:2;const item={id,type,title:scrub(title),detail:scrub(detail),at:t===null?null:new Date(t).toISOString(),urgency,urgencyLabel:urgency===0?'紧急':urgency===1?'即将到时':'常规',action};if(!items.has(id)||compare(item,items.get(id))<0)items.set(id,item);};
+ const queueAction=(resource,row,scope='mine')=>({query:{resource,scope,queue:'all',id:row.id||row.leadId}}),team=queries.canTeam(actor)?'team':'mine';
+ if(inView('sales','superadmin')){
+  for(const lead of list('leads')){const timing=queries.timing(state,lead,now);if(!timing.active)continue;const first=stamp(lead.assignedAt||lead.createdAt),deadline=timing.firstContact&&first!==null?first+Number(state.leadPolicy?.firstFollowHours??4)*3600000:null,next=stamp(lead.nextFollowAt),due=[deadline,next].filter(t=>t!==null&&day(t)<=today).sort((a,b)=>a-b)[0];if(due!==undefined)add('lead:'+lead.id,'followup',lead.name,timing.firstContact?'首次联系':'预约回访',new Date(due).toISOString(),queueAction('leads',lead));}
+  for(const [resource,type,label]of [['crmTasks','task','跟进任务'],['serviceTickets','service','服务工单']])for(const row of list(resource)){if(['completed','closed','resolved','cancelled','已完成','已取消'].includes(row.status))continue;const at=row.dueAt||row.nextFollowAt;if(stamp(at)!==null&&day(stamp(at))>today)continue;add(resource+':'+row.id,type,row.title||row.name||label,label,at,queueAction(resource,row),['urgent','high','紧急','高'].includes(row.priority));}
+ }
+ if(inView('superadmin','operations','sales'))for(const row of list('formSubmissions','pending',mode==='sales'?'mine':team))if(has(actor,'lead.create'))add('formSubmissions:'+row.id,'review','表单提交审核',row.name||'待处理',row.dueAt,{page:'formSubmissions'},false,!!row.dueAt);
+ if(inView('superadmin','principal')){
+  if(has(actor,'lead.assign'))for(const row of list('leads','unassigned',team))add('assign:'+row.id,'assignment',row.name,'待分配负责人',null,queueAction('leads',row,team));
+  for(const [resource,label,page,allowed]of [['leadReclaimRequests','超时线索申请','myLeads',has(actor,'lead.assign')],['attributionRequests','业绩归因审核','crmAttribution',has(actor,'lead.assign')]])if(allowed)for(const row of list(resource,'pending',team))add(resource+':'+row.id,'review',label,row.name||row.reason||'待处理',row.dueAt,{page},false,!!row.dueAt);
+ }
+ const todaySessions=has(actor,'schedule.read')?rows('classes').flatMap(c=>(c.schedule||[]).filter(s=>s.date===today&&!['cancelled','已取消'].includes(s.status)&&(mode!=='teacher'||(s.substituteTeacherId||s.teacherId||c.teacherId)===actor.id)).map(s=>({c,s}))):[];
+ if(inView('academic','teacher'))for(const {c,s}of todaySessions){if(['completed','已完成'].includes(s.status))continue;const at=s.date+'T'+String(s.time).slice(0,5)+':00+08:00';add('session:'+c.id+':'+s.id,'lesson',c.name,String(s.time||'')+' · '+(s.room||c.room||''),at,{page:mode==='teacher'?'teacherCourses':'schedule'},false,false);}
+ if(inView('superadmin','principal','academic')&&has(actor,'session.move'))for(const r of rows('rescheduleRequests').filter(r=>r.status==='pending'))add('reschedule:'+r.id,'review','调课申请',r.className||'待处理',r.dueAt,{page:'rescheduleApprovals'},false,!!r.dueAt);
+ const unpaid=rows('orders').filter(r=>!['cancelled','closed'].includes(r.status)&&Number(r.totalCents??r.amountCents??0)>Number(r.paidCents||0));
+ if(inView('finance','sales','superadmin')&&has(actor,'order.confirmReceipt','order.paymentLink'))for(const r of unpaid){const at=r.dueAt||r.paymentDueAt;if(stamp(at)!==null&&day(stamp(at))>today)continue;const owed=Number(r.totalCents??r.amountCents??0)-Number(r.paidCents||0);add('order:'+r.id,'payment',mode==='sales'?'待跟进收款':'待收款订单','待收 ¥'+(owed/100).toFixed(2),at,{page:'financeArrears'});}
+ const pendingRefunds=rows('refunds').filter(r=>r.status==='pending'),approvedRefunds=rows('refunds').filter(r=>r.status==='approved');
+ if(inView('finance','superadmin'))for(const r of [...pendingRefunds,...approvedRefunds]){if(!has(actor,r.status==='pending'?'refund.approve':'refund.submit'))continue;add('refund:'+r.id,'refund',r.status==='pending'?'待核准退款':'待确认线下退款','¥'+(Number(r.approvedAmountCents??r.amountCents??0)/100).toFixed(2),r.dueAt,{page:'financeRefunds'},false,!!r.dueAt);}
+ if(inView('sales','academic','superadmin','principal')&&(has(actor,'lead.follow')||actor.roleIds?.some(r=>['academic','superadmin'].includes(r))&&has(actor,'class.create')&&['all','campus'].includes(actor.scope?.type))){const result=require('./business-trial-workflow.cjs').read(snapshot,actor,directory,'/v1/crm/trials/requests',new URLSearchParams({date:'today',status:'approved',pageSize:'50'}),new Date(now).toISOString());for(let page=1,part=result;;){for(const r of part.items)add('trial:'+r.id,'trial',r.name,(r.slot?.courseName||'试听')+' · '+(r.slot?.time||'')+' · '+(r.salesName||''),r.slot?.start?new Date(r.slot.start).toISOString():null,{page:'crmReception'},false,false);if(page*50>=result.total)break;part=require('./business-trial-workflow.cjs').read(snapshot,actor,directory,'/v1/crm/trials/requests',new URLSearchParams({date:'today',status:'approved',pageSize:'50',page:String(++page)}),new Date(now).toISOString());}}
+ const dashboard=[],latest=[],metric=(label,value,page,unit='',query)=>dashboard.push({label,value,page,unit,...(query?{query}:{})});
+ if(inView('superadmin','principal','auditor','sales','operations')&&has(actor,'lead.read','lead.assign')){const leadScope=mode==='sales'?'mine':team,leads=list('leads','all',leadScope);metric('跟进中线索',leads.filter(l=>queries.timing(state,l,now).active).length,'myLeads','',{resource:'leads',scope:leadScope,queue:'all',stage:'跟进中'});if(mode!=='sales')metric('待分配线索',list('leads','unassigned',leadScope).length,'myLeads','',{resource:'leads',scope:leadScope,queue:'unassigned'});}
+ if(inView('superadmin','principal','auditor','academic','teacher')&&has(actor,'student.read'))metric(mode==='teacher'?'我的学生':'在读学员',new Set(rows('enrollments').filter(e=>['active','在读','已生效'].includes(e.status)&&(mode!=='teacher'||rows('classes').some(c=>c.id===e.classId&&(c.teacherId===actor.id||(c.schedule||[]).some(s=>(s.substituteTeacherId||s.teacherId||c.teacherId)===actor.id))))).map(e=>e.studentId)).size,mode==='teacher'?'teacherStudents':'learningActive','人');
+ if(inView('superadmin','principal','auditor','academic','teacher')&&has(actor,'schedule.read'))metric(mode==='teacher'?'本人今日课次':'今日课次',todaySessions.length,mode==='teacher'?'teacherCourses':'schedule','节');
+ if(inView('finance','sales','superadmin','principal','auditor')&&has(actor,'order.read')){metric('待收款订单',unpaid.length,'financeArrears','笔');metric('待收金额',unpaid.reduce((n,r)=>n+Number(r.totalCents??r.amountCents??0)-Number(r.paidCents||0),0)/100,'financeArrears','元');}
+ if(inView('finance')&&has(actor,'refund.read')){metric('待核准退款',pendingRefunds.length,'financeRefunds','笔');metric('待确认退款',approvedRefunds.length,'financeRefunds','笔');}
+ if(inView('academic')&&has(actor,'session.move'))metric('待审调课',rows('rescheduleRequests').filter(r=>r.status==='pending').length,'rescheduleApprovals','项');
+ if(inView('operations')){metric('获客活动',rows('campaigns').length,'crmCampaigns','个');metric('已发布表单',rows('forms').filter(f=>f.published===true||f.status==='published').length,'marketingForms','张');metric('待审核提交',list('formSubmissions','pending',team).length,'formSubmissions','条');}
+ if(manager){const labels=new Map(operations.map(op=>[op.id,op.label]));const changes=events.filter(e=>e.outcome==='success'&&labels.has(e.action)&&Array.isArray(e.details?.changes)&&e.details.changes.length);for(const e of scopedAuditEvents(changes,actor,directory,state).filter(e=>e.details?.changes?.length).sort((a,b)=>b.at.localeCompare(a.at)||a.id.localeCompare(b.id)).slice(0,10))latest.push({id:e.id,at:e.at,actorName:scrub(e.actorName||directory.find(u=>u.id===e.actorId)?.name||'系统'),label:labels.get(e.action),outcome:'已完成'});}
+ return {today,items:[...items.values()].sort(compare),total:items.size,manager,scopeLabel,dashboard,latest,view,views,revision:snapshot.revision,updatedAt:new Date(now).toISOString()};
+}
+module.exports={overview,compare,isManager};

@@ -3728,7 +3728,13 @@
             "minLength": 1,
             "maxLength": 100
           },
-          "contact": {
+          "phone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "接受规范手机号及旧系统支持的+86格式"
+          },
+          "source": {
             "type": "string",
             "minLength": 1,
             "maxLength": 100
@@ -3737,29 +3743,37 @@
             "type": "string",
             "format": "uuid"
           },
-          "source": {
+          "ownerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "guardian": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "grade": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 5000
+          },
+          "followChoice": {
             "type": "string",
             "enum": [
-              "sales",
-              "operations",
-              "street",
-              "private",
-              "event",
-              "other"
+              "self",
+              "public"
             ]
-          },
-          "sourceRef": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
-          },
-          "retainForSelf": {
-            "type": "boolean"
           }
         },
         "required": [
           "name",
-          "contact",
+          "phone",
           "source"
         ],
         "additionalProperties": false
@@ -3856,28 +3870,37 @@
             "type": "string",
             "format": "uuid"
           },
-          "content": {
+          "note": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 10000
+            "maxLength": 5000
           },
           "nextFollowAt": {
             "type": "string",
             "format": "date-time"
           },
-          "intent": {
+          "channel": {
+            "type": "string",
+            "enum": [
+              "电话",
+              "线上会议",
+              "现场沟通"
+            ]
+          },
+          "disposition": {
             "type": "string",
             "enum": [
               "high",
               "medium",
               "low",
-              "unknown"
+              "lost_cold"
             ]
           }
         },
         "required": [
           "leadId",
-          "content"
+          "note",
+          "channel"
         ],
         "additionalProperties": false
       },

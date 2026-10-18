@@ -1,0 +1,45 @@
+.java-crm-needs { --jn-gap: 16px; display: grid; gap: var(--jn-gap); min-width: 0; }
+.java-crm-needs *, .java-crm-needs *::before, .java-crm-needs *::after { box-sizing: border-box; }
+.java-crm-needs .jn-heading, .java-crm-needs .jn-toolbar, .java-crm-needs .jn-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.java-crm-needs .jn-heading { justify-content: space-between; }
+.java-crm-needs .jn-heading h1, .java-crm-needs .jn-panel h2, .java-crm-needs .jn-panel h3 { margin: 0; }
+.java-crm-needs .jn-heading p { margin: 8px 0 0; }
+.java-crm-needs .jn-summary { position: sticky; top: 0; z-index: 3; background: var(--card, #fff); border: 1px solid var(--border, #dbe2ea); border-radius: 12px; padding: 18px; }
+.java-crm-needs .jn-summary-grid, .java-crm-needs .jn-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--jn-gap); }
+.java-crm-needs .jn-summary-grid { margin-top: 16px; }
+.java-crm-needs .jn-summary-grid dt { color: var(--muted, #64748b); font-size: 12px; margin-bottom: 6px; }
+.java-crm-needs .jn-summary-grid dd { margin: 0; overflow-wrap: anywhere; }
+.java-crm-needs .jn-panel { background: var(--card, #fff); border: 1px solid var(--border, #dbe2ea); border-radius: 12px; padding: 20px; min-width: 0; }
+.java-crm-needs .jn-panel > h2, .java-crm-needs .jn-panel > h3, .java-crm-needs .jn-panel > .jn-toolbar { margin-bottom: 16px; }
+.java-crm-needs fieldset { min-width: 0; border: 0; padding: 0; margin: 0 0 16px; }
+.java-crm-needs legend { margin-bottom: 12px; font-weight: 600; }
+.java-crm-needs .jn-field { display: grid; grid-template-rows: auto 40px auto; align-content: start; gap: 6px; min-width: 0; }
+.java-crm-needs .jn-field label { font-weight: 500; font-size: 13px; }
+.java-crm-needs .jn-field input:not([type="checkbox"]):not([type="radio"]), .java-crm-needs .jn-field select { width: 100%; height: 40px; min-height: 40px; min-width: 0; padding: 8px 10px; border: 1px solid var(--border, #cbd5e1); border-radius: 7px; background: #fff; color: inherit; font: inherit; }
+.java-crm-needs .jn-field textarea { width: 100%; height: 128px; min-height: 128px; padding: 10px; border: 1px solid var(--border, #cbd5e1); border-radius: 7px; resize: vertical; font: inherit; }
+.java-crm-needs .jn-field:has(textarea) { grid-template-rows: auto 128px auto; }
+.java-crm-needs .jn-field input:disabled, .java-crm-needs .jn-field select:disabled { background: #f4f6f8; color: #64748b; }
+.java-crm-needs .jn-wide { grid-column: 1 / -1; }
+.java-crm-needs .jn-half { grid-column: span 2; }
+.java-crm-needs .jn-hint { color: var(--muted, #64748b); font-size: 12px; line-height: 1.6; margin: 0; }
+.java-crm-needs .jn-steps { display: flex; gap: 8px; list-style: none; padding: 0; margin: 0; flex-wrap: wrap; }
+.java-crm-needs .jn-steps li { flex: 1 1 140px; padding: 10px 14px; border: 1px solid var(--border, #dbe2ea); border-radius: 8px; background: #fff; }
+.java-crm-needs .jn-steps [aria-current="step"] { color: #426C84; border-color: #CBDDE7; background: #EAF2F6; font-weight: 600; }
+.java-crm-needs .jn-actions { margin-top: 18px; justify-content: flex-end; }
+.java-crm-needs .jn-actions .btn, .java-crm-needs .jn-toolbar .btn { min-height: 40px; }
+.java-crm-needs .jn-table { width: 100%; border-collapse: collapse; }
+.java-crm-needs .jn-table th, .java-crm-needs .jn-table td { padding: 12px; border-bottom: 1px solid var(--border, #e2e8f0); text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.java-crm-needs .jn-table th { background: #EAF2F6; white-space: nowrap; font-size: 13px; }
+.java-crm-needs .jn-table .btn { white-space: nowrap; }
+.java-crm-needs .jn-table-wrap { overflow-x: auto; }
+.java-crm-needs .jn-empty { padding: 18px; color: var(--muted, #64748b); background: #EAF2F6; border-radius: 8px; }
+.java-crm-needs .jn-error { border: 1px solid #fca5a5; background: #fef2f2; color: #991b1b; padding: 14px 16px; border-radius: 8px; overflow-wrap: anywhere; }
+.java-crm-needs .jn-notice { border: 1px solid #fde68a; background: #fffbeb; color: #92400e; padding: 14px 16px; border-radius: 8px; }
+.java-crm-needs .jn-success { border: 1px solid #86efac; background: #f0fdf4; color: #166534; padding: 14px 16px; border-radius: 8px; }
+.java-crm-needs .jn-choice { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid var(--border, #dbe2ea); border-radius: 8px; }
+.java-crm-needs .jn-choice input { margin-top: 4px; }
+.java-crm-needs .jn-choice p { margin: 4px 0 0; }
+.java-crm-needs .jn-pager { display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+.java-crm-needs .jn-disabled { opacity: .65; }
+@media (max-width: 1100px) { .java-crm-needs .jn-summary-grid, .java-crm-needs .jn-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 650px) { .java-crm-needs .jn-summary { position: static; } .java-crm-needs .jn-summary-grid, .java-crm-needs .jn-grid { grid-template-columns: minmax(0, 1fr); } .java-crm-needs .jn-half { grid-column: auto; } .java-crm-needs .jn-panel { padding: 14px; } .java-crm-needs .jn-actions { justify-content: stretch; } .java-crm-needs .jn-actions .btn { flex: 1; } }

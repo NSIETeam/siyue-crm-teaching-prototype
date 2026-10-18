@@ -10,6 +10,7 @@ const date={...text('日期或带时区的时间',40),description:'YYYY-MM-DD �
 const range={from:date,to:date};
 const page={limit:{type:'integer',minimum:1,maximum:500,title:'每页数量'}};
 const selected={id:identifier('记录编号；只在服务器已授权结果中筛选')};
+const crmFilters={resource:{type:'string',enum:['leads','customers','campaigns','touchpoints','consultations','crmTaskBatches','crmTasks','opportunities','orders','receipts','refunds','enrollments','serviceTickets','attributionRequests','importBatches','routingRules','routingQueue','formSubmissions','trialBookings','leadReclaimRequests','savedCrmViews'],title:'业务资源'},scope:{type:'string',enum:['mine','team'],title:'本人或授权团队'},queue:{type:'string',enum:['all','firstContact','today','overdue','future','unassigned','decision','pending','converted','recycleSoon','recycle','unmatched','archived','completed','active','created','participated','registered'],title:'办理队列'},...selected,customerId:identifier('客户编号'),campaignId:identifier('活动编号'),ownerId:identifier('负责人编号'),campusId:identifier('校区编号'),stage:text('阶段'),status:text('状态'),taskType:text('任务类型'),search:text('姓名、联系方式或业务编号',200),...range,dateField:{type:'string',enum:['createdAt','completedAt','paidAt','at','receivedAt','submittedAt'],title:'统计日期字段'},sort:{type:'string',enum:['updatedAt:desc','createdAt:desc','createdAt:asc','nextFollowAt:asc','dueAt:asc','name:asc'],title:'排序'},page:{type:'integer',minimum:1,maximum:1000000,title:'页码'},pageSize:{type:'integer',minimum:1,maximum:200,title:'每页条数'}};
 const auditFields={
  view:{type:'string',enum:['activity','attention','all'],title:'日志视图'},
  actor:text('员工编号（actorId 的兼容名）',128),actorId:text('员工编号',128),actorQuery:text('员工姓名、账号或工号'),
@@ -19,6 +20,11 @@ const auditFields={
 const definitions=[
  ['health','服务状态','/healthz'],['api-contract','API 接口契约','/openapi.json'],['me','当前登录员工','/v1/auth/me'],
  ['state','全部授权业务数据','/v1/state'],['catalog','当前账号可执行操作','/v1/catalog'],
+ ['lead-owners','线索负责人推荐与搜索','/v1/crm/lead-owners',{campusId:identifier('校区编号'),search:text('销售姓名或工号',120),page:{type:'integer',minimum:1,maximum:1000000},pageSize:{type:'integer',minimum:1,maximum:200}}],
+ ['trial-requests','试听预约与复核列表','/v1/crm/trials/requests',{leadId:identifier('线索编号'),status:{type:'string',enum:['all','pending','approved','rejected','cancelled']},date:text('试听日期YYYY-MM-DD或today',10),subject:text('试听课程科目'),page:{type:'integer',minimum:1,maximum:1000000},pageSize:{type:'integer',minimum:1,maximum:50}}],
+ ['crm-query','CRM 业务队列与客户检索','/v1/crm/query',crmFilters],
+ ['crm-workbench','CRM 工作台','/v1/crm/workbench',{scope:crmFilters.scope}],
+ ['crm-reports','CRM 经营报表','/v1/crm/reports',{scope:crmFilters.scope,...range}],
  ['students','学生档案','/v1/students',selected,'items'],['employees','员工档案','/v1/employees',selected,'items'],
  ['leads','线索','/v1/leads',selected,'items'],['orders','收费订单','/v1/orders',selected,'items'],
  ['schedule','班级及课表','/v1/schedule',selected,'items'],['reports','综合统计','/v1/reports'],
@@ -50,7 +56,7 @@ for(const [id,label,collection] of [
 ])definitions.push({id,label,endpoint:'/v1/state',collection,inputSchema:schema(),collectionType:'value'});
 
 const registry=new Map(definitions.map(definition=>[definition.id,definition]));
-const queries=definitions.map(({id,label,inputSchema})=>({id,label,inputSchema:structuredClone(inputSchema)}));
+const queries=definitions.map(({id,label,inputSchema,endpoint,collection,itemKey,collectionType,required})=>({id,label,method:'GET',endpoint,requiredQueryParams:required||[],...(collection?{projection:{collection,collectionType}}:{}),...(itemKey?{responseCollection:itemKey}:{}),authorization:'server-enforced and scope-filtered',inputSchema:structuredClone(inputSchema)}));
 function validDate(value){
  const parts=value.match(/^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2}))?$/);
  if(!parts)return false;

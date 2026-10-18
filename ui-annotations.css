@@ -1,0 +1,22 @@
+#ui-annotation-pencil{position:fixed;z-index:10020;display:none;width:30px;height:30px;padding:6px;border:1px solid #CBDDE7;border-radius:8px;background:#fff;color:#426C84;box-shadow:0 4px 16px #1c385026;cursor:pointer}
+#ui-annotation-pencil.is-visible{display:grid;place-items:center}
+#ui-annotation-pencil svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#ui-annotation-desk{position:fixed;right:18px;bottom:18px;z-index:10010;border:1px solid #426C84;border-radius:999px;padding:9px 14px;background:#426C84;color:#fff;font-weight:650;box-shadow:0 5px 18px #1d3d8230}
+#ui-annotation-dialog{width:min(680px,calc(100vw - 28px));max-height:min(82vh,850px);padding:0;border:1px solid #CBDDE7;border-radius:14px;color:#243149;box-shadow:0 20px 60px #10233d40}
+#ui-annotation-dialog::backdrop{background:#14233d70}
+.uia-head{display:flex;align-items:center;justify-content:space-between;padding:17px 20px;border-bottom:1px solid #EAF2F6}
+.uia-head h2{margin:0;font-size:18px}.uia-close{border:0;background:transparent;color:#718096;font-size:22px}
+.uia-body{padding:18px 20px;overflow:auto;max-height:calc(82vh - 65px)}
+.uia-context{padding:12px 14px;border-radius:8px;background:#EAF2F6;color:#52637b;font-size:13px;overflow-wrap:anywhere}
+.uia-context strong{color:#26364d}.uia-field{display:block;margin:16px 0 7px;font-weight:600}.uia-input,.uia-textarea{width:100%;border:1px solid #CBDDE7;border-radius:8px;padding:10px 12px;font:inherit;color:#27364b}.uia-textarea{min-height:110px;resize:vertical}
+.uia-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:16px}.uia-status{min-height:20px;margin:10px 0;color:#63738a;font-size:13px}.uia-list{display:grid;gap:10px;margin-top:14px}.uia-item{padding:12px;border:1px solid #EAF2F6;border-radius:9px}.uia-item-head{display:flex;justify-content:space-between;gap:10px}.uia-item p{white-space:pre-wrap;overflow-wrap:anywhere}.uia-item small{color:#718096}.uia-resolved{color:#268452}
+.uia-queue-actions{justify-content:flex-start;flex-wrap:wrap}.uia-item p{margin:9px 0}
+.uia-flow-definition{min-height:126px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;line-height:1.55}.uia-hint{display:block;color:#718096;font-size:12px;margin-top:5px}.uia-flow-editor-preview,.uia-flow-preview{display:grid;gap:7px;margin:9px 0;padding:10px;border-radius:9px;background:#EAF2F6}.uia-flow-preview>strong{margin:5px 0;color:#52637b}.uia-flow-edge{display:flex;align-items:center;gap:8px;min-width:0}.uia-flow-node{padding:6px 10px;border:1px solid #CBDDE7;border-radius:7px;background:#fff;overflow-wrap:anywhere}.uia-flow-arrow{display:flex;align-items:center;gap:4px;color:#426C84;white-space:nowrap}.uia-flow-arrow small{padding:2px 5px;border-radius:10px;background:#EAF2F6;color:#52637b}.uia-flow-raw{white-space:pre-wrap;color:#a34b26;overflow-wrap:anywhere}
+
+/* Keep the queue reachable without covering forms or pagination. */
+body .topbar .user>#ui-annotation-desk{position:static;flex:none;margin:0;padding:8px 12px;height:40px;border-radius:10px;box-shadow:none;white-space:nowrap;z-index:auto}
+@media(max-width:600px){body .topbar .user>#ui-annotation-desk{height:34px;padding:6px 8px;font-size:11px}}
+
+/* Selected annotation region: viewport overlay, no layout changes or pointer capture. */
+#ui-annotation-selection{position:fixed;inset:auto;margin:0;padding:0;box-sizing:border-box;border:2px solid #000;border-radius:0;background:transparent;box-shadow:none;pointer-events:none;z-index:10030;max-width:none;max-height:none;overflow:visible}
+#ui-annotation-selection[hidden]{display:none}

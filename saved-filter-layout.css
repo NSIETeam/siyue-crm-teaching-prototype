@@ -1,0 +1,161 @@
+/* Saved filters belong to their filter form, not a separate toolbar. */
+body .content .scrm-filters:has(>.scrm-filter-actions){display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:16px;align-items:end}
+body .content .scrm-filters:has(>.scrm-filter-actions)>label{display:grid;gap:7px;min-width:0;width:auto;max-width:none;margin:0}
+body .content .scrm-filters:has(>.scrm-filter-actions)>label>:is(.input,.select){width:100%;min-width:0;max-width:none;height:40px}
+body .content .scrm-filter-actions{grid-column:1/-1;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-top:12px;border-top:1px solid #CBDDE7}
+body .content .scrm-filter-submit{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+body .content .scrm-filter-actions .scrm-saved-views{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;margin:0;min-width:0;max-width:100%}
+body .content .scrm-filter-actions .scrm-saved-views:empty{display:none}
+body .content .scrm-filter-actions .scrm-saved-views label{display:grid;gap:7px;margin:0;min-width:0;flex:1 1 180px}
+body .content .scrm-filter-actions .scrm-saved-views .select{width:100%;min-width:0;max-width:260px;height:40px}
+body .content .scrm-filter-actions .btn{height:40px;min-height:40px;padding:0 16px}
+body .content #java-crm-queue-filters{padding:16px;background:#EAF2F6;border-radius:10px;gap:16px;align-items:flex-end}
+body .content .sy-saved-filter-tools{grid-column:1/-1;flex:1 0 100%;min-width:0;border-top:1px solid #CBDDE7;padding-top:12px}
+body .content .sy-saved-filter-tools .toolbar{justify-content:flex-start;gap:10px;margin:0;align-items:center}
+body .content .sy-saved-filter-tools .actions{flex-wrap:wrap;gap:10px}
+body .content .sy-saved-filter-tools :is(.btn,.select){height:40px;min-height:40px}
+body .content .sy-saved-filter-tools .select{min-width:0;max-width:260px}
+body .content .sy-saved-filter-tools .help{margin:8px 0 0}
+@media(max-width:600px){body .content .scrm-filter-actions{align-items:stretch}body .content .scrm-filter-actions .scrm-saved-views{width:100%}body .content .scrm-filter-actions .scrm-saved-views .select{max-width:none}}
+/* Reset inherited flex alignment before using equal-width grid fields. */
+body .content .scrm-filters:has(>.scrm-filter-actions)>label{justify-content:stretch;grid-template-columns:minmax(0,1fr);text-align:left}
+body .content .scrm-filter-actions .scrm-saved-views{margin-left:auto;flex-wrap:nowrap}
+body .content .scrm-filter-actions .scrm-saved-views label{justify-content:stretch;grid-template-columns:minmax(0,1fr);flex:0 1 240px}
+body .content .scrm-filter-actions .scrm-saved-views .btn{flex:none}
+@media(max-width:600px){body .content .scrm-filter-actions .scrm-saved-views{margin-left:0;flex-wrap:wrap}}
+
+/* Scope belongs at the upper right, alongside the status navigation. */
+body .content .scrm-list-header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start;margin:0 0 12px}
+body .content .scrm-queue-navigation{min-width:0;overflow:hidden}
+body .content .scrm-list-header .scrm-scope{justify-self:end;align-self:start;margin:0;white-space:nowrap}
+body .content .scrm-list-header .business-tabs{margin:0;max-width:100%;overflow-x:auto;white-space:nowrap}
+@media(max-width:560px){body .content .scrm-list-header{grid-template-columns:minmax(0,1fr)}body .content .scrm-list-header .scrm-scope{grid-row:1;justify-self:end}body .content .scrm-queue-navigation{grid-row:2}}
+
+/* Explicit scroll affordances plus native touch/trackpad scrolling. */
+body .content .scrm-status-strip{display:flex;align-items:center;min-width:0;gap:4px}
+body .content .scrm-status-strip>.business-tabs{flex:1;min-width:0;scrollbar-width:thin;touch-action:pan-x}
+body .content .scrm-status-strip>.business-tabs>button{flex:0 0 auto}
+body .content .scrm-status-arrow{flex:0 0 24px;width:24px;height:32px;padding:0;border:0;border-radius:6px;background:#EAF2F6;color:#426C84;font-size:23px;cursor:pointer}
+body .content .scrm-status-arrow[hidden]{display:none}
+body .content .scrm-status-arrow:disabled{opacity:.35;cursor:default}
+body .content .scrm-filter-actions .scrm-saved-views>.select{width:200px}
+
+/* Staff lists share the compact workspace toolbar. */
+body .content .employee-list-page .employee-summary-strip{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;padding:0;margin:0 0 14px;background:none;border:0;border-radius:0;font-size:13px;color:#60718a}
+body .content .employee-list-page .employee-summary-strip strong{font-size:14px;color:#354963}
+body .content .employee-list-page .employee-result-count{margin-left:auto}
+body .content .employee-list-tools{display:grid;grid-template-columns:minmax(180px,1.7fr) minmax(120px,1fr) minmax(130px,1fr) auto;gap:12px;align-items:center;padding:14px;margin-bottom:16px;border-radius:10px;background:#EAF2F6}
+body .content .employee-list-tools>:is(.input,.select,.btn){width:100%;min-width:0;max-width:none;height:40px;margin:0}
+body .content .employee-list-tools>.btn{white-space:nowrap}
+body .content .employee-list-page .employee-auth-error:empty{display:none}
+body .content .employee-list-page th{text-align:left}
+@media(max-width:720px){body .content .employee-list-tools{grid-template-columns:repeat(2,minmax(0,1fr))}body .content .employee-list-tools>#ea-account-search{grid-column:1/-1}body .content .employee-list-tools>.btn{grid-column:1/-1;justify-self:end;width:auto}}
+
+/* Compact account editor: scope and roles first, important permissions above folded groups. */
+body .content .employee-compact-form{max-width:none}
+body .content .employee-compact-form .employee-account-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 12px}
+body .content .employee-compact-form .employee-account-grid>label{gap:5px;font-size:12px}
+body .content .employee-compact-form .employee-account-grid :is(.input,.select){width:100%;min-width:0;max-width:none;height:36px}
+body .content .employee-compact-form #ea-campuses-label{grid-column:1/-1}
+body .content .employee-compact-form fieldset{margin:12px 0;padding:9px 12px;border-radius:8px}
+body .content .employee-compact-form legend{font-size:13px}
+body .content .employee-compact-form .employee-role-options{gap:8px 18px}
+body .content .employee-compact-form .employee-role-options label{display:flex;align-items:center;gap:5px;font-size:13px}
+body .content .employee-compact-form #ea-scope-hint{margin:6px 0;font-size:12px}
+body .content .employee-compact-permissions{padding:10px 0;border-top:0}
+body .content .employee-permission-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin-bottom:8px}
+body .content .employee-permission-toolbar .help{margin:0;font-size:12px}
+body .content .employee-compact-permissions .employee-permission-tree{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+body .content .employee-compact-permissions .employee-critical-permissions{grid-column:1/-1;border-color:#d9b89d;background:#fffcf8}
+body .content .employee-compact-permissions .employee-permission-node{padding:0 10px}
+body .content .employee-compact-permissions .employee-permission-node>summary{min-height:36px;font-size:13px}
+body .content .employee-compact-permissions .employee-permission-grid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:4px 18px;padding:6px 0 8px}
+body .content .employee-compact-permissions .employee-permission-grid label{display:flex;flex-direction:row;align-items:center;gap:8px;min-height:34px;padding:2px 0;font-size:12px}
+body .content .employee-compact-permissions .employee-permission-grid label>span{min-width:0;overflow-wrap:anywhere}
+body .content .employee-compact-permissions .employee-permission-grid .select{flex:0 0 100px;width:100px;min-width:0;height:30px;min-height:30px;padding:4px 8px;font-size:12px}
+body .content .employee-reserved-hint{display:block;color:#8a6144;font-size:10px}
+body .content .employee-compact-form>.employee-auth-error:empty{display:none}
+body .content .employee-compact-form>.form-actions{position:sticky;bottom:0;background:rgba(255,255,255,.96);padding:10px 0;margin:8px 0 0;border-top:1px solid #e4ebef;z-index:2}
+@media(max-width:650px){body .content .employee-compact-form .employee-account-grid{grid-template-columns:repeat(2,minmax(0,1fr))}body .content .employee-compact-permissions .employee-permission-tree{grid-template-columns:1fr}}
+
+body .content .employee-compact-permissions .employee-critical-permissions .employee-permission-grid{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));column-gap:12px}
+body .content .employee-compact-permissions .employee-permission-grid .select{height:30px!important;min-height:30px!important;padding:3px 6px!important;flex-basis:90px;width:90px!important}
+
+/* Position details keep assignment controls in the heading row. */
+body .content .employee-role-choice.is-selected{box-shadow:none}
+body .content .employee-position-page .employee-workspace-split{grid-template-columns:180px minmax(0,1fr);gap:16px;margin-top:12px}
+body .content .employee-position-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+body .content .employee-position-heading h2{font-size:17px;margin:0;white-space:nowrap}
+body .content .employee-position-heading .employee-position-assign{display:flex;align-items:center;gap:8px;margin:0;flex-wrap:wrap}
+body .content .employee-position-heading .employee-position-assign .select{width:150px;min-width:0;max-width:100%;height:36px}
+body .content .employee-position-heading .btn{padding:0 10px;height:36px;min-height:36px;white-space:nowrap}
+body .content .employee-position-page .employee-role-facts{padding:8px 10px;margin:10px 0;font-size:12px}
+body .content .employee-position-page .employee-role-detail>p{font-size:13px;margin:10px 0}
+body .content .employee-position-page .employee-role-detail>h3{font-size:14px;margin:14px 0 10px}
+body .content .employee-auth-page>.toolbar{margin-right:0;max-width:100%;box-sizing:border-box;gap:12px}
+body .content .employee-auth-page>.toolbar>.btn{flex-shrink:0;margin-right:0}
+@media(max-width:720px){body .content .employee-position-page .employee-workspace-split{grid-template-columns:1fr}}
+/* The outer workspace already supplies the card corners; do not clip its first toolbar. */
+body #view.content>.card.pad.employee-auth-page:only-child{border-radius:0;overflow:visible}
+/* Shared compact workspace rules; preserve nested cards and table scrollers. */
+body .main>#workspace-tabs:not([hidden])~#view.content>.card.pad:only-child{border-radius:0;overflow:visible}
+body #view>.card>.toolbar{min-width:0;max-width:100%;gap:12px;align-items:center;flex-wrap:wrap}
+body #view>.card>.toolbar>:is(.actions,.toolbar-right,.toolbar-left){display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0;max-width:100%}
+body #view>.card>.toolbar>:is(.actions,.toolbar-right,.toolbar-left)>.btn{flex:none;white-space:nowrap}
+body #view>.card>.toolbar .input,body #view>.card>.toolbar .select{max-width:100%;min-width:0}
+body #view .employee-permission-workspace{grid-template-columns:180px minmax(0,1fr);gap:16px;margin-top:0}
+body #view .employee-permission-page .employee-permission-heading h2{font-size:17px;margin:0 0 5px}
+body #view .employee-permission-page .employee-permission-heading p{font-size:12px;line-height:1.5}
+body #view .employee-permission-page .employee-role-detail>p{font-size:12px;margin:8px 0}
+body #view .employee-role-tree{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+body #view .employee-role-tree .employee-permission-node>summary{min-height:38px;font-size:12px;gap:6px}
+body #view .employee-role-tree .employee-permission-node{padding:0 8px 6px}
+body #view .employee-role-tree .employee-permission-node:not([open]){padding-bottom:0}
+body #view .employee-role-tree .employee-critical-role{grid-column:1/-1;background:#fffcf8;border-color:#d9b89d}
+body #view .employee-role-tree .employee-critical-role .employee-permission-grid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px 10px}
+body #view .employee-role-tree .employee-role-permission{font-size:12px;min-height:32px;padding:4px 0;border:0;line-height:1.4}
+body #view .employee-permission-page .employee-permission-actions{display:flex;justify-content:flex-end;gap:8px;margin:10px 0}
+body #view .employee-audit-page>.toolbar{justify-content:flex-end;margin:0 0 8px}
+body #view .employee-audit-page .employee-audit-filter{padding:12px;border-radius:10px;background:#EAF2F6;gap:10px;margin:12px 0;grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
+body #view .employee-audit-page .employee-audit-filter>#ea-audit-actor{grid-column:auto}
+body #view .employee-workspace-nav .input{width:100%;min-width:0;max-width:100%}
+@media(max-width:720px){body #view .employee-permission-workspace{grid-template-columns:1fr}body #view .employee-role-tree{grid-template-columns:1fr}}
+
+/* Header and values use the same alignment, including audit tables. */
+body #view table.sy-data-table :is(th,td){text-align:left}
+body #view table.sy-data-table :is(th,td)[data-sy-column="check"]{text-align:center}
+body #view table.sy-data-table :is(th,td):is([data-sy-column="amount"],[data-sy-column="number"]){text-align:right}
+body #view .employee-audit-table :is(th,td){text-align:left!important;padding-left:16px;padding-right:16px}
+body #view .employee-audit-header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+body #view .employee-audit-header .employee-audit-tabs{flex:1;min-width:0;margin:0}
+body #view .employee-audit-header>.btn{flex:none}
+body #view .employee-audit-page .employee-audit-filter{grid-template-columns:repeat(4,minmax(0,1fr));align-items:center}
+body #view .employee-audit-page .employee-audit-filter>#ea-audit-actor{grid-column:span 2}
+body #view .employee-audit-page .employee-audit-filter>:is(.input,.select,.btn){width:100%!important;min-width:0!important;max-width:none;height:40px!important;box-sizing:border-box;margin:0}
+@media(max-width:600px){body #view .employee-audit-page .employee-audit-filter{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+body #view .employee-auth-page .employee-audit-table{min-width:725px;table-layout:fixed}
+body #view .employee-auth-page .employee-audit-table :is(th,td){width:auto!important;white-space:normal;overflow-wrap:anywhere}
+body #view .employee-role-tree .employee-permission-grid .employee-role-permission{justify-content:flex-start;gap:8px;text-align:left}
+body #view .employee-role-tree .employee-role-permission input{flex:none;margin:0}
+
+body #view .scrm-reception-filters{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:end;gap:12px;margin:0 0 16px;padding:14px}
+body #view .scrm-reception-filters>.scrm-search{min-width:0;display:grid;gap:6px;justify-content:stretch}
+body #view .scrm-reception-filters .input{width:100%;min-width:0;max-width:none;height:40px}
+body #view .scrm-reception-filters>.btn{height:40px;min-width:0;white-space:nowrap;padding:0 16px}
+body #view>.card>.toolbar>.filters{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;width:100%;min-width:0}
+body #view>.card>.toolbar>.filters>label{display:grid;gap:6px;min-width:0;flex:1 1 160px}
+body #view>.card>.toolbar>.filters>label>:is(.input,.select){width:100%;max-width:none;min-width:0;height:40px}
+body #view>.card>.toolbar>.filters>.btn{height:40px;flex:none}
+@media(max-width:480px){body #view .scrm-reception-filters{grid-template-columns:1fr auto}body #view .scrm-reception-filters>.scrm-search{grid-column:1/-1}}
+
+/* Full-row actions must not create a spare auto-fit track beside the fields. */
+body .content .scrm-filters:has(>.scrm-filter-actions){grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1100px){body .content .scrm-filters:has(>.scrm-filter-actions){grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){body .content .scrm-filters:has(>.scrm-filter-actions){grid-template-columns:minmax(0,1fr)}}
+@media(min-width:1101px){body .content .scrm-filters:has(>label:nth-of-type(6)):not(:has(>label:nth-of-type(7))){grid-template-columns:repeat(3,minmax(0,1fr))}}
+body #view .toolbar>.scrm-scope{margin-left:auto}
+body #view .scrm-filters:has(>label:nth-of-type(2)):not(:has(>label:nth-of-type(3))):not(:has(>.scrm-filter-actions)){grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:600px){body #view .scrm-filters:has(>label:nth-of-type(2)):not(:has(>label:nth-of-type(3))):not(:has(>.scrm-filter-actions)){grid-template-columns:minmax(0,1fr)}}
+/* Checkbox labels remain a single readable row on narrow screens. */
+body #view.content .employee-permission-node .employee-permission-grid label.employee-role-permission{flex-direction:row;align-items:center;justify-content:flex-start;gap:8px}

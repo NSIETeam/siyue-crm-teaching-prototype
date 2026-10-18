@@ -1,0 +1,55 @@
+.bat-workspace h2{font-size:18px;margin:0 0 6px}.bat-workspace .toolbar{align-items:flex-start}.bat-workspace .toolbar .help{margin:0;max-width:680px}.bat-workspace .tabs{margin:18px 0 14px}.bat-filters{display:flex;align-items:flex-end;gap:10px 14px;flex-wrap:wrap;margin-bottom:18px}.bat-filters label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted,#667085)}.bat-filters .select,.bat-filters .input{min-width:120px;max-width:210px}.bat-filters input[type=date]{min-width:140px}.bat-workspace td small{display:block;white-space:normal;max-width:340px;overflow-wrap:anywhere;line-height:1.6;color:var(--muted,#667085)}.bat-status{display:inline-block;padding:3px 8px;border-radius:6px;background:#EAF2F6;color:#475569}.bat-attended{background:#e7f5ed;color:#207b48}.bat-late,.bat-left_early{background:#fff4dc;color:#946512}.bat-absent{background:#fcebea;color:#b43b32}.bat-leave{background:#edeafa;color:#7058ad}.bat-pagination{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:16px;font-size:13px}.bat-pagination span{margin-right:auto}.bat-empty{padding:30px;text-align:center;color:var(--muted,#667085)}
+
+/* Keep controls readable at narrow workspace widths; only the results table scrolls. */
+#view:has(>.bat-workspace){min-width:0;max-width:100%}
+#view .bat-workspace{width:100%;max-width:100%;min-width:0}
+#view .bat-workspace>.toolbar{display:flex;align-items:flex-start;flex-wrap:wrap;gap:12px 20px;min-width:0}
+#view .bat-workspace>.toolbar>div:first-child{flex:1 1 320px;min-width:0}
+#view .bat-workspace>.toolbar>.actions{flex:0 1 auto;display:flex;flex-wrap:wrap;justify-content:flex-start;max-width:100%;white-space:normal;gap:8px}
+#view .bat-workspace>.toolbar .help{max-width:640px;line-height:1.7;overflow-wrap:anywhere}
+#view .bat-workspace>.tabs{padding-inline:0;max-width:100%;min-width:0}
+#view .bat-workspace .bat-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));align-items:end;gap:14px 16px;padding:16px;background:#EAF2F6;border:1px solid #EAF2F6;border-radius:9px;min-width:0}
+#view .bat-workspace .bat-filters label{display:flex;flex-direction:column;gap:7px;min-width:0;max-width:100%;white-space:normal;line-height:1.5}
+#view .bat-workspace .bat-filters>p{grid-column:1/-1;margin:0;white-space:normal}
+#view .bat-workspace .bat-filters :is(.select,.input){display:block;width:100%;max-width:100%;min-width:0;height:40px;margin:0}
+#view .bat-workspace>.table-wrap{display:block;width:100%;min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+#view .bat-workspace table.table{table-layout:fixed!important;width:100%;min-width:1050px;max-width:none}
+#view .bat-workspace table.table :is(th,td){white-space:normal!important;word-break:normal;overflow-wrap:anywhere;padding:14px 12px}
+#view .bat-workspace table.table :is(th,td) :is(strong,small,span){white-space:normal;word-break:normal;overflow-wrap:anywhere}
+#view .bat-workspace table.table td:last-child{white-space:nowrap!important}
+#view .bat-workspace .bat-pagination{flex-wrap:wrap;min-width:0;gap:10px}
+#view .bat-workspace .bat-pagination>span{flex:1 1 220px;min-width:0}
+@media(max-width:760px){#view .bat-workspace{padding:16px}#view .bat-workspace .bat-filters{padding:12px;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr))}#view .bat-workspace>.toolbar>.actions{width:100%}}
+
+/* Date bounds stay together as one filter; collapse only inside a narrow group. */
+#view .bat-workspace .bat-filters{container-name:attendance-filters;container-type:inline-size}
+#view .bat-workspace .bat-date-range{grid-column:span 2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;min-width:0}
+@container attendance-filters (max-width:335px){#view .bat-workspace .bat-date-range{grid-column:1/-1;grid-template-columns:minmax(0,1fr);gap:12px}}
+@media(max-width:450px){#view .bat-workspace .bat-date-range{grid-column:1/-1;grid-template-columns:minmax(0,1fr);gap:12px}}
+
+/* Desktop attendance owns its six visible columns after row actions move below. */
+@media(min-width:1000px){
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout]{width:100%!important;min-width:960px!important;table-layout:fixed!important}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout]>colgroup>col:nth-child(1){width:27%!important}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout]>colgroup>col:nth-child(2){width:14%!important}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout]>colgroup>col:nth-child(3){width:16%!important}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout]>colgroup>col:nth-child(4){width:17%!important}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout]>colgroup>col:nth-child(5){width:10%!important}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout]>colgroup>col:nth-child(6){width:16%!important}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout]:has(th:nth-child(5)[data-sy-column="status"])>colgroup>col:nth-child(1){width:18%!important}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout]:has(th:nth-child(5)[data-sy-column="status"])>colgroup>col:nth-child(2){width:28%!important}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout]:has(th:nth-child(5)[data-sy-column="status"])>colgroup>col:nth-child(5){width:10%!important}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout]:has(th:nth-child(5)[data-sy-column="status"])>colgroup>col:nth-child(6){width:10%!important}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout] :is(th,td){padding:11px 12px;white-space:normal!important;line-height:1.45;vertical-align:top}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout] th{font-size:12px}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout] td{font-size:13px}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout] td :is(strong,small){max-width:none;line-height:1.45}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout] td>small{margin-top:3px;font-size:12px}
+ body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout] tr.sy-row-action-detail>td{padding:10px 12px!important}
+}
+@media(min-width:1280px){
+ body #view.content .bat-workspace .bat-filters{grid-template-columns:repeat(5,minmax(0,1fr));gap:12px 16px}
+ body #view.content .bat-workspace .bat-filters>label:has(input[aria-label="搜索考勤"]){grid-column:span 2}
+}
+
+body #view.content .bat-workspace table.table.sy-data-table[data-sy-layout] .bat-count{display:inline-block;white-space:nowrap!important;margin:0 8px 4px 0;font-size:12px;line-height:1.5}

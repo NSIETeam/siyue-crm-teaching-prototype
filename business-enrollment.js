@@ -12,6 +12,7 @@
   const isEnrollment = operation => ['enrollment.create', 'enrollment.batchCreate'].includes(operation?.id);
   const isBatch = operation => operation?.id === 'enrollment.batchCreate';
   const selectedStudentSearch = new Map();
+  let classPicker = {courseId:"", campusId:"", week:"", open:false};
   const modelPath = operation => isBatch(operation) ? [] : [];
   const pathFor = (operation, path) => [...modelPath(operation), ...path];
   const dataRows = (ctx, key) => Array.isArray(ctx?.data?.[key]) ? ctx.data[key] : [];
@@ -184,10 +185,48 @@
     return `<div class="summary-box enrollment-class-summary"><div class="summary-line"><span>报名班级</span><strong>${escape(klass.name)}</strong></div>${course ? `<div class="summary-line"><span>课程</span><strong>${escape(course.name)}</strong></div>` : ''}${campus ? `<div class="summary-line"><span>校区</span><strong>${escape(campus)}</strong></div>` : ''}${teacher ? `<div class="summary-line"><span>授课老师</span><strong>${escape(teacher)}</strong></div>` : ''}${firstSession ? `<div class="summary-line"><span>开课时间</span><strong>${escape(`${firstSession.date || ''} ${firstSession.time || ''}`)}</strong></div>` : ''}${course?.priceCents !== undefined ? `<div class="summary-line"><span>课程标价</span><strong>${money(course.priceCents)}</strong></div>` : ''}</div>`;
   }
 
+  const validPickerDate = value => /^\d{4}-\d{2}-\d{2}$/.test(value || '') && Number.isFinite(Date.parse(value + 'T12:00:00Z')) && new Date(value + 'T12:00:00Z').toISOString().slice(0,10) === value;
+  function pickerDay(date,delta) { const d = new Date(date + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate()+delta); return d.toISOString().slice(0,10); }
+  function pickerMonday(date) { return pickerDay(date,-((new Date(date+'T12:00:00Z').getUTCDay()+6)%7)); }
+  const pickerToday = () => new Date(Date.now()+8*3600000).toISOString().slice(0,10);
+  function futureClassSessions(klass) {
+    return (klass.schedule || []).filter(session => {
+      if (['cancelled','canceled','已取消'].includes(session.status) || !validPickerDate(session.date)) return false;
+      const time=String(session.time || '').match(/^(\d{2}:\d{2})/);
+      return time && Date.parse(session.date+'T'+time[1]+':00+08:00') > Date.now();
+    });
+  }
+  function courseClasses(ctx) { return classes(ctx).filter(row=>row.courseId===classPicker.courseId && (!classPicker.campusId || row.campusId===classPicker.campusId)); }
+  function pickerSessions(ctx) { return courseClasses(ctx).flatMap(klass=>futureClassSessions(klass).map(session=>({klass,session}))).sort((a,b)=>a.session.date.localeCompare(b.session.date)||String(a.session.time).localeCompare(String(b.session.time))); }
+  function classCalendar(ctx) {
+    const start=classPicker.week||pickerMonday(pickerToday()),days=Array.from({length:7},(_,i)=>pickerDay(start,i)),events=pickerSessions(ctx),disabled=ctx.disabled?'disabled':'';
+    const campuses=[...new Set(classes(ctx).filter(c=>c.courseId===classPicker.courseId).map(c=>c.campusId))];
+    const unscheduled=courseClasses(ctx).filter(klass=>!futureClassSessions(klass).length);
+    return `<section class="be-class-calendar" aria-label="报名选班课表"><div class="be-calendar-head"><strong>在课表中选择报名班级</strong><button type="button" class="btn small" ${disabled} onclick="SiyueBusinessEnrollment.closeClassSchedule()">收起课表</button></div><p class="help">点击课次选择其所属班级，报名包含该班级的课程安排。名额和学生时间冲突将在预览时核对。</p><div class="be-week-nav"><label>校区<select class="select" aria-label="报名课表校区" ${disabled} onchange="SiyueBusinessEnrollment.classCampus(this.value)"><option value="">全部校区</option>${campuses.map(id=>`<option value="${escape(id)}" ${classPicker.campusId===id?'selected':''}>${escape(campusLabel(ctx,id))}</option>`).join('')}</select></label><button type="button" class="btn small" aria-label="报名课表上一周" ${disabled} onclick="SiyueBusinessEnrollment.classWeek(-1)">上一周</button><strong>${escape(start)} — ${escape(days[6])}</strong><button type="button" class="btn small" aria-label="报名课表下一周" ${disabled} onclick="SiyueBusinessEnrollment.classWeek(1)">下一周</button><label>选择周日期<input class="input" type="date" aria-label="报名课表选择周日期" value="${escape(start)}" ${disabled} onchange="SiyueBusinessEnrollment.classWeekDate(this.value)"></label></div><div class="be-week-wrap"><table class="be-week-table" aria-label="可报名班级周课表"><thead><tr>${days.map((date,i)=>`<th scope="col">${['周一','周二','周三','周四','周五','周六','周日'][i]}<span>${escape(date.slice(5))}</span></th>`).join('')}</tr></thead><tbody><tr>${days.map(date=>`<td>${events.filter(e=>e.session.date===date).map(({klass,session})=>{const cid=escape(JSON.stringify(klass.id)),sid=escape(JSON.stringify(session.id)),campus=campusLabel(ctx,session.campusId||klass.campusId);return `<button type="button" class="be-class-event" aria-label="选择报名班级" aria-pressed="${ctx.draft.classId===klass.id}" ${disabled} onclick="SiyueBusinessEnrollment.chooseClass(${cid},${sid})"><strong>${escape(session.time)}</strong><span>${escape(klass.name)}</span><small>${escape(teacherLabel(ctx,session.substituteTeacherId||session.teacherId||klass.teacherId,klass.teacher))}</small><small>${escape(campus)} · ${escape(session.room||klass.room||'教室待定')}</small>${klass.capacity?`<small>班级容量 ${Number(klass.capacity)} 人</small>`:''}</button>`;}).join('')||'<span class="be-day-empty">本日暂无课次</span>'}</td>`).join('')}</tr></tbody></table></div>${unscheduled.length?`<details class="be-unscheduled"><summary>暂无未来课表的班级（${unscheduled.length}）</summary><p class="help">以下班级尚无未来课次，可先选择班级并在预览时核对报名条件。</p>${unscheduled.map(klass=>`<button type="button" class="btn" aria-label="选择待排课班级" ${disabled} onclick="SiyueBusinessEnrollment.chooseClass(${escape(JSON.stringify(klass.id))})">${escape(klass.name)} · ${escape(campusLabel(ctx,klass.campusId))}</button>`).join('')}</details>`:''}</section>`;
+  }
   function classSection(ctx) {
-    const selected = classes(ctx).find(row => row.id === ctx.draft.classId);
-    const rows = classChoices(ctx);
-    return `${select(ctx, ['classId'], '选择班级', rows, ctx.draft.classId || '', { required: true, disabled: ctx.disabled })}${classSummary(ctx, selected)}`;
+    const selected=classes(ctx).find(row=>row.id===ctx.draft.classId),available=dataRows(ctx,'courses').filter(course=>course.active!==false&&classes(ctx).some(c=>c.courseId===course.id));
+    if(selected)classPicker.courseId=selected.courseId;
+    if(!available.some(c=>c.id===classPicker.courseId))classPicker={courseId:'',campusId:'',week:'',open:false};
+    const selector=`<div class="field"><label class="required">选择课程</label><select class="select" aria-label="报名选择课程" ${ctx.disabled?'disabled':''} onchange="SiyueBusinessEnrollment.chooseCourse(this.value)"><option value="">请选择课程</option>${available.map(c=>`<option value="${escape(c.id)}" ${classPicker.courseId===c.id?'selected':''}>${escape(c.name)}${c.grade?' · '+escape(c.grade):''}${c.subject?' · '+escape(c.subject):''}</option>`).join('')}</select></div><input type="hidden" data-business-path="[&quot;classId&quot;]" data-business-type="string" value="${escape(ctx.draft.classId||'')}">`;
+    return selector+(classPicker.open&&classPicker.courseId?classCalendar(ctx):`${classSummary(ctx,selected)}<button type="button" class="btn be-open-calendar" ${ctx.disabled||!classPicker.courseId?'disabled':''} onclick="SiyueBusinessEnrollment.openClassSchedule()">${selected?'更换班级':'查看课表选班'}</button>`);
+  }
+  function pickerContext() { const ctx=root.businessAPI?.academicDraft?.(); return ctx&&isEnrollment(ctx.operation)&&!ctx.disabled?ctx:null; }
+  function pickerRedraw() { root.businessAPI?.redraw?.(); return true; }
+  function chooseCourse(id) {
+    const ctx=pickerContext();if(!ctx||id&&!dataRows(ctx,'courses').some(c=>c.id===id&&c.active!==false&&classes(ctx).some(k=>k.courseId===id)))return false;
+    classPicker={courseId:id,campusId:'',week:'',open:!!id};classPicker.week=pickerMonday(pickerSessions(ctx)[0]?.session.date||pickerToday());
+    return root.businessAPI.academicSet(['classId'],'');
+  }
+  function openClassSchedule() { const ctx=pickerContext();if(!ctx||!classPicker.courseId)return false;classPicker.open=true;classPicker.week=classPicker.week||pickerMonday(pickerSessions(ctx)[0]?.session.date||pickerToday());return pickerRedraw(); }
+  function closeClassSchedule() { if(!pickerContext())return false;classPicker.open=false;return pickerRedraw(); }
+  function classCampus(id) { const ctx=pickerContext();if(!ctx||!classPicker.open||id&&!classes(ctx).some(c=>c.courseId===classPicker.courseId&&c.campusId===id))return false;classPicker.campusId=id;classPicker.week=pickerMonday(pickerSessions(ctx)[0]?.session.date||pickerToday());return pickerRedraw(); }
+  function classWeek(delta) { if(!pickerContext()||!classPicker.open||![-1,1].includes(delta))return false;classPicker.week=pickerDay(classPicker.week||pickerMonday(pickerToday()),7*delta);return pickerRedraw(); }
+  function classWeekDate(value) { if(!pickerContext()||!classPicker.open||!validPickerDate(value))return false;classPicker.week=pickerMonday(value);return pickerRedraw(); }
+  function chooseClass(id,sessionId) {
+    const ctx=pickerContext();if(!ctx||!classPicker.open)return false;const klass=courseClasses(ctx).find(c=>c.id===id);if(!klass)return false;
+    const future=futureClassSessions(klass);if(sessionId){const session=future.find(s=>s.id===sessionId);if(!session||session.date<classPicker.week||session.date>pickerDay(classPicker.week,6))return false;}else if(future.length)return false;
+    classPicker.open=false;return root.businessAPI.academicSet(['classId'],id);
   }
 
   function settlementSection(ctx, batch) {
@@ -205,7 +244,9 @@
   }
 
   function renderSingle(ctx) {
-    return `${section(1, '学生信息', identityControl(ctx, ctx.draft, []))}<hr class="divider">${section(2, '报名信息', classSection(ctx))}<hr class="divider">${section(3, '费用结算', settlementSection(ctx, false))}`;
+    const student=students(ctx).find(row=>row.id===ctx.draft.studentId),customerIds=new Set([student?.customerId,...dataRows(ctx,'customers').filter(row=>row.studentId===student?.id||row.studentIds?.includes(student?.id)).map(row=>row.id)].filter(Boolean)),opportunities=dataRows(ctx,'opportunities').filter(row=>customerIds.has(row.customerId)&&!['closed','won'].includes(row.stage)).map(row=>({id:row.id,label:row.title||`${row.subject||''} · ${row.term||''}`}));
+    const chosen=(ctx.data.opportunities||[]).find(row=>row.id===ctx.draft.opportunityId);if(!student&&chosen&&!opportunities.some(row=>row.id===chosen.id))opportunities.push({id:chosen.id,label:chosen.title||`${chosen.subject} · ${chosen.term}`});const attribution=(student||chosen)?`<div class="form-grid">${select(ctx,['opportunityId'],'关联销售机会',opportunities,ctx.draft.opportunityId||'',{empty:'暂不关联'})}</div><p class="help">关联已确认的客户需求，首笔实收后保留当时的销售归属。</p>`:'';
+    return `${section(1, '学生信息', identityControl(ctx, ctx.draft, []))}<hr class="divider">${section(2, '报名信息', classSection(ctx)+attribution)}<hr class="divider">${section(3, '费用结算', settlementSection(ctx, false))}`;
   }
 
   function renderBatchRows(ctx) {
@@ -328,10 +369,10 @@
     return true;
   }
 
-  function reset() { activeStep = 1; focusedStudentId = null; singleStudentPickerExpanded = false; selectedStudentSearch.clear(); }
+  function reset() { activeStep = 1; focusedStudentId = null; singleStudentPickerExpanded = false; selectedStudentSearch.clear(); classPicker={courseId:"",campusId:"",week:"",open:false}; }
 
   root.SiyueBusinessEnrollment = {
     renderForm, renderPage, renderTabs, initialize, reset, goTo, addRow, removeRow, filterStudents, toggleStudentPicker, chooseStudent,
-    refreshValidation, rowIssues, singleIssues
+    refreshValidation, rowIssues, singleIssues, chooseCourse, openClassSchedule, closeClassSchedule, classCampus, classWeek, classWeekDate, chooseClass
   };
 })(typeof window === 'undefined' ? globalThis : window);

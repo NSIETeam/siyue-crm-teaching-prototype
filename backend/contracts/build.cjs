@@ -37,11 +37,11 @@ function op(idValue, label, group, input, labels = [], opts = {}) {
     inputSchema: ref(inputName), frontendAliases: legacy.filter(x => labels.includes(x.label)).map(x=>x.id),
     ...opts });
 }
-op('lead.create','创建线索','crm',obj({name:str(100),contact:str(100),campusId:id,source:enumeration('sales','operations','street','private','event','other'),sourceRef:str(200),retainForSelf:{type:'boolean'}},['name','contact','source']),['新建线索']);
+op('lead.create','创建线索','crm',obj({name:str(100),phone:{type:'string',minLength:1,maxLength:50,description:'接受规范手机号及旧系统支持的+86格式'},source:str(100),campusId:id,ownerId:id,guardian:{type:'string',maxLength:100},grade:{type:'string',maxLength:50},subject:{type:'string',maxLength:100},note:{type:'string',maxLength:5000},followChoice:enumeration('self','public')},['name','phone','source']),['新建线索'],{rules:['followChoice 未提供时保留旧的去向决策流程；有跟进权限者进入待决策，无跟进权限者进入公海','followChoice=self 需要 lead.follow 并由当前员工本人跟进；followChoice=public 直接进入公海','显式 followChoice 不得同时提交 ownerId；无 followChoice 时指定 ownerId 仍需要 lead.assign']});
 op('lead.assign','分配线索','crm',obj({leadIds:ids,assigneeId:id,reason:str(1000)}),['分配线索']);
 op('lead.transfer','转移线索','crm',obj({leadIds:ids,assigneeId:id,reason:str(1000)}),['转移线索']);
 op('lead.release','释放线索到公海','crm',obj({leadIds:ids,reason:str(1000)}),['释放线索到公海']);
-op('lead.follow','记录跟进','crm',obj({leadId:id,content:str(10000),nextFollowAt:time,intent:enumeration('high','medium','low','unknown')},['leadId','content']),['添加线索跟进']);
+op('lead.follow','记录跟进','crm',obj({leadId:id,note:{type:'string',minLength:1,maxLength:5000},nextFollowAt:time,channel:enumeration('电话','线上会议','现场沟通'),disposition:enumeration('high','medium','low','lost_cold')},['leadId','note','channel']),['添加线索跟进'],{rules:['lost_cold 必须提供非空 note；已报名或已收款线索不可标记为流失','lost_cold 会清除下次跟进时间并将阶段设为已流失']});
 op('leadPolicy.preview','试运行保留与回收规则','crm',ref('PolicyInput'),['线索保留与回收策略设置']);
 op('leadPolicy.publish','发布保留与回收规则','crm',obj({draftId:id,dryRunToken:str(500)}));
 op('student.create','创建学生档案','archives',obj({name:str(100),birthday:{type:'string',format:'date'},guardianName:str(100),contact:str(100)},['name','guardianName','contact']),['录入新学生']);

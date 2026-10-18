@@ -1,0 +1,57 @@
+/* Filter forms remain visible; shared layout is retained. */
+.filters-always-open > summary { display: none !important; }
+body #view .filters-always-open.card { padding: 0; border: 0; background: transparent; box-shadow: none; }
+.filter-inline-fields{display:flex;gap:8px;flex:1;min-width:180px;flex-wrap:wrap}.filter-inline-fields>.input,.filter-inline-fields>.select{width:auto;flex:1;min-width:160px}.filter-inline-fields[hidden]{display:none!important}
+
+/* Employee filters: three fields and the create action share four equal tracks. */
+body #view.content .employee-list-tools{grid-template-columns:repeat(4,minmax(0,1fr))}
+body #view.content .employee-list-tools>.filter-inline-fields:not([hidden]){display:contents}
+body #view.content .employee-list-tools>.filter-inline-fields>:is(.input,.select),
+body #view.content .employee-list-tools>.btn{width:100%!important;min-width:0!important;max-width:none;box-sizing:border-box;height:40px;margin:0;grid-column:auto;justify-self:stretch}
+@media(max-width:720px){body #view.content .employee-list-tools{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){body #view.content .employee-list-tools{grid-template-columns:minmax(0,1fr)}}
+body #view .bp-toolbar.filter-actions-only{justify-content:flex-end;margin-bottom:12px}
+body #view .bp-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end}
+body #view .bp-filters>.bp-filter{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;min-width:0;text-align:left;justify-content:stretch}
+body #view .bp-filters>.bp-filter>:is(input,select){width:100%;min-width:0;max-width:none;height:40px}
+@media(max-width:1100px){body #view .bp-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){body #view .bp-filters{grid-template-columns:minmax(0,1fr)}}
+@media(min-width:1101px){body #view .bp-filters:has(>label:nth-of-type(6)):not(:has(>label:nth-of-type(7))){grid-template-columns:repeat(3,minmax(0,1fr))}}
+body #view .schedule-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end}
+body #view .schedule-filter-field{display:grid;gap:6px;min-width:0;color:#587486;font-size:12px}
+body #view .schedule-filter-field>:is(input,select){width:100%;min-width:0;max-width:none}
+body #view .schedule-filter-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+@media(max-width:1100px){body #view .schedule-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){body #view .schedule-filters{grid-template-columns:minmax(0,1fr)}}
+body #view :is(.toolbar,.actions,.toolbar-left,.toolbar-right):has(>.filter-inline-fields){align-items:flex-end}
+body #view .filter-inline-fields{align-items:flex-end;min-width:0}
+body #view .filter-inline-fields>label{display:grid;gap:6px;min-width:0;flex:1}
+body #view .filter-inline-fields>label>:is(input,select){width:100%;min-width:0;max-width:none;height:40px}
+/* Plain report filters share the same aligned field geometry. */
+body #view .filters:not(.bp-filters):not(.schedule-filters):has(>label){display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));align-items:end;gap:12px}
+body #view .filters:not(.bp-filters):not(.schedule-filters)>label{display:grid;grid-template-columns:minmax(0,1fr);justify-content:stretch;text-align:left;gap:6px;min-width:0;margin:0}
+body #view .filters:not(.bp-filters):not(.schedule-filters)>label>:is(input,select){width:100%;max-width:none;min-width:0;height:40px}
+body #view .filters:not(.bp-filters):not(.schedule-filters)>.btn{height:40px;margin:0}
+/* A single presenter search stays level with its create/refresh actions. */
+body #view .bp-toolbar>.toolbar-left:has(>.bp-search){display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+body #view .bp-toolbar>.toolbar-left>.bp-search{flex:1;min-width:0;margin:0;height:40px}
+@media(max-width:600px){body #view .bp-toolbar>.toolbar-left:has(>.bp-search){flex-basis:100%;flex-wrap:wrap}body #view .bp-toolbar>.toolbar-left>.bp-search{flex-basis:100%}}
+body #view .schedule-filter-field{grid-template-columns:minmax(0,1fr);justify-content:stretch;align-content:start;justify-items:stretch;text-align:left;gap:6px}
+body #view .schedule-filter-field>:is(input,select){width:100%!important;height:40px;box-sizing:border-box}
+body #view :is(.schedule-filter-field,.bp-filter,.filter-inline-fields>label,.filters>label){height:auto;min-height:0}
+
+body #view.content .actions:has(>.filter-inline-fields){align-items:flex-end!important}
+@media(max-width:720px){
+ body #view.content .actions:has(>.filter-inline-fields){display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}
+ body #view.content .actions>.filter-inline-fields{display:contents}
+ body #view.content .actions>.filter-inline-fields[hidden]{display:none!important}
+ body #view.content .actions>.filter-inline-fields>label{width:100%;min-width:0}
+}
+
+/* Student actions share the filter row and keep their original controls and permissions. */
+body #view .bp-filters.bp-student-filters{--student-filter-columns:4;grid-template-columns:repeat(var(--student-filter-columns),minmax(0,1fr)) max-content;align-items:end;margin-top:0;margin-bottom:16px;overflow:visible}
+body #view .bp-filters.bp-student-filters:has(>label:nth-of-type(5)){--student-filter-columns:5}
+body #view .bp-student-filters>.bp-student-filter-actions{display:flex;gap:8px;align-items:end;justify-content:flex-end;flex-wrap:nowrap;min-width:0;width:auto;margin:0;align-self:end}
+body #view .bp-student-filter-actions>.btn{height:40px;min-height:40px;box-sizing:border-box;margin:0;white-space:nowrap;flex:0 0 auto}
+@media(max-width:1100px){body #view .bp-filters.bp-student-filters{grid-template-columns:repeat(2,minmax(0,1fr))}body #view .bp-student-filters>.bp-student-filter-actions{grid-column:1/-1}}
+@media(max-width:600px){body #view .bp-filters.bp-student-filters{grid-template-columns:minmax(0,1fr)}body #view .bp-student-filters>.bp-student-filter-actions{flex-wrap:wrap}body #view .bp-student-filter-actions>.btn{flex:1 1 auto}}

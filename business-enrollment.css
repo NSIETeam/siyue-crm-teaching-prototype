@@ -1,8 +1,8 @@
 .enrollment-section { scroll-margin-top: 20px; }
 .enrollment-section > .section-title { margin: 8px 0 16px; }
-.enrollment-student-table input[type="radio"] { accent-color: #315deb; }
+.enrollment-student-table input[type="radio"] { accent-color: #426C84; }
 .enrollment-student-picker { max-height: 300px; overflow: auto; }
-.enrollment-student-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid #dce3ef; border-radius: 12px; background: #f8faff; }
+.enrollment-student-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid #CBDDE7; border-radius: 12px; background: #EAF2F6; }
 .enrollment-student-summary-copy { display: grid; gap: 4px; min-width: 0; }
 .enrollment-student-summary-copy strong { color: #1f2a44; }
 .enrollment-student-summary-copy span { color: #667085; font-size: 13px; }
@@ -24,3 +24,31 @@
   .enrollment-form .step { flex: 0 0 auto; gap: 5px; font-size: 12px; white-space: nowrap; }
   .enrollment-student-table { min-width: 520px; }
 }
+
+/* Enrollment selects a class from the course timetable; it still enrolls the whole class. */
+.be-class-calendar { margin: 16px 0; padding: 18px; border: 1px solid #CBDDE7; border-radius: 12px; }
+.be-calendar-head, .be-week-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.be-calendar-head { justify-content: space-between; }
+.be-week-nav { margin: 16px 0; }
+.be-week-nav label { display: flex; align-items: center; gap: 8px; margin: 0; }
+.be-week-nav .select { width: 160px; }
+.be-week-nav input { width: 155px; }
+.be-week-wrap { overflow: auto; border: 1px solid #e2e8f0; border-radius: 10px; }
+.be-week-table { width: 100%; min-width: 900px; table-layout: fixed; border-collapse: collapse; }
+.be-week-table th { background: #f8fafc; padding: 12px 8px; text-align: center; font-size: 13px; }
+.be-week-table th span { display: block; margin-top: 5px; font-weight: 400; color: #64748b; }
+.be-week-table td { vertical-align: top; padding: 8px; border: 1px solid #e2e8f0; white-space: normal !important; }
+.be-class-event { display: flex; flex-direction: column; gap: 7px; width: 100%; margin: 0 0 10px; padding: 12px 10px; text-align: left; font: inherit; font-size: 13px; line-height: 1.5; background: #f0f7fa; border: 1px solid #cbdde7; border-radius: 8px; color: #334155; cursor: pointer; overflow-wrap: anywhere; }
+.be-class-event:hover, .be-class-event:focus-visible { border-color: #426c84; outline: 2px solid #a8c6d5; outline-offset: 1px; }
+.be-class-event[aria-pressed="true"] { background: #dcecf3; border-color: #426c84; }
+.be-class-event:disabled { opacity: .65; cursor: not-allowed; }
+.be-class-event small { color: #64748b; font-size: 12px; }
+.be-day-empty { display: block; padding: 20px 0; text-align: center; color: #94a3b8; font-size: 12px; }
+.be-unscheduled { margin-top: 18px; }
+.be-unscheduled .btn { margin: 0 8px 8px 0; }
+.be-open-calendar { margin-top: 12px; }
+/* The shared list auto-layout must keep timetable columns equal and seven days visible. */
+body #view .enrollment-form table.be-week-table.sy-data-table[data-sy-layout] { width: 100% !important; min-width: 900px !important; table-layout: fixed !important; }
+body #view .enrollment-form table.be-week-table.sy-data-table[data-sy-layout] col { width: 14.285714% !important; }
+body #view .enrollment-form table.be-week-table.sy-data-table[data-sy-layout] :is(th,td) { padding: 10px 8px; }
+body #view .enrollment-form table.be-week-table.sy-data-table[data-sy-layout] th { text-align: center; }

@@ -1,9 +1,9 @@
 /* One content surface; a compact action strip lives directly under its record. */
 body .topbar .crumb{display:flex;align-items:center;gap:10px;min-width:0}
 body #workspace-back{display:inline-flex;flex:0 0 32px;align-items:center;justify-content:center;width:32px;height:32px;padding:5px;border:0;background:transparent;color:#6c80a0;border-radius:6px}
-body #workspace-back:hover:not(:disabled){background:#edf2fc;color:#315deb}body #workspace-back:disabled{opacity:.25}
-.workspace-record-row{cursor:pointer}.workspace-record-row:hover{background:#f8faff}.workspace-record-row[aria-expanded=true]{background:#f0f5ff}
-.workspace-action-row>td{background:#f4f7ff!important;padding:10px 16px!important}
+body #workspace-back:hover:not(:disabled){background:#EAF2F6;color:#426C84}body #workspace-back:disabled{opacity:.25}
+.workspace-record-row{cursor:pointer}.workspace-record-row:hover{background:#EAF2F6}.workspace-record-row[aria-expanded=true]{background:#EAF2F6}
+.workspace-action-row>td{background:#EAF2F6!important;padding:10px 16px!important}
 .workspace-action-buttons{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
 .workspace-form-page{display:block;position:static;background:none;padding:0}
 body .workspace-form-page>.workspace-form{width:100%;max-width:none;max-height:none;margin:0;overflow:visible}
@@ -11,6 +11,6 @@ body .workspace-form-page .modal-head{margin-bottom:18px}body .workspace-form-pa
 #workflow-session-action{margin-top:20px}#workflow-session-action:empty{display:none}
 #workflow-session-action>.select,#workflow-session-action>.textarea{margin-bottom:12px}
 .content>.workspace-form-page~*{display:none}
-.workspace-batch-entry{padding:10px 14px;background:#f2f6ff;border:1px solid #e2eafa;border-radius:6px;margin:0 0 16px}.tabs+.workspace-batch-entry{margin:12px 24px 0}
+.workspace-batch-entry{padding:10px 14px;background:#EAF2F6;border:1px solid #EAF2F6;border-radius:6px;margin:0 0 16px}.tabs+.workspace-batch-entry{margin:12px 24px 0}
 
 #workspace-back .back-icon,.batch-page .back-icon{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}

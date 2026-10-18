@@ -23,7 +23,7 @@ class BusinessStore{
   if(!this.db.prepare('PRAGMA table_info(business_requests)').all().some(c=>c.name==='actor_version'))this.db.exec('ALTER TABLE business_requests ADD COLUMN actor_version INTEGER NOT NULL DEFAULT 0');
   this.db.prepare('INSERT OR IGNORE INTO business_state VALUES(1,0,?)').run(JSON.stringify(emptyState()));if(file!==':memory:')fs.chmodSync(file,0o600);this.closed=false;
  }
- snapshot(){const row=this.db.prepare('SELECT revision,data FROM business_state WHERE id=1').get();return {revision:row.revision,state:JSON.parse(row.data)};}
+ snapshot(){const row=this.db.prepare('SELECT revision,data FROM business_state WHERE id=1').get(),stored=JSON.parse(row.data);return {revision:row.revision,state:{...emptyState(),...stored,schemaVersion:Math.max(2,stored.schemaVersion||1)}};}
  transaction(fn){this.db.exec('BEGIN IMMEDIATE');try{const result=fn();this.db.exec('COMMIT');return result;}catch(e){this.db.exec('ROLLBACK');throw e;}}
  audit(actor,action,outcome,details={},requestId=null){const event={id:crypto.randomUUID(),at:new Date().toISOString(),actorId:actor?.id||null,actorName:actor?.name||null,action,outcome,requestId,details};this.db.prepare('INSERT INTO business_audit(id,at,actor,action,outcome,event) VALUES(?,?,?,?,?,?)').run(event.id,event.at,event.actorId,action,outcome,JSON.stringify(event));return event;}
  operationContext(state,actor,directory,seed,extra){let i=0;return context(state,actor,directory,{...extra,id:prefix=>(prefix||'row')+'_'+hash(seed+':'+(++i)).slice(0,32)});}

@@ -40,7 +40,7 @@ function parseAuditQuery(query){
 const lower=value=>String(value||'').toLowerCase();
 function systemRead(event){
  const action=lower(event.action);
- return ['audit.query','account.list','report.sales','report.teachers','sales.activity','sales.followups','makeup.candidates','session.attendance.roster'].includes(action)||/^(?:read|directory|staff\.directory|employee\.directory)\./.test(action);
+ return ['crm.query','crm.workbench','crm.reports','crm.trials.read','crm.leadowners.read','crm.import.inspect','student.communications','attendance.query','audit.query','account.list','report.sales','report.teachers','sales.activity','sales.followups','makeup.candidates','session.attendance.roster'].includes(action)||/^(?:read|directory|staff\.directory|employee\.directory)\./.test(action);
 }
 function attentionEvent(event){
  const outcome=lower(event.outcome),action=lower(event.action);

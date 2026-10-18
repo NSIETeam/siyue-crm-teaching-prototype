@@ -44,6 +44,13 @@ test('every planned operation is accepted by preview and execute contract with m
   if(mode==='execute')assert.ok(route.parameters.some(x=>x.in==='header'&&x.name==='Idempotency-Key'&&x.required));
  }
 });
+test('lead creation and follow-up contracts expose the current choice and disposition fields',()=>{
+ const creation=resolve(catalog,catalog.operations.find(x=>x.id==='lead.create').inputSchema.$ref),follow=resolve(catalog,catalog.operations.find(x=>x.id==='lead.follow').inputSchema.$ref);
+ assert.deepEqual(creation.required,['name','phone','source']);assert.deepEqual(creation.properties.followChoice.enum,['self','public']);assert.equal(creation.properties.retainForSelf,undefined);assert.equal(creation.properties.ownerId.type,'string');
+ assert.deepEqual(follow.required,['leadId','note','channel']);assert.deepEqual(follow.properties.disposition.enum,['high','medium','low','lost_cold']);assert.deepEqual(follow.properties.channel.enum,['电话','线上会议','现场沟通']);assert.equal(follow.properties.intent,undefined);
+ const createAction=frontend.operations.find(x=>x.id==='action.quickRegister.f299e5f6'),followAction=frontend.operations.find(x=>x.id==='action.myLeads.b7fe9ead');
+ assert.equal(createAction.execution,'browser-only');assert.ok(createAction.sideEffects.includes('followChoice=self|public'));assert.equal(followAction.execution,'browser-only');assert.match(followAction.sideEffects,/lost_cold/);assert.match(followAction.sideEffects,/不自动提交/);
+});
 test('HTTP methods and path parameters exactly match contract',()=>{
  const operationIds=[];
  for(const [pathname,methods] of Object.entries(openapi.paths))for(const [method,operation] of Object.entries(methods)){

@@ -6,7 +6,7 @@
   <script src="deployment-config.js"></script>
   <title>教培 CRM 与教务系统 · 第一批原型</title>
   <style>
-    :root{font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;color:#243149;background:#f4f7fb;font-size:14px}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.45}.app{display:flex;min-height:100vh}.sidebar{width:238px;background:#172945;color:#c2d0e4;flex-shrink:0;padding:24px 12px}.brand{font-size:18px;font-weight:700;color:white;padding:0 14px 26px;letter-spacing:.5px}.brand small{display:block;color:#7f98b9;font-size:11px;font-weight:500;margin-top:5px;letter-spacing:1px}.menu-title{font-size:11px;color:#7490b2;margin:18px 12px 8px}.menu-item{display:block;width:100%;border:0;background:transparent;color:#b5c5da;text-align:left;padding:11px 14px;border-radius:8px;margin:2px 0}.menu-item:hover{background:#24405f}.menu-item.active{background:#315deb;color:white;font-weight:600}.menu-item.muted{opacity:.6}.main{min-width:0;flex:1}.topbar{height:64px;background:#fff;border-bottom:1px solid #e7edf5;display:flex;align-items:center;justify-content:space-between;padding:0 34px}.topbar .crumb{font-size:13px;color:#7b8ba2}.topbar .user{display:flex;align-items:center;gap:10px;color:#63738a}.avatar{width:30px;height:30px;border-radius:50%;background:#dfe8ff;color:#315deb;display:grid;place-items:center;font-weight:700}.content{padding:28px 34px 60px;max-width:1600px;margin:auto}.heading{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}.heading h1{font-size:24px;margin:0 0 7px}.subtitle{color:#8090a6;margin:0}.card{background:white;border:1px solid #e7edf5;border-radius:12px;box-shadow:0 3px 15px #1c385006}.pad{padding:24px}.tabs{display:flex;gap:32px;border-bottom:1px solid #e8edf4;padding:0 24px}.tab{border:0;background:transparent;color:#7b8ba2;padding:19px 2px 16px;border-bottom:3px solid transparent;font-weight:600}.tab.active{color:#315deb;border-color:#315deb}.tab:disabled{color:#b9c3cf}.section-title{font-size:17px;font-weight:700;margin:0 0 20px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.toolbar-left,.toolbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.btn{border:1px solid #d9e2ef;background:#fff;color:#315deb;border-radius:7px;padding:9px 17px;font-weight:600;min-height:38px}.btn:hover{background:#f6f8ff}.btn.primary{background:#315deb;border-color:#315deb;color:#fff}.btn.primary:hover{background:#244ed5}.btn.danger{color:#d84b56}.btn.small{padding:6px 10px;min-height:30px}.count{color:#8090a6}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:760px}.table th{text-align:left;color:#8796aa;background:#f8fafe;font-weight:600;padding:16px;border-bottom:1px solid #e7edf5}.table td{padding:17px 16px;border-bottom:1px solid #edf1f6;vertical-align:middle}.table tr:last-child td{border-bottom:0}.table a,.link{color:#315deb;text-decoration:none;cursor:pointer}.badge{display:inline-block;border-radius:99px;padding:4px 10px;background:#e9f8f0;color:#16915c;font-size:12px}.badge.off{background:#f0f2f5;color:#8792a1}.actions{display:flex;gap:12px;white-space:nowrap}.filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}.input,.select,.textarea{width:100%;border:1px solid #dce4ef;background:#fff;border-radius:7px;min-height:40px;padding:9px 12px;color:#27364b;outline:none}.input:focus,.select:focus,.textarea:focus{border-color:#315deb;box-shadow:0 0 0 3px #315deb19}.textarea{min-height:85px;resize:vertical}.filters .input{width:250px}.filters .select{width:155px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 28px;max-width:900px}.field label{display:block;color:#56677f;margin-bottom:8px}.required:before{content:"* ";color:#ef6972}.help{font-size:12px;color:#96a3b4;margin-top:7px}.full{grid-column:1/-1}.inline{display:flex;gap:10px}.inline>*{flex:1}.form-actions{display:flex;gap:10px;margin-top:26px}.divider{border:0;border-top:1px solid #edf1f6;margin:28px 0}.subcard{border:1px solid #e7edf5;border-radius:9px;padding:20px;margin-top:20px}.subcard-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.subcard h3{margin:0;font-size:15px}.muted{color:#8b9aac}.empty{padding:38px;text-align:center;color:#9aa8b8;background:#fbfcfe;border:1px dashed #dce4ef;border-radius:8px}.config-table{width:100%;border-collapse:collapse;max-width:920px}.config-table th,.config-table td{padding:14px 12px;text-align:left;border-bottom:1px solid #edf1f6}.config-table th{background:#f8fafe;color:#8190a3}.switch{position:relative;display:inline-block;width:40px;height:23px;vertical-align:middle}.switch input{opacity:0;width:0;height:0}.switch span{position:absolute;inset:0;background:#bbc4d1;border-radius:99px;transition:.2s}.switch span:before{content:"";position:absolute;left:3px;top:3px;width:17px;height:17px;border-radius:50%;background:white;transition:.2s}.switch input:checked+span{background:#315deb}.switch input:checked+span:before{transform:translateX(17px)}.notice{background:#eff5ff;border:1px solid #d9e8ff;color:#52729e;padding:12px 14px;border-radius:7px;margin:0 0 20px}.pill{display:inline-block;color:#7290bd;background:#f1f5fc;padding:6px 10px;border-radius:6px;margin:4px 6px 4px 0}.checkrow{display:flex;flex-wrap:wrap;gap:14px 22px;margin:12px 0 24px}.checkrow label{color:#5a6b82;white-space:nowrap}.checkrow input{accent-color:#315deb}.permission-block{border-top:1px solid #edf1f6;padding:20px 0}.permission-block:first-of-type{border-top:0}.permission-block h3{margin:0;font-size:15px}.toast{position:fixed;right:28px;bottom:26px;background:#20324b;color:white;padding:12px 18px;border-radius:8px;box-shadow:0 8px 22px #10233d30;display:none}.toast.show{display:block}@media(max-width:900px){.sidebar{width:190px}.content{padding:20px}.form-grid{grid-template-columns:1fr}.topbar{padding:0 20px}}@media(max-width:680px){.app{display:block}.sidebar{width:100%;height:auto;padding:10px;display:flex;overflow:auto;align-items:center}.brand{font-size:14px;padding:8px;white-space:nowrap}.brand small,.menu-title{display:none}.menu-item{width:auto;white-space:nowrap}.topbar{display:none}.content{padding:18px}.tabs{gap:18px;overflow:auto;white-space:nowrap}}
+    :root{font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;color:#243149;background:#EAF2F6;font-size:14px}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.45}.app{display:flex;min-height:100vh}.sidebar{width:238px;background:#172945;color:#CBDDE7;flex-shrink:0;padding:24px 12px}.brand{font-size:18px;font-weight:700;color:white;padding:0 14px 26px;letter-spacing:.5px}.brand small{display:block;color:#7f98b9;font-size:11px;font-weight:500;margin-top:5px;letter-spacing:1px}.menu-title{font-size:11px;color:#7490b2;margin:18px 12px 8px}.menu-item{display:block;width:100%;border:0;background:transparent;color:#CBDDE7;text-align:left;padding:11px 14px;border-radius:8px;margin:2px 0}.menu-item:hover{background:#24405f}.menu-item.active{background:#426C84;color:white;font-weight:600}.menu-item.muted{opacity:.6}.main{min-width:0;flex:1}.topbar{height:64px;background:#fff;border-bottom:1px solid #EAF2F6;display:flex;align-items:center;justify-content:space-between;padding:0 34px}.topbar .crumb{font-size:13px;color:#7b8ba2}.topbar .user{display:flex;align-items:center;gap:10px;color:#63738a}.avatar{width:30px;height:30px;border-radius:50%;background:#EAF2F6;color:#426C84;display:grid;place-items:center;font-weight:700}.content{padding:28px 34px 60px;max-width:1600px;margin:auto}.heading{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}.heading h1{font-size:24px;margin:0 0 7px}.subtitle{color:#8090a6;margin:0}.card{background:white;border:1px solid #EAF2F6;border-radius:12px;box-shadow:0 3px 15px #1c385006}.pad{padding:24px}.tabs{display:flex;gap:32px;border-bottom:1px solid #EAF2F6;padding:0 24px}.tab{border:0;background:transparent;color:#7b8ba2;padding:19px 2px 16px;border-bottom:3px solid transparent;font-weight:600}.tab.active{color:#426C84;border-color:#426C84}.tab:disabled{color:#b9c3cf}.section-title{font-size:17px;font-weight:700;margin:0 0 20px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.toolbar-left,.toolbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.btn{border:1px solid #CBDDE7;background:#fff;color:#426C84;border-radius:7px;padding:9px 17px;font-weight:600;min-height:38px}.btn:hover{background:#EAF2F6}.btn.primary{background:#426C84;border-color:#426C84;color:#fff}.btn.primary:hover{background:#426C84}.btn.danger{color:#d84b56}.btn.small{padding:6px 10px;min-height:30px}.count{color:#8090a6}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:760px}.table th{text-align:left;color:#8796aa;background:#EAF2F6;font-weight:600;padding:16px;border-bottom:1px solid #EAF2F6}.table td{padding:17px 16px;border-bottom:1px solid #EAF2F6;vertical-align:middle}.table tr:last-child td{border-bottom:0}.table a,.link{color:#426C84;text-decoration:none;cursor:pointer}.badge{display:inline-block;border-radius:99px;padding:4px 10px;background:#e9f8f0;color:#16915c;font-size:12px}.badge.off{background:#f0f2f5;color:#8792a1}.actions{display:flex;gap:12px;white-space:nowrap}.filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}.input,.select,.textarea{width:100%;border:1px solid #CBDDE7;background:#fff;border-radius:7px;min-height:40px;padding:9px 12px;color:#27364b;outline:none}.input:focus,.select:focus,.textarea:focus{border-color:#426C84;box-shadow:0 0 0 3px #426C8419}.textarea{min-height:85px;resize:vertical}.filters .input{width:250px}.filters .select{width:155px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 28px;max-width:900px}.field label{display:block;color:#56677f;margin-bottom:8px}.required:before{content:"* ";color:#ef6972}.help{font-size:12px;color:#96a3b4;margin-top:7px}.full{grid-column:1/-1}.inline{display:flex;gap:10px}.inline>*{flex:1}.form-actions{display:flex;gap:10px;margin-top:26px}.divider{border:0;border-top:1px solid #EAF2F6;margin:28px 0}.subcard{border:1px solid #EAF2F6;border-radius:9px;padding:20px;margin-top:20px}.subcard-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.subcard h3{margin:0;font-size:15px}.muted{color:#8b9aac}.empty{padding:38px;text-align:center;color:#9aa8b8;background:#EAF2F6;border:1px dashed #CBDDE7;border-radius:8px}.config-table{width:100%;border-collapse:collapse;max-width:920px}.config-table th,.config-table td{padding:14px 12px;text-align:left;border-bottom:1px solid #EAF2F6}.config-table th{background:#EAF2F6;color:#8190a3}.switch{position:relative;display:inline-block;width:40px;height:23px;vertical-align:middle}.switch input{opacity:0;width:0;height:0}.switch span{position:absolute;inset:0;background:#bbc4d1;border-radius:99px;transition:.2s}.switch span:before{content:"";position:absolute;left:3px;top:3px;width:17px;height:17px;border-radius:50%;background:white;transition:.2s}.switch input:checked+span{background:#426C84}.switch input:checked+span:before{transform:translateX(17px)}.notice{background:#EAF2F6;border:1px solid #EAF2F6;color:#52729e;padding:12px 14px;border-radius:7px;margin:0 0 20px}.pill{display:inline-block;color:#426C84;background:#EAF2F6;padding:6px 10px;border-radius:6px;margin:4px 6px 4px 0}.checkrow{display:flex;flex-wrap:wrap;gap:14px 22px;margin:12px 0 24px}.checkrow label{color:#5a6b82;white-space:nowrap}.checkrow input{accent-color:#426C84}.permission-block{border-top:1px solid #EAF2F6;padding:20px 0}.permission-block:first-of-type{border-top:0}.permission-block h3{margin:0;font-size:15px}.toast{position:fixed;right:28px;bottom:26px;background:#20324b;color:white;padding:12px 18px;border-radius:8px;box-shadow:0 8px 22px #10233d30;display:none}.toast.show{display:block}@media(max-width:900px){.sidebar{width:190px}.content{padding:20px}.form-grid{grid-template-columns:1fr}.topbar{padding:0 20px}}@media(max-width:680px){.app{display:block}.sidebar{width:100%;height:auto;padding:10px;display:flex;overflow:auto;align-items:center}.brand{font-size:14px;padding:8px;white-space:nowrap}.brand small,.menu-title{display:none}.menu-item{width:auto;white-space:nowrap}.topbar{display:none}.content{padding:18px}.tabs{gap:18px;overflow:auto;white-space:nowrap}}
   </style>
   <link rel="stylesheet" href="academic.css">
   <link rel="stylesheet" href="navigation.css">
@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="workspace-navigation.css">
 <link rel="stylesheet" href="sales-metrics.css">
 <link rel="stylesheet" href="employee-auth.css">
+<link rel="stylesheet" href="ui-annotations.css">
 <link rel="stylesheet" href="academic-class-audit.css">
 <link rel="stylesheet" href="commerce-audit.css">
 <link rel="stylesheet" href="crm-audit.css">
@@ -40,96 +41,134 @@
 <link rel="stylesheet" href="business-schedule.css">
 <link rel="stylesheet" href="business-api.css">
 <link rel="stylesheet" href="business-presenter.css">
+<link rel="stylesheet" href="business-academic.css">
+<link rel="stylesheet" href="business-attendance.css">
+<link rel="stylesheet" href="business-commerce-selection.css">
+<link rel="stylesheet" href="business-commerce-checkout.css">
 <link rel="stylesheet" href="business-form-builder.css">
 <link rel="stylesheet" href="business-workbench.css">
+<link rel="stylesheet" href="business-scrm.css">
+<link rel="stylesheet" href="crm-followup-layout.css">
+<link rel="stylesheet" href="business-student-communication.css">
+<link rel="stylesheet" href="work-tabs.css">
 <link rel="stylesheet" href="academic-planner.css">
+  <link rel="stylesheet" href="sidebar-menu.css">
+  <link rel="stylesheet" href="java-crm-workspace.css">
+  <link rel="stylesheet" href="java-academic-workspace.css">
+  <link rel="stylesheet" href="java-commerce-workspace.css">
+  <link rel="stylesheet" href="java-crm-needs.css">
+  <link rel="stylesheet" href="java-crm-task-routing.css">
+<link rel="stylesheet" href="crm-layout-consistency.css">
+<link rel="stylesheet" href="table-layout.css">
+<link rel="stylesheet" href="entity-links.css">
+<link rel="stylesheet" href="sky-apricot-theme.css">
+<link rel="stylesheet" href="sidebar-glass.css">
+<link rel="stylesheet" href="saved-filter-layout.css">
+<link rel="stylesheet" href="table-row-actions.css">
+<link rel="stylesheet" href="business-flow.css">
+<link rel="stylesheet" href="filter-collapse.css">
+<link rel="stylesheet" href="mobile-workspace.css">
 </head>
 <body>
 <svg class="ui-icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" width="0" height="0"><defs><symbol id="ui-back-arrow" viewBox="0 0 24 24"><path d="M21 12H3M12 3l-9 9 9 9"/></symbol></defs></svg>
 <div class="app">
   <aside class="sidebar">
     <div class="brand brand-logo"><svg viewBox="289 1157 5328 1229" role="img" aria-label="思跃培优" xmlns="http://www.w3.org/2000/svg"><title>思跃培优</title><defs><filter id="brand-white" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/></filter></defs><image href="assets/siyue-peiyou-logo.png" width="5906" height="3543" filter="url(#brand-white)"/></svg></div>
-    <button class="menu-item nav-level-1 workspace-entry" data-page="home">工作台</button>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="leads" aria-expanded="true" aria-controls="nav-leads">线索 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
-    <div class="nav-children" id="nav-leads">
-      <button class="menu-item nav-level-2" data-page="quickRegister">线索登记</button>
-      <button class="menu-item nav-level-2" data-page="leadTodo">今日待办</button>
-      <button class="menu-item nav-level-2" data-page="myLeads">我的线索</button>
-      <button class="menu-item nav-level-2" data-page="leadManage">线索管理</button>
-      <button class="menu-item nav-level-2" data-page="salesMetrics">销售统计</button>
+<nav class="sidebar-menu" aria-label="功能菜单">
+    <button class="menu-item nav-level-1 workspace-entry" data-page="home"><svg class="nav-category-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 3l9 8M5 10v11h14V10M9 21v-7h6v7"/></svg><span>工作台</span></button>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="customers" aria-expanded="false" aria-controls="nav-customers"><svg class="nav-category-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M19 21v-2a4 4 0 0 0-3-4M13 3a4 4 0 0 1 0 8M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0"/></svg><span class="nav-group-label">客户管理</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+    <div class="nav-children" id="nav-customers" hidden>
+        <button class="menu-item nav-level-2" data-page="crmReception" data-auth-only hidden>前台接待</button>
+        <button class="menu-item nav-level-2" data-page="crmNeedIntake" data-auth-only data-java-only hidden>前台接待</button>
+        <button class="menu-item nav-level-2" data-page="crmCustomers" data-auth-only hidden>客户档案</button>
     </div>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="forms" aria-expanded="true" aria-controls="nav-forms">表单 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
-    <div class="nav-children" id="nav-forms">
-      <button class="menu-item nav-level-2" data-page="marketingForms">表单管理</button>
-      <button class="menu-item nav-level-2" data-page="formSubmissions">提交审核</button>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="forms" aria-expanded="false" aria-controls="nav-forms"><svg class="nav-category-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM8 3v4M16 3v4M4 10h16M8 14h3"/></svg><span class="nav-group-label">获客管理</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+    <div class="nav-children" id="nav-forms" hidden>
+        <button class="menu-item nav-level-2" data-page="crmCampaigns" data-auth-only hidden>获客活动</button>
+        <button class="menu-item nav-level-2" data-page="marketingForms">表单管理</button>
+        <button class="menu-item nav-level-2" data-page="formSubmissions">提交审核</button>
     </div>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="academic" aria-expanded="true" aria-controls="nav-academic">教务 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
-    <div class="nav-children" id="nav-academic">
-      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="teaching" aria-expanded="true" aria-controls="nav-teaching">教学管理 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
-      <div class="nav-children" id="nav-teaching">
-        <button class="menu-item nav-level-3" data-page="course">课程管理</button>
-        <button class="menu-item nav-level-3" data-page="classes">班级管理</button>
-        <button class="menu-item nav-level-3" data-page="students">学生管理</button>
-        <button class="menu-item nav-level-3" data-page="attendance">考勤</button>
-        <button class="menu-item nav-level-3" data-page="makeup">补课</button>
-        <button class="menu-item nav-level-3" data-page="schedule">课表</button>
-        <button class="menu-item nav-level-3" data-page="teacherCourses">我的课程</button>
-        <button class="menu-item nav-level-3" data-page="rescheduleRequests">调课申请</button>
-        <button class="menu-item nav-level-3" data-page="rescheduleApprovals">调课审批</button>
-        <button class="menu-item nav-level-3" data-page="teacherMetrics">教师统计</button>
-      </div>
-      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="business" aria-expanded="true" aria-controls="nav-business">业务办理 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
-      <div class="nav-children" id="nav-business">
-        <button class="menu-item nav-level-3" data-page="enroll">报名</button>
-        <button class="menu-item nav-level-3" data-page="tempMove">临时调班</button>
-        <button class="menu-item nav-level-3" data-page="transfer">转课／班</button>
-        <button class="menu-item nav-level-3" data-page="withdraw">退课／退班</button>
-        <button class="menu-item nav-level-3" data-page="supplement">补费</button>
-      </div>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="leads" aria-expanded="false" aria-controls="nav-leads"><svg class="nav-category-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM8 9h8M8 13h5M8 17h3"/></svg><span class="nav-group-label">线索管理</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+    <div class="nav-children" id="nav-leads" hidden>
+        <button class="menu-item nav-level-2" data-page="quickRegister">线索登记</button>
+        <button class="menu-item nav-level-2" data-page="myLeads">我的线索</button>
     </div>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="learning" aria-expanded="true" aria-controls="nav-learning">教学 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
-    <div class="nav-children" id="nav-learning">
-      <button class="menu-item nav-level-2" data-page="learningActive">在读学生</button>
-      <button class="menu-item nav-level-2" data-page="learningHistory">历史学生</button>
-      <button class="menu-item nav-level-2" data-page="learningData">数据管理</button>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="academic" aria-expanded="false" aria-controls="nav-academic"><svg class="nav-category-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-6 9 6-9 6-9-6M5 11v7l7 4 7-4v-7"/></svg><span class="nav-group-label">教务管理</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+    <div class="nav-children" id="nav-academic" hidden>
+        <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="teaching" aria-expanded="false" aria-controls="nav-teaching"><span class="nav-group-label">教学管理</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+        <div class="nav-children" id="nav-teaching" hidden>
+            <button class="menu-item nav-level-3" data-page="course">课程管理</button>
+            <button class="menu-item nav-level-3" data-page="classes">班级管理</button>
+            <button class="menu-item nav-level-3" data-page="students">学生管理</button>
+            <button class="menu-item nav-level-3" data-page="attendance">考勤</button>
+            <button class="menu-item nav-level-3" data-page="makeup">补课</button>
+            <button class="menu-item nav-level-3" data-page="schedule">课表</button>
+            <button class="menu-item nav-level-3" data-page="studentArchives">学生档案</button>
+        </div>
+        <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="business" aria-expanded="false" aria-controls="nav-business"><span class="nav-group-label">业务办理</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+        <div class="nav-children" id="nav-business" hidden>
+            <button class="menu-item nav-level-3" data-page="enroll">报名</button>
+            <button class="menu-item nav-level-3" data-page="tempMove">临时调班</button>
+            <button class="menu-item nav-level-3" data-page="transfer">转课／班</button>
+            <button class="menu-item nav-level-3" data-page="withdraw">退课／退班</button>
+            <button class="menu-item nav-level-3" data-page="supplement">补费</button>
+        </div>
     </div>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="mall" aria-expanded="true" aria-controls="nav-mall">商城工具 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
-    <div class="nav-children" id="nav-mall">
-      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="courseMall" aria-expanded="true" aria-controls="nav-course-mall">课程商城 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
-      <div class="nav-children" id="nav-course-mall">
-        <button class="menu-item nav-level-3" data-page="mallDecor">商城装修</button>
-        <button class="menu-item nav-level-3" data-page="mallShelf">课程上架</button>
-      </div>
-      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="marketing" aria-expanded="true" aria-controls="nav-marketing">营销工具 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
-      <div class="nav-children" id="nav-marketing">
-        <button class="menu-item nav-level-3" data-page="mallGroup">拼团</button>
-        <button class="menu-item nav-level-3" data-page="mallJoint">联报</button>
-        <button class="menu-item nav-level-3" data-page="mallCoupon">优惠券</button>
-      </div>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="learning" aria-expanded="false" aria-controls="nav-learning"><svg class="nav-category-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h7l2 2 2-2h7v16h-7l-2 2-2-2H3zM12 6v16"/></svg><span class="nav-group-label">教学工作</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+    <div class="nav-children" id="nav-learning" hidden>
+        <button class="menu-item nav-level-2" data-page="teacherCourses">我的课表</button>
+        <button class="menu-item nav-level-2" data-page="teacherStudents" data-auth-only hidden>我的学生</button>
+        <button class="menu-item nav-level-2" data-page="teacherMetrics">数据统计</button>
     </div>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="finance" aria-expanded="true" aria-controls="nav-finance">财务中心 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
-    <div class="nav-children" id="nav-finance">
-      <button class="menu-item nav-level-2" data-page="orders">收费订单</button>
-      <button class="menu-item nav-level-2" data-page="financeRefunds">退转记录</button>
-      <button class="menu-item nav-level-2" data-page="financeArrears">欠费记录</button>
-      <button class="menu-item nav-level-2" data-page="financeConsumption">课消记录</button>
-      <button class="menu-item nav-level-2" data-page="financeReceipts">收款设置</button>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="mall" aria-expanded="false" aria-controls="nav-mall"><svg class="nav-category-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18l-2-6H5l-2 6M5 9v12h14V9M9 21v-8h6v8"/></svg><span class="nav-group-label">商城工具</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+    <div class="nav-children" id="nav-mall" hidden>
+        <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="courseMall" aria-expanded="false" aria-controls="nav-course-mall"><span class="nav-group-label">课程商城</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+        <div class="nav-children" id="nav-course-mall" hidden>
+            <button class="menu-item nav-level-3" data-page="mallDecor">商城装修</button>
+            <button class="menu-item nav-level-3" data-page="mallShelf">课程上架</button>
+        </div>
+        <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="marketing" aria-expanded="false" aria-controls="nav-marketing"><span class="nav-group-label">营销工具</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+        <div class="nav-children" id="nav-marketing" hidden>
+            <button class="menu-item nav-level-3" data-page="mallGroup">拼团</button>
+            <button class="menu-item nav-level-3" data-page="mallJoint">联报</button>
+            <button class="menu-item nav-level-3" data-page="mallCoupon">优惠券</button>
+        </div>
     </div>
-    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="basicSettings" aria-expanded="true" aria-controls="nav-basic-settings">基础设置 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
-    <div class="nav-children" id="nav-basic-settings">
-      <button class="menu-item nav-level-2" data-page="system">系统配置</button>
-      <button class="menu-item nav-level-2" data-page="campus">校区配置</button>
-      <button class="menu-item nav-level-2" data-page="teaching">教学配置</button>
-      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="staffManage" aria-expanded="true" aria-controls="nav-staff-manage">员工管理 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
-      <div class="nav-children" id="nav-staff-manage">
-        <button class="menu-item nav-level-3" data-page="staff">员工列表</button>
-        <button class="menu-item nav-level-3" data-page="positions">职位管理</button>
-        <button class="menu-item nav-level-3" data-page="permissions">权限管理</button>
-        <button class="menu-item nav-level-3" data-page="permissionLogs">操作日志</button>
-      </div>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="finance" aria-expanded="false" aria-controls="nav-finance"><svg class="nav-category-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v15H3zM3 6V3h15M16 12h5v5h-5z"/></svg><span class="nav-group-label">财务中心</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+    <div class="nav-children" id="nav-finance" hidden>
+        <button class="menu-item nav-level-2" data-page="crmAttribution" data-auth-only hidden>业绩归因</button>
+        <button class="menu-item nav-level-2" data-page="orders">收费订单</button>
+        <button class="menu-item nav-level-2" data-page="financeRefunds">退转记录</button>
+        <button class="menu-item nav-level-2" data-page="financeArrears">欠费记录</button>
+        <button class="menu-item nav-level-2" data-page="financeConsumption">课消记录</button>
+        <button class="menu-item nav-level-2" data-page="financeReceipts">收款设置</button>
     </div>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="reports" aria-expanded="false" aria-controls="nav-reports"><svg class="nav-category-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V3M4 21h17M8 17v-5M13 17V8M18 17V4"/></svg><span class="nav-group-label">经营报表</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+    <div class="nav-children" id="nav-reports" hidden>
+        <button class="menu-item nav-level-2" data-page="crmReports" data-auth-only hidden>经营报表</button>
+        <button class="menu-item nav-level-2" data-page="learningData">教学总览</button>
+        <button class="menu-item nav-level-2" data-page="salesMetrics">销售统计</button>
+    </div>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="basicSettings" aria-expanded="false" aria-controls="nav-basic-settings"><svg class="nav-category-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.608,9.528 L21.514,10.108 L21.514,13.892 L19.608,14.472 L19.128,15.632 L20.065,17.389 L17.389,20.065 L15.632,19.128 L14.472,19.608 L13.892,21.514 L10.108,21.514 L9.528,19.608 L8.368,19.128 L6.611,20.065 L3.935,17.389 L4.872,15.632 L4.392,14.472 L2.486,13.892 L2.486,10.108 L4.392,9.528 L4.872,8.368 L3.935,6.611 L6.611,3.935 L8.368,4.872 L9.528,4.392 L10.108,2.486 L13.892,2.486 L14.472,4.392 L15.632,4.872 L17.389,3.935 L20.065,6.611 L19.128,8.368 Z"/><circle cx="12" cy="12" r="3.25"/></svg><span class="nav-group-label">系统设置</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+    <div class="nav-children" id="nav-basic-settings" hidden>
+        <button class="menu-item nav-level-2" data-page="crmRouting" data-auth-only hidden>分配规则</button>
+        <button class="menu-item nav-level-2" data-page="crmNeedConfiguration" data-auth-only data-java-only hidden>需求配置</button>
+        <button class="menu-item nav-level-2" data-page="crmCustomerSearchMaintenance" data-auth-only data-java-only hidden>客户检索维护</button>
+        <button class="menu-item nav-level-2" data-page="system">系统配置</button>
+        <button class="menu-item nav-level-2" data-page="campus">校区配置</button>
+        <button class="menu-item nav-level-2" data-page="teaching">教学配置</button>
+        <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="staffManage" aria-expanded="false" aria-controls="nav-staff-manage"><span class="nav-group-label">员工与权限</span><span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>
+        <div class="nav-children" id="nav-staff-manage" hidden>
+            <button class="menu-item nav-level-3" data-page="staff">员工列表</button>
+            <button class="menu-item nav-level-3" data-page="positions">职位管理</button>
+            <button class="menu-item nav-level-3" data-page="permissions">权限管理</button>
+            <button class="menu-item nav-level-3" data-page="permissionLogs">操作日志</button>
+        </div>
+    </div>
+</nav>
+<button type="button" class="nav-collapse-all" onclick="SiyueNavigation.collapseAll()">收起全部菜单</button>
   </aside>
-  <main class="main"><header class="topbar"><div class="crumb"><button id="workspace-back" type="button" onclick="workspaceBack()" aria-label="返回上一页" title="返回上一页" disabled><svg class="back-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#ui-back-arrow"></use></svg></button><span id="crumb">基础设置</span></div><div class="user"><button type="button" class="avatar account-trigger" onclick="accountOpen()" aria-label="设置和账号管理" aria-haspopup="dialog" title="设置和账号管理"><span class="avatar-letter">管</span><svg class="avatar-gear" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3-.5 2-2 1L4.5 6 3 9l1.5 1.5v3L3 15l1.5 3 2-.1 2 1L9 21h6l.5-2 2-1 2 .1 1.5-3-1.5-1.5v-3L21 9l-1.5-3-2 .1-2-1L15 3Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></header><div id="view" class="content"></div></main>
+  <main class="main"><header class="topbar"><div class="crumb"><button id="workspace-back" type="button" onclick="workspaceBack()" aria-label="返回上一页" title="返回上一页" disabled><svg class="back-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#ui-back-arrow"></use></svg></button><span id="crumb">基础设置</span></div><form id="java-crm-resource-search" class="java-crm-resource-search" role="search" aria-label="客户资源检索" hidden><label for="java-crm-resource-type">资源检索</label><select id="java-crm-resource-type" class="select" name="searchType" aria-label="资源检索方式"></select><input id="java-crm-resource-query" class="input" name="query" maxlength="254" aria-label="资源检索内容（精确匹配）" placeholder="输入身份信息精确检索"><button id="java-crm-resource-submit" type="submit" class="btn primary">检索</button><p id="java-crm-resource-error" role="alert" hidden></p></form><div class="user"><button type="button" class="avatar account-trigger" onclick="accountOpen()" aria-label="设置和账号管理" aria-haspopup="dialog" title="设置和账号管理"><span class="avatar-letter">管</span><svg class="avatar-gear" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3-.5 2-2 1L4.5 6 3 9l1.5 1.5v3L3 15l1.5 3 2-.1 2 1L9 21h6l.5-2 2-1 2 .1 1.5-3-1.5-1.5v-3L21 9l-1.5-3-2 .1-2-1L15 3Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></header><section id="workspace-tabs" class="work-tabs" aria-label="工作页签" hidden></section><div id="view" class="content"></div></main>
 </div>
 <div class="toast" id="toast"></div>
 <script>
@@ -186,16 +225,43 @@ document.querySelectorAll('.menu-item').forEach(e=>e.addEventListener('click',()
 <script src="finance-audit.js"></script>
 <script src="platform-audit.js"></script>
 <script src="operation-journal.js"></script>
+<script src="java-oidc-client.js"></script>
+<script src="java-api-client.js"></script>
 <script src="employee-auth.js"></script>
 <script src="academic-dictionary.js"></script>
 <script src="academic-planner.js"></script>
 <script src="qrcode-vendor.js"></script>
 <script src="business-presenter.js"></script>
+<script src="business-attendance.js"></script>
+<script src="business-academic.js"></script>
+<script src="business-commerce-selection.js"></script>
+<script src="business-commerce-checkout.js"></script>
 <script src="business-form-builder.js"></script>
+<script src="crm-followup-layout.js"></script>
+<script src="business-student-communication.js"></script>
+<script src="business-scrm.js"></script>
+<script src="workflow-editor.js"></script>
 <script src="business-workbench.js"></script>
 <script src="business-decor.js"></script>
 <script src="business-enrollment.js"></script>
 <script src="business-schedule.js"></script>
+<script src="work-tabs.js"></script>
 <script src="business-api.js"></script>
+<script src="sidebar-menu.js"></script>
+<script src="sidebar-glass.js"></script>
+<script src="java-academic-workspace.js"></script>
+<script src="java-commerce-workspace.js"></script>
+<script src="java-crm-needs.js"></script>
+<script src="java-crm-task-routing.js"></script>
+<script src="java-crm-workspace.js"></script>
+<script src="page-registry.js"></script>
+<script src="table-row-actions.js"></script>
+<script src="table-layout.js"></script>
+<script src="entity-links.js"></script>
+<script src="ui-annotations.js"></script>
+<script src="page-chrome.js"></script>
+<script src="filter-collapse.js"></script>
+<script src="trial-workflow.js"></script>
+<script src="mobile-workspace.js"></script>
 </body>
 </html>

@@ -1,0 +1,15 @@
+.java-commerce .jc-editor,.java-commerce .jc-picker,.java-commerce .jc-review{margin-top:18px}
+.java-commerce .jc-editor .heading,.java-commerce .jc-picker .heading,.java-commerce .jc-course-head{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.java-commerce .jc-editor .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}
+.java-commerce .jc-course-range{border:1px solid var(--line,#e5e7eb);border-radius:10px;padding:14px;margin:12px 0}
+.java-commerce .jc-course-range h3{margin:0 0 10px;font-size:15px}
+.java-commerce .jc-class-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;max-height:300px;overflow:auto}
+.java-commerce .jc-class-list label{display:grid;grid-template-columns:18px 1fr;gap:3px 8px;align-items:center;padding:8px;border-radius:8px;background:var(--surface-subtle,#EAF2F6)}
+.java-commerce .jc-class-list input{grid-row:span 2}
+.java-commerce .jc-class-list small{color:var(--muted,#667085);font-size:12px}
+.java-commerce .jc-check,.java-commerce .jc-participants label{display:inline-flex;align-items:center;gap:8px;margin:8px 16px 8px 0}
+.java-commerce .jc-participants{border:1px solid var(--line,#e5e7eb);border-radius:8px;margin:16px 0;padding:10px 14px}
+.java-commerce .jc-review dl{display:grid;grid-template-columns:150px 1fr;gap:8px 14px}
+.java-commerce .jc-review dt{color:var(--muted,#667085)}
+.java-commerce .jc-review dd{margin:0;overflow-wrap:anywhere}
+@media(max-width:700px){.java-commerce .jc-editor .form-grid{grid-template-columns:1fr}.java-commerce .jc-review dl{grid-template-columns:1fr;gap:3px}.java-commerce .jc-review dd{margin-bottom:9px}}

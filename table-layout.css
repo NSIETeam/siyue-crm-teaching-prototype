@@ -1,0 +1,64 @@
+/* Final, scoped list layout; column widths come from table-layout.js. */
+body :is(#view,.modal,.drawer) .sy-table-scroll {
+  width:100%; min-width:0; max-width:100%; overflow-x:auto;
+  overscroll-behavior-x:contain; isolation:isolate;
+}
+body :is(#view,.modal,.drawer) .sy-table-scroll:focus-visible { outline:2px solid #426C84; outline-offset:2px; }
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] {
+  table-layout:fixed!important; width:100%!important;
+  min-width:var(--sy-table-min)!important; max-width:none!important; border-collapse:collapse;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] :is(th,td) {
+  box-sizing:border-box; width:auto!important; min-width:0!important; max-width:none!important;
+  padding:14px 16px; white-space:normal!important; word-break:normal!important;
+  overflow-wrap:anywhere!important; vertical-align:top; line-height:1.6;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] :is(th,td) :where(a,span,strong,small,div,p,.scrm-text-button) {
+  white-space:normal!important; word-break:normal!important; overflow-wrap:anywhere!important;
+  min-width:0; max-width:100%;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] td>small {
+  display:block; margin-top:5px; color:#718096; font-size:12px;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] .scrm-text-button { text-align:left; line-height:1.6; }
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] .sy-cell-copy {
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] .sy-cell-expanded>.sy-cell-copy {
+  display:block; -webkit-line-clamp:unset; overflow:visible;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] .sy-text-toggle {
+  display:block; margin:5px 0 0; padding:0; border:0; background:none; color:#426C84;
+  font:inherit; font-size:12px; line-height:1.6; cursor:pointer; white-space:nowrap!important;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] :is(.actions,.bp-row-actions,.bp-student-actions,.mf-list-actions) {
+  display:flex; flex-wrap:wrap!important; align-items:center; gap:8px; white-space:normal!important;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] :is(.btn,.bp-status,.employee-status) {
+  white-space:nowrap!important; word-break:normal!important; overflow-wrap:normal!important; flex-shrink:0;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] :is(input:not([type=checkbox]):not([type=radio]),select,textarea) {
+  box-sizing:border-box; width:100%; min-width:0!important; max-width:100%;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] [data-sy-column=amount] {
+  text-align:right; white-space:nowrap!important; font-variant-numeric:tabular-nums;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] :is([data-sy-column=date],[data-sy-column=phone],[data-sy-column=number]) {
+  font-variant-numeric:tabular-nums;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] [data-sy-column=check] { text-align:center; }
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] [data-sy-column=actions] {
+  position:sticky; right:0; z-index:1; background:#fff; box-shadow:-1px 0 #CBDDE7;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] th[data-sy-column=actions] { background:#EAF2F6; z-index:2; }
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] [data-sy-column=expanded] {
+  position:static; box-shadow:none; white-space:normal!important;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] :is(.scrm-note,.scrm-timeline p) {
+  white-space:pre-wrap!important;
+}
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] .schedule-event { width:100%; white-space:normal!important; }
+body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] .schedule-event strong { white-space:nowrap!important; }
+@media(max-width:640px) {
+  body :is(#view,.modal,.drawer) table.sy-data-table[data-sy-layout] [data-sy-column=actions] { position:static; }
+}

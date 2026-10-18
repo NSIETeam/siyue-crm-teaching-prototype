@@ -25,7 +25,10 @@ function makeUser(input,users){
 function createAuthService(options){
  const store=options.store||new AuthStore(options.storeFile);const origin=new URL(options.publicOrigin).origin;
  if(new URL(origin).protocol!=='https:'&&!options.allowInsecureTest)throw new Error('认证服务的公开地址必须使用 HTTPS');
+ const qaLoadMode=options.qaLoadMode===true,qaLoginGlobalLimit=Number(process.env.SIYUE_QA_AUTH_LOGIN_GLOBAL_LIMIT||2000),qaLoginIpLimit=Number(process.env.SIYUE_QA_AUTH_LOGIN_IP_LIMIT||500);
+ if(qaLoadMode){if(!Number.isInteger(qaLoginGlobalLimit)||qaLoginGlobalLimit<100||qaLoginGlobalLimit>10000)throw new Error('SIYUE_QA_AUTH_LOGIN_GLOBAL_LIMIT 须为 100–10000');if(!Number.isInteger(qaLoginIpLimit)||qaLoginIpLimit<20||qaLoginIpLimit>5000)throw new Error('SIYUE_QA_AUTH_LOGIN_IP_LIMIT 须为 20–5000');}
  const cookiePath=options.cookiePath||'/crm-api/';if(!/^\/[a-zA-Z0-9/_-]*$/.test(cookiePath))throw new Error('Cookie 路径无效');
+ const cliPairings=new Map();
  const cookieName='siyue_session',challengeCookieName='siyue_challenge';const buckets=new Map();
  const expose=user=>publicUser(user,store.state.rolePolicies);const currentPermissions=user=>effectivePermissions(user,store.state.rolePolicies);
  const captcha=createCaptchaService(options.captchaOptions);
@@ -43,9 +46,9 @@ function createAuthService(options){
   let token,client;
   if(req.headers.authorization){if(typeof req.headers.authorization!=='string'||!/^Bearer [A-Za-z0-9_-]{43}$/.test(req.headers.authorization))reject(401,'AUTH_REQUIRED','请重新登录');token=req.headers.authorization.slice(7);client='cli';}
   else{const matches=(req.headers.cookie||'').split(';').map(x=>x.trim()).filter(x=>x.startsWith(cookieName+'='));if(matches.length!==1)reject(401,'AUTH_REQUIRED','请先登录');token=matches[0].slice(cookieName.length+1);client='browser';if(!/^[A-Za-z0-9_-]{43}$/.test(token))reject(401,'AUTH_REQUIRED','请重新登录');}
-  const hash=tokenHash(token);const session=store.state.sessions.find(x=>x.tokenHash===hash&&x.client===client);
+  const hash=tokenHash(token);const session=store.state.sessions.find(x=>x.tokenHash===hash&&x.client===client)||(client==='cli'?(store.state.cliConnections||[]).find(x=>x.tokenHash===hash&&!x.revokedAt):null);
   const user=session&&store.state.users.find(x=>x.id===session.userId);
-  if(!session||!user||user.disabled||session.version!==user.version||Date.parse(session.expiresAt)<=Date.now())reject(401,'SESSION_EXPIRED','登录已失效，请重新登录');
+  if(!session||!user||user.disabled||session.version!==user.version||(!session.persistent&&Date.parse(session.expiresAt)<=Date.now()))reject(401,'SESSION_EXPIRED','登录已失效，请重新登录');
   return {session,user};
  }
  function admin(user){if(!user.roleIds.includes('superadmin'))reject(403,'FORBIDDEN','仅超级管理员可以管理账号与权限');}
@@ -68,7 +71,7 @@ function createAuthService(options){
     const challenge=captcha.issue(readCookie(req,challengeCookieName));addCookie(res,challengeCookie(challenge.binding));return respond(200,{id:challenge.id,image:challenge.image,expiresAt:challenge.expiresAt});
    }
    if(pathname==='/v1/auth/login'&&req.method==='POST'){
-    action='auth.login';limit('global-login',100,60000);limit('ip:'+address(req),20,15*60000);
+    action='auth.login';limit('global-login',qaLoadMode?qaLoginGlobalLimit:100,60000);limit('ip:'+address(req),qaLoadMode?qaLoginIpLimit:20,15*60000);
     const body=await jsonBody(req);fields(body,['username','password','client','remember','captchaId','captchaCode']);
     if(!['browser','cli'].includes(body.client))reject(400,'INVALID_CLIENT','请选择有效登录方式');
     if(body.client==='browser'){
@@ -91,10 +94,61 @@ function createAuthService(options){
     const result=store.transact(state=>{const user=state.users.find(u=>u.id===candidate.id);state.sessions=state.sessions.filter(s=>Date.parse(s.expiresAt)>Date.now());const active=state.sessions.filter(s=>s.userId===user.id);if(active.length>=10){const oldest=active.sort((a,b)=>a.createdAt.localeCompare(b.createdAt))[0];state.sessions=state.sessions.filter(s=>s!==oldest);}state.sessions.push(issued.session);audit(state,req,action,'success',user,user.id);return expose(user);});
     if(body.client==='browser')addCookie(res,cookie(token,issued.session));return respond(200,{user:result,expiresAt,...(body.client==='cli'?{token}:{csrfToken})});
    }
+   if(['/v1/auth/cli-pair/start','/v1/auth/cli-pair/poll'].includes(pathname)&&req.method==='POST'){
+    if(req.headers.origin!==undefined||req.headers['sec-fetch-site']!==undefined||req.headers.cookie)reject(403,'CLI_ONLY','配对仅供命令行发起');
+    limit('cli-pair-ip:'+address(req),60,60000);const body=await jsonBody(req);for(const [key,p]of cliPairings)if(p.until<=Date.now())cliPairings.delete(key);
+    if(pathname.endsWith('/start')){fields(body,['name']);if(cliPairings.size>=100)reject(429,'RATE_LIMITED','待连接设备过多');const name=text(body.name,'设备名称',80),deviceCode=crypto.randomBytes(32).toString('base64url'),userCode=crypto.randomBytes(6).toString('hex').toUpperCase();cliPairings.set(tokenHash(deviceCode),{name,userCode,until:Date.now()+5*60000});return respond(201,{deviceCode,userCode,expiresIn:300,verificationUri:origin+'/crm/cli-connect.html?code='+userCode});}
+    fields(body,['deviceCode']);const p=typeof body.deviceCode==='string'&&cliPairings.get(tokenHash(body.deviceCode));if(!p||p.until<=Date.now())reject(410,'PAIR_EXPIRED','配对已过期，请重新发起');if(!p.actorId)return respond(202,{status:'pending'});
+    const user=store.state.users.find(x=>x.id===p.actorId);if(!user||user.disabled||user.mustChangePassword||user.version!==p.version)reject(403,'PAIR_REVOKED','账号状态已变更，请重新发起连接');
+    if(p.connectionId&&!(store.state.cliConnections||[]).some(x=>x.id===p.connectionId&&!x.revokedAt))reject(403,'PAIR_REVOKED','连接已撤销');
+    if(!p.token){const token=crypto.randomBytes(32).toString('base64url');p.token=token;const now=new Date().toISOString();p.connectionId=crypto.randomUUID();store.transact(state=>{(state.cliConnections||(state.cliConnections=[])).push({id:p.connectionId,name:p.name,tokenHash:tokenHash(token),userId:user.id,version:user.version,client:'cli',persistent:true,createdAt:now,expiresAt:null});audit(state,req,'auth.cli.connected','success',user,p.connectionId,{name:p.name});});}
+    return respond(200,{status:'connected',token:p.token,connectionId:p.connectionId,user:expose(user),expiresAt:null});
+   }
    actor=authenticate(req).user;
    let session;({user:actor,session}=reauthenticate(req,{allowInitialPassword:true}));
    if(pathname==='/v1/auth/me'&&req.method==='GET')return respond(200,{user:expose(actor),expiresAt:session.expiresAt,...(session.client==='browser'?{csrfToken:session.csrfToken}:{})});
-   if(pathname==='/v1/auth/logout'&&req.method==='POST'){action='auth.logout';store.transact(s=>{s.sessions=s.sessions.filter(x=>x.tokenHash!==session.tokenHash);audit(s,req,action,'success',actor,actor.id);});if(session.client==='browser')addCookie(res,cookie('',{clear:true}));return respond(200,{loggedOut:true});}
+   if(pathname==='/v1/auth/cli-pair/review'&&req.method==='GET'){
+    reauthenticate(req);const code=new URL(req.url,origin).searchParams.get('code');const p=[...cliPairings.values()].find(x=>x.userCode===code&&x.until>Date.now());if(!p)reject(404,'PAIR_NOT_FOUND','待连接设备不存在或已过期');return respond(200,{name:p.name,userCode:p.userCode,approved:!!p.actorId,user:expose(actor)});
+   }
+   if(pathname==='/v1/auth/cli-pair/approve'&&req.method==='POST'){
+    const body=await jsonBody(req);({user:actor,session}=reauthenticate(req));if(session.client!=='browser')reject(403,'BROWSER_REQUIRED','请在已登录网页中批准连接');fields(body,['userCode']);const p=[...cliPairings.values()].find(x=>x.userCode===body.userCode&&x.until>Date.now());if(!p)reject(404,'PAIR_NOT_FOUND','待连接设备不存在或已过期');if(p.actorId)reject(409,'PAIR_ALREADY_APPROVED','此连接已批准');writeAudit(req,'auth.cli.approve','success',actor,null,{name:p.name});p.actorId=actor.id;p.version=actor.version;return respond(200,{approved:true});
+   }
+   if(pathname==='/v1/auth/cli-connections'&&req.method==='GET'){reauthenticate(req);return respond(200,{connections:(store.state.cliConnections||[]).filter(x=>x.userId===actor.id&&!x.revokedAt&&x.version===actor.version).map(x=>({id:x.id,name:x.name,createdAt:x.createdAt}))});}
+   if(pathname==='/v1/auth/cli-connections/revoke'&&req.method==='POST'){
+    const body=await jsonBody(req);({user:actor}=reauthenticate(req));fields(body,['id']);const target=(store.state.cliConnections||[]).find(x=>x.id===body.id&&x.userId===actor.id&&!x.revokedAt);if(!target)reject(404,'CONNECTION_NOT_FOUND','连接不存在');store.transact(state=>{state.cliConnections.find(x=>x.id===target.id).revokedAt=new Date().toISOString();audit(state,req,'auth.cli.revoke','success',actor,target.id);});return respond(200,{revoked:true});
+   }
+   if(pathname==='/v1/auth/logout'&&req.method==='POST'){action='auth.logout';store.transact(s=>{s.sessions=s.sessions.filter(x=>x.tokenHash!==session.tokenHash);if(session.persistent){const c=(s.cliConnections||[]).find(x=>x.tokenHash===session.tokenHash);if(c)c.revokedAt=new Date().toISOString();}audit(s,req,action,'success',actor,actor.id);});if(session.client==='browser')addCookie(res,cookie('',{clear:true}));return respond(200,{loggedOut:true});}
+   if(pathname==='/v1/admin/feature-registry'&&req.method==='GET'){
+    action='feature.registry.read';({user:actor}=reauthenticate(req,{adminOnly:true}));
+    const registry=require('./feature-registry.cjs').build();writeAudit(req,action,'success',actor);
+    return respond(200,registry);
+   }
+   if(pathname==='/v1/admin/ui-annotations'&&req.method==='GET'){
+    ({user:actor,session}=reauthenticate(req,{adminOnly:true}));
+    const records=(store.state.uiAnnotations||[]).slice().reverse().slice(0,500);
+    return respond(200,{annotations:records});
+   }
+   if(pathname==='/v1/admin/ui-annotations'&&req.method==='POST'){
+    action='ui.annotation.create';const body=await jsonBody(req);({user:actor,session}=reauthenticate(req,{adminOnly:true}));
+    fields(body,['page','pageTitle','elementKind','elementLabel','selector','issue','category','workflowName','flowDefinition','desiredFlowDefinition']);
+    const page=text(body.page,'页面路径',256),pageTitle=text(body.pageTitle,'页面名称',120),elementKind=text(body.elementKind,'元素类型',32),elementLabel=text(body.elementLabel,'元素说明',200),selector=text(body.selector,'元素定位信息',500),issue=text(body.issue,'问题描述',4000);
+    if(!page.startsWith('/crm/')||!['button','link','input','select','textarea','table-cell','table-row','table-header','tab','label','card','navigation','heading','other'].includes(elementKind))reject(400,'INVALID_INPUT','页面或元素类型无效');
+    const category=body.category===undefined?'interface':body.category;if(!['interface','workflow'].includes(category))reject(400,'INVALID_INPUT','问题类型无效');
+    const workflowName=category==='workflow'?text(body.workflowName,'流程名称',120):'';
+    const cleanFlow=(value,label)=>{if(typeof value!=='string'||value.length>6000||!value.trim()||/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(value))reject(400,'INVALID_INPUT',label+'无效');return value.trim()};
+    const flowDefinition=category==='workflow'?cleanFlow(body.flowDefinition,'现有流程图'):'';
+    const desiredFlowDefinition=category==='workflow'?cleanFlow(body.desiredFlowDefinition,'目标流程图'):'';
+    const record={id:crypto.randomUUID(),page,pageTitle,elementKind,elementLabel,selector,issue,category,workflowName,flowDefinition,desiredFlowDefinition,status:'open',createdBy:actor.id,createdByName:actor.name,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+    store.transact(state=>{state.uiAnnotations||=[];state.uiAnnotations.push(record);audit(state,req,action,'success',actor,record.id,{page,elementKind});});
+    return respond(201,{annotation:record});
+   }
+   const uiAnnotationMatch=pathname.match(/^\/v1\/admin\/ui-annotations\/([a-f0-9-]{36})$/);
+   if(uiAnnotationMatch&&req.method==='PATCH'){
+    targetId=uiAnnotationMatch[1];action='ui.annotation.update';const body=await jsonBody(req);({user:actor,session}=reauthenticate(req,{adminOnly:true}));fields(body,['status']);
+    if(!['open','resolved'].includes(body.status))reject(400,'INVALID_INPUT','标注状态无效');
+    const record=store.transact(state=>{const item=(state.uiAnnotations||[]).find(x=>x.id===targetId);if(!item)reject(404,'ANNOTATION_NOT_FOUND','标注不存在');item.status=body.status;item.updatedAt=new Date().toISOString();audit(state,req,action,'success',actor,targetId,{status:item.status});return item;});
+    return respond(200,{annotation:record});
+   }
    if(pathname==='/v1/auth/password'&&req.method==='POST'){
     action='auth.password';limit('password:'+actor.id,8,15*60000);const body=await jsonBody(req);({user:actor,session}=reauthenticate(req,{allowInitialPassword:true}));fields(body,['currentPassword','newPassword']);
     if(typeof body.currentPassword!=='string'||Buffer.byteLength(body.currentPassword)>256||!verifyPassword(body.currentPassword,actor.passwordHash))reject(403,'CURRENT_PASSWORD_INVALID','当前密码不正确');
@@ -142,7 +196,7 @@ function createAuthService(options){
     const role=roles.find(item=>item.id===roleId);if(!role)reject(404,'ROLE_NOT_FOUND','角色不存在');
     if(roleId==='superadmin')reject(403,'ROLE_PROTECTED','超级管理员角色固定保留全部权限');
     if(!Number.isInteger(body.expectedVersion)||body.expectedVersion<1)reject(400,'INVALID_INPUT','角色版本无效');
-    const nextPermissions=normalizeRolePermissions(body.permissions);
+    const nextPermissions=normalizeRolePermissions(body.permissions,roleId);
     const current=store.state.rolePolicies[roleId]||{permissions:[...role.permissions].sort(),version:1};
     if(body.expectedVersion!==current.version)reject(409,'ROLE_VERSION_CONFLICT','角色已被其他管理员修改，请刷新后重试');
     const before=[...current.permissions].sort(),same=before.length===nextPermissions.length&&before.every((value,index)=>value===nextPermissions[index]);

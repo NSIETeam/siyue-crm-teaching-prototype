@@ -1,7 +1,7 @@
 // 员工权限原型。真实系统仍需服务端鉴权与持久化；此处演示职位授权、回显和访问体验。
 const permissionGroups=[
   {id:'workspace',name:'登记与报名',items:[['quickRegister','线索登记'],['quickEnroll','报名']]},
-  {id:'leads',name:'线索',items:[['leadTodo','今日待办'],['myLeads','我的线索'],['leadManage','线索管理']]},
+  {id:'leads',name:'线索',items:[['myLeads','我的线索']]},
   {id:'forms',name:'表单',items:[['marketingForms','表单管理'],['formSubmissions','提交审核']]},
   {id:'salesReports',name:'招生统计',items:[['salesMetrics','销售统计']]},
   {id:'academic',name:'教务',items:[['course','课程管理'],['classes','班级管理'],['students','学生管理'],['teacherCourses','我的课程'],['attendance','考勤'],['makeup','补课'],['schedule','课表'],['rescheduleRequests','调课申请'],['rescheduleApprovals','调课审批'],['enroll','报名'],['tempMove','临时调班'],['transfer','转课／班'],['withdraw','退课／退班'],['supplement','补费'],['teacherMetrics','教师统计']]},
@@ -40,7 +40,7 @@ function permissionRole(id=permissionState.identity){return permissionState.role
 function permissionCanVisit(page){
   if(permissionState.identity==='admin')return true;
   const role=permissionRole();if(!role||!role.active)return false;
-  const aliases={leadDetail:['leadTodo','myLeads','leadManage','quickRegister'],studentDetail:['students','learningActive','learningHistory'],courseForm:['course'],classForm:['classes'],mallForm:['mallGroup','mallJoint','mallCoupon'],marketingFormBuilder:['marketingForms'],marketingFormPreview:['marketingForms'],marketingFormSubmissions:['marketingForms'],formSubmissions:['formSubmissions','marketingForms']};
+  const aliases={myLeads:['myLeads','leadManage','leadTodo'],leadManage:['myLeads','leadManage','leadTodo'],leadTodo:['myLeads','leadManage','leadTodo'],leadDetail:['leadTodo','myLeads','leadManage','quickRegister'],studentDetail:['students','learningActive','learningHistory'],courseForm:['course'],classForm:['classes'],mallForm:['mallGroup','mallJoint','mallCoupon'],marketingFormBuilder:['marketingForms'],marketingFormPreview:['marketingForms'],marketingFormSubmissions:['marketingForms'],formSubmissions:['formSubmissions','marketingForms']};
   if(aliases[page])return aliases[page].some(p=>role.grants.includes(p));
   return role.grants.includes(page);
 }
@@ -65,7 +65,7 @@ function permissionChangeIdentity(id){
 }
 function permissionToggleStaffActive(index){if(permissionState.identity!=='admin')return;const staff=state.staff[index];if(!staff)return;staff.active=!staff.active;if(!permissionPersist()){staff.active=!staff.active;return}render()}
 function permissionRefreshNavigation(){
-  document.querySelectorAll('.menu-item[data-page]').forEach(e=>{e.hidden=!permissionCanVisit(e.dataset.page)});
+  document.querySelectorAll('.menu-item[data-page]').forEach(e=>{e.hidden=(e.hasAttribute('data-auth-only')&&!window.SIYUE_AUTH_API)||(e.hasAttribute('data-java-only')&&!window.SIYUE_JAVA_AUTH_MODE)||!permissionCanVisit(e.dataset.page)});
   document.querySelectorAll('.nav-toggle').forEach(e=>{const panel=document.getElementById(e.getAttribute('aria-controls'));if(panel)e.hidden=!panel.querySelector('.menu-item:not([hidden])')});
   const basic=['system','campus','teaching','staff','positions','permissions','permissionLogs'].includes(state.page),staffArea=['staff','positions','permissions','permissionLogs'].includes(state.page);
   document.querySelector('[data-nav-toggle="basicSettings"]').classList.toggle('active-parent',basic);

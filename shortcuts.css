@@ -3,20 +3,20 @@
 .shortcut-stat span{color:#8190a3;font-size:13px}
 .shortcut-stat strong{font-size:28px;color:#253854;line-height:1.2}
 .shortcut-stat-note{color:#8898ad;font-size:11px;line-height:1.5;margin-top:2px}
-.shortcut-filter-bar{display:grid;gap:12px;margin-bottom:18px}.shortcut-date-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.shortcut-date-row>label{font-weight:600;color:#56677f;white-space:nowrap}.shortcut-date-range{display:flex;align-items:center;gap:9px}.shortcut-date-range .input{width:145px;min-height:36px}.shortcut-date-range span{color:#8796aa}.shortcut-presets{display:flex;gap:6px;flex-wrap:wrap}.shortcut-presets .btn{min-height:36px;padding:7px 11px;color:#4c5e78}.shortcut-presets .btn.selected{color:#315deb;border-color:#315deb;background:#f1f5ff}.shortcut-rule{font-size:12px;color:#8b9aac;margin:13px 0 0;line-height:1.5}.quick-lead-table tr[hidden]{display:none!important}
-.shortcut-extra-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.shortcut-extra-filters label{font-weight:600;color:#56677f;white-space:nowrap}.shortcut-extra-filters .select{width:160px;min-height:36px;margin-right:14px}.shortcut-intent{display:inline-block;padding:4px 9px;border-radius:99px;background:#f1f5fc;color:#536b92;font-size:12px;white-space:nowrap}
+.shortcut-filter-bar{display:grid;gap:12px;margin-bottom:18px}.shortcut-date-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.shortcut-date-row>label{font-weight:600;color:#56677f;white-space:nowrap}.shortcut-date-range{display:flex;align-items:center;gap:9px}.shortcut-date-range .input{width:145px;min-height:36px}.shortcut-date-range span{color:#8796aa}.shortcut-presets{display:flex;gap:6px;flex-wrap:wrap}.shortcut-presets .btn{min-height:36px;padding:7px 11px;color:#4c5e78}.shortcut-presets .btn.selected{color:#426C84;border-color:#426C84;background:#EAF2F6}.shortcut-rule{font-size:12px;color:#8b9aac;margin:13px 0 0;line-height:1.5}.quick-lead-table tr[hidden]{display:none!important}
+.shortcut-extra-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.shortcut-extra-filters label{font-weight:600;color:#56677f;white-space:nowrap}.shortcut-extra-filters .select{width:160px;min-height:36px;margin-right:14px}.shortcut-intent{display:inline-block;padding:4px 9px;border-radius:99px;background:#EAF2F6;color:#536b92;font-size:12px;white-space:nowrap}
 .shortcut-search{position:relative;width:min(310px,100%);min-width:220px}.shortcut-search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#8a9ab0;pointer-events:none}.shortcut-search .input{padding-left:38px;min-height:36px}
 @media(max-width:900px){.shortcut-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.shortcut-stats{gap:9px}.shortcut-stat{padding:14px}.shortcut-stat strong{font-size:22px}}
 
 /* Registration is a working list: keep metrics in a compact single strip. */
 .content .shortcut-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;align-items:center;gap:0;margin-bottom:14px;padding:8px 12px;box-shadow:none}
-.content .shortcut-stat{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;padding:4px 12px;min-width:0;border-right:1px solid #e7edf5}
+.content .shortcut-stat{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;padding:4px 12px;min-width:0;border-right:1px solid #EAF2F6}
 .content .shortcut-stat span{font-size:12px;white-space:nowrap}
 .content .shortcut-stat strong{font-size:21px;line-height:1.4;font-variant-numeric:tabular-nums}
 .shortcut-stat-help{font-size:11px;color:#8190a3;margin-left:12px;min-width:0}
 .shortcut-stat-help summary{cursor:pointer;white-space:nowrap;padding:6px 0}
-.shortcut-stat-help[open]{grid-column:1/-1;margin:8px 12px 2px;border-top:1px solid #edf1f6;padding-top:6px}
+.shortcut-stat-help[open]{grid-column:1/-1;margin:8px 12px 2px;border-top:1px solid #EAF2F6;padding-top:6px}
 .shortcut-stat-help p{line-height:1.6;margin:4px 0}
 @media(max-width:520px){.content .shortcut-stats{grid-template-columns:repeat(3,minmax(0,1fr));padding:6px}.content .shortcut-stat{flex-direction:column;gap:0;padding:4px}.content .shortcut-stat:nth-child(3){border-right:0}.shortcut-stat-help{grid-column:1/-1;margin:2px 6px 0}.shortcut-stat-help summary{padding:3px 0}}
 
@@ -56,16 +56,10 @@
  .content .shortcut-date-range .input{padding-left:6px;padding-right:6px;font-size:12px}
 }
 
-/* Search stays visible; secondary filters expand only on request. */
+/* Search and secondary filters are always visible. */
 .content .shortcut-filter-bar>.shortcut-search-field{display:block}
-.content .shortcut-filter-bar .shortcut-search>.input{padding-right:62px;height:42px}
-.content .shortcut-search .quick-filter-toggle{position:absolute;right:4px;top:4px;bottom:4px;width:42px;display:flex;align-items:center;justify-content:center;border:0;border-left:1px solid #dce4ef;background:transparent;color:#7c8da5;border-radius:0 5px 5px 0;padding:0}
-.content .shortcut-search .quick-filter-toggle svg{position:static;transform:none;width:19px;height:19px;color:inherit}
-.content .quick-filter-toggle:hover,.content .quick-filter-toggle[aria-expanded="true"],.content .quick-filter-toggle.is-filtered{color:#315deb;background:#edf2ff}
-.quick-filter-toggle:focus-visible{outline:2px solid #315deb;outline-offset:1px}
-#quick-filter-badge{position:absolute;right:1px;top:-2px;background:#315deb;color:white;min-width:14px;height:14px;border-radius:7px;font-size:10px;line-height:14px;text-align:center}
-#quick-filter-badge[hidden],.content .quick-filter-panel[hidden]{display:none!important}
-.content .quick-filter-panel{display:grid;gap:16px;background:#f8faff;border:1px solid #e5ebf4;border-radius:8px;padding:16px}
+.content .shortcut-filter-bar .shortcut-search>.input{padding-right:12px;height:42px}
+.content .quick-filter-panel{display:grid;gap:16px;background:#EAF2F6;border:1px solid #EAF2F6;border-radius:8px;padding:16px}
 .content .quick-filter-panel .shortcut-extra-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
 .quick-filter-footer{display:flex;justify-content:flex-end;gap:8px}
 @container(max-width:360px){.content .quick-filter-panel .shortcut-extra-filters{grid-template-columns:1fr}}

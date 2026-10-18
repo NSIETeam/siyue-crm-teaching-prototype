@@ -1,5 +1,11 @@
 # 思跃 CRM 与教务综合系统
 
+## 当前生产源码（2026-10-18 同步）
+
+本仓库已按线上 `20261018-academic-trial-intake` 前端和 `auth-academic-trial-intake-20261018` 后端同步，195 个生产文件逐一校验。正式入口仍使用同源 Node 认证与业务接口；没有将本地待发布的 Java 切换配置混入本次同步。运行数据、账号、密钥、日志和备份不在仓库中。
+
+生产文件清单与 SHA-256 见 [production-version.json](production-version.json)，可运行 `node scripts/verify-production-snapshot.cjs` 核对本次快照。后续开发改动不应直接覆盖线上文件；完成发布后再更新快照记录。测试结果和旧演示测试的兼容性限制见 [同步记录](docs/production-sync-2026-10-18.md)。
+
 [员工入口](https://www.siyuejn.com/crm/) · [GitHub Pages 演示](https://nsieteam.github.io/siyue-crm-teaching-prototype/) · [项目计划与原始逻辑图](docs/siyue-project-plan.html) · [2026-10-11 共享后端报告](docs/backend-deployment-2026-10-11.html)
 
 当前源码包含真实员工认证、共享 SQLite 业务服务、网页办理入口与 `siyue-cli`。正式模式的线索、学生、课程、班级、报名、订单、考勤、课消、营销和配置由服务器统一保存。业务写入经过权限校验、预览、确认与事务提交，不再以浏览器 localStorage 作为正式数据来源。

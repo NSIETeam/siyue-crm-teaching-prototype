@@ -14,6 +14,7 @@
   let selectedField = null;
   let trialCampusFilter = '';
   let trialCourseFilter = '';
+  let rewardUploadStatus = '';
 
   const clone = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({
@@ -108,7 +109,44 @@
     if (type === 'coupon') reward = { type, promotionId: '' };
     else if (type === 'material_link') reward = { type, title: '', url: '' };
     else if (type !== 'none') return false;
+    rewardUploadStatus = '';
     return setSetting('reward', reward);
+  }
+
+  async function uploadRewardFile(input) {
+    const file = input?.files?.[0];
+    const ctx = readContext();
+    if (!file || !ctx || !isBuilderOperation(ctx.operation) || ctx.disabled) return false;
+    if (file.size > 20 * 1024 * 1024) {
+      rewardUploadStatus = '文件不能超过 20 MB。';
+      root.businessAPI.redraw();
+      return false;
+    }
+    rewardUploadStatus = '正在上传资料…';
+    root.businessAPI.redraw();
+    try {
+      const uploaded = await root.businessAPI.uploadFormMaterial(file);
+      const latest = readContext();
+      if (!latest || !isBuilderOperation(latest.operation) || latest.operation.id !== ctx.operation.id) return false;
+      const model = current(latest), settings = { ...(model.settings || {}) };
+      settings.reward = { ...(settings.reward || { type: 'material_link' }), type: 'material_link', title: settings.reward?.title || file.name.slice(0, 120), url: uploaded.url };
+      setPath(latest, ['settings'], settings);
+      rewardUploadStatus = '资料已上传并填入领取链接。';
+      root.businessAPI.redraw();
+      return true;
+    } catch (error) {
+      rewardUploadStatus = error?.message || '资料上传失败，请重试。';
+      root.businessAPI.redraw();
+      return false;
+    }
+  }
+
+  function dropRewardFile(event) {
+    event.preventDefault();
+    if (event.currentTarget) event.currentTarget.classList.remove('is-dragover');
+    const file = event.dataTransfer?.files?.[0];
+    if (!file) return false;
+    return uploadRewardFile({ files: [file] });
   }
 
   function setTrialEnabled(enabled) {
@@ -274,7 +312,7 @@
   function rewardTrialSettings(ctx, model, disabled) {
     const settings = model.settings || {}, reward = settings.reward || null, trial = settings.trial || null;
     const rewardType = reward?.type || 'none';
-    const rewardMarkup = `<div class="sfb-reward-grid"><label class="sfb-control"><span>提交奖励</span><select onchange="SiyueBusinessFormBuilder.setReward(this.value)" ${disabled ? 'disabled' : ''}><option value="none" ${rewardType === 'none' ? 'selected' : ''}>不设置奖励</option><option value="coupon" ${rewardType === 'coupon' ? 'selected' : ''}>领取优惠券</option><option value="material_link" ${rewardType === 'material_link' ? 'selected' : ''}>领取资料</option></select></label>${rewardType === 'coupon' ? `<label class="sfb-control"><span>已发布优惠券</span><select data-business-path="${escape(JSON.stringify(businessPath(ctx.operation, ['settings', 'reward', 'promotionId'])))}" data-business-type="string" onchange="businessAPI.change(${escape(JSON.stringify(businessPath(ctx.operation, ['settings', 'reward', 'promotionId'])))},this.value,'string')" ${disabled ? 'disabled' : ''}><option value="">请选择优惠券</option>${couponRows(ctx).map(row => `<option value="${escape(row.id)}" ${reward.promotionId === row.id ? 'selected' : ''}>${escape(row.name || row.title || row.id)}</option>`).join('')}</select>${!couponRows(ctx).length ? '<small>暂无当前可领取的已发布优惠券</small>' : ''}</label>` : ''}${rewardType === 'material_link' ? `${input('资料标题', reward.title || '', ctx.operation, ['settings', 'reward', 'title'], disabled)}${input('HTTPS 资料链接', reward.url || '', ctx.operation, ['settings', 'reward', 'url'], disabled, 'url', 'string', 'placeholder="https://"')}` : ''}</div>`;
+    const rewardMarkup = `<div class="sfb-reward-grid"><label class="sfb-control"><span>提交奖励</span><select onchange="SiyueBusinessFormBuilder.setReward(this.value)" ${disabled ? 'disabled' : ''}><option value="none" ${rewardType === 'none' ? 'selected' : ''}>不设置奖励</option><option value="coupon" ${rewardType === 'coupon' ? 'selected' : ''}>领取优惠券</option><option value="material_link" ${rewardType === 'material_link' ? 'selected' : ''}>领取资料</option></select></label>${rewardType === 'coupon' ? `<label class="sfb-control"><span>已发布优惠券</span><select data-business-path="${escape(JSON.stringify(businessPath(ctx.operation, ['settings', 'reward', 'promotionId'])))}" data-business-type="string" onchange="businessAPI.change(${escape(JSON.stringify(businessPath(ctx.operation, ['settings', 'reward', 'promotionId'])))},this.value,'string')" ${disabled ? 'disabled' : ''}><option value="">请选择优惠券</option>${couponRows(ctx).map(row => `<option value="${escape(row.id)}" ${reward.promotionId === row.id ? 'selected' : ''}>${escape(row.name || row.title || row.id)}</option>`).join('')}</select>${!couponRows(ctx).length ? '<small>暂无当前可领取的已发布优惠券</small>' : ''}</label>` : ''}${rewardType === 'material_link' ? `${input('资料标题', reward.title || '', ctx.operation, ['settings', 'reward', 'title'], disabled)}${input('资料链接', reward.url || '', ctx.operation, ['settings', 'reward', 'url'], disabled, 'url', 'string', 'placeholder="https://"')}<div class="sfb-material-drop ${disabled ? 'is-disabled' : ''}" ondragover="event.preventDefault();this.classList.add('is-dragover')" ondragleave="this.classList.remove('is-dragover')" ondrop="SiyueBusinessFormBuilder.dropRewardFile(event)"><input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx" aria-label="上传奖励资料" onchange="SiyueBusinessFormBuilder.uploadRewardFile(this)" ${disabled ? 'disabled' : ''}><strong>拖动资料到这里上传</strong><span>或点击选择 PDF、Word、PowerPoint、Excel 文件，最大 20 MB</span><small>${escape(rewardUploadStatus || (reward.url ? '已有资料链接；上传新文件会替换链接。' : '上传完成后会自动填入资料链接。'))}</small></div>` : ''}</div>`;
     const fields = Array.isArray(model.fields) ? model.fields : [];
     const requiredFields = fields.filter(field => field.required === true);
     const nameFields = requiredFields.filter(field => ['name', 'text', 'single', 'dropdown'].includes(field.type));
@@ -436,7 +474,7 @@
     const disabled = !!ctx.disabled, selected = fields.find(field => field.id === selectedField) || null;
     const palette = types.map(([type, label]) => `<button type="button" class="sfb-palette-item" onclick="SiyueBusinessFormBuilder.addField('${type}')" ${disabled ? 'disabled' : ''}><span>＋</span>${escape(label)}</button>`).join('');
     const title = model.title || (operation.id === 'form.update' ? '编辑表单' : '新建表单');
-    const preview = `<div class="sfb-phone-wrap"><div class="sfb-phone"><div class="sfb-phone-top"><i></i><span>公开填写预览</span><i></i></div><div class="sfb-phone-screen"><header><small>${escape(model.kind === 'survey' ? '家长问卷' : model.kind === 'lead' ? '线索登记' : '自定义表单')}</small><h2>${escape(title)}</h2><p>请按提示填写以下内容</p></header>${fields.length ? fields.map((field, index) => fieldMarkup(field, index, selected?.id === field.id, disabled)).join('') : '<div class="sfb-empty">从左侧添加字段，实时查看填写效果</div>'}<button type="button" class="sfb-submit-preview" disabled>提交</button></div></div></div>`;
+    const preview = `<div class="sfb-phone-wrap"><div class="sfb-phone" aria-label="iPhone 17 表单预览"><div class="sfb-phone-top"><span>9:41</span><i class="sfb-phone-island" aria-hidden="true"></i><span class="sfb-phone-status">●●● 5G ▰</span></div><div class="sfb-phone-screen"><header><small>iPhone 17 · ${escape(model.kind === 'survey' ? '家长问卷' : model.kind === 'lead' ? '线索登记' : '自定义表单')}</small><h2>${escape(title)}</h2><p>请按提示填写以下内容</p></header>${fields.length ? fields.map((field, index) => fieldMarkup(field, index, selected?.id === field.id, disabled)).join('') : '<div class="sfb-empty">从左侧添加字段，实时查看填写效果</div>'}<button type="button" class="sfb-submit-preview" disabled>提交</button></div><div class="sfb-phone-home" aria-hidden="true"></div></div></div>`;
     return `<div class="sfb-builder-wrap"><section class="sfb-builder${disabled ? ' is-disabled' : ''}" aria-label="服务端表单构建器"><aside class="sfb-panel sfb-palette"><div class="sfb-panel-heading"><div><small>添加内容</small><h3>字段组件</h3></div></div><p>选择组件添加到表单，选中预览中的字段后可编辑属性。</p><div class="sfb-palette-grid">${palette}</div><div class="sfb-usage"><strong>收集用途</strong><span>${escape(model.kind === 'survey' ? '家长问卷：审批后只发布答案' : model.collectLead ? '将审核通过的提交登记为线索' : '只收集表单答案，不创建销售线索')}</span></div></aside>${preview}${properties(model, selected, disabled, operation)}</section>${rewardTrialSettings(ctx, model, disabled)}</div>`;
   }
 
@@ -525,9 +563,9 @@
   }
 
   root.SiyueBusinessFormBuilder = {
-    initialize, render, reset() { selectedField = null; trialCampusFilter = ''; trialCourseFilter = ''; }, syncPreview,
+    initialize, render, reset() { selectedField = null; trialCampusFilter = ''; trialCourseFilter = ''; rewardUploadStatus = ''; }, syncPreview,
     setMeta, setMetaPath, setSetting, setKind, setField, setOption,
     addField, removeField, moveField, addOption, removeOption, select,
-    setReward, setTrialEnabled, setTrialField, updateTrialSlot, toggleTrialSlot, removeTrialSlot, addTrialMatchFields, setTrialFilter
+    setReward, uploadRewardFile, dropRewardFile, setTrialEnabled, setTrialField, updateTrialSlot, toggleTrialSlot, removeTrialSlot, addTrialMatchFields, setTrialFilter
   };
 })(typeof window === 'undefined' ? globalThis : window);

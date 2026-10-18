@@ -1,0 +1,7 @@
+.sy-row-action-trigger{cursor:pointer}
+.sy-row-action-trigger:hover>td{background:#f1f6f9}
+.sy-row-action-trigger:focus-visible{outline:2px solid #82AEC6;outline-offset:-2px}
+.sy-row-action-detail[hidden]{display:none!important}
+.sy-row-action-detail>td{padding:14px 18px!important;background:#f1f6f9;white-space:normal!important}
+.sy-row-action-content{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+.sy-row-action-close{margin-left:auto}

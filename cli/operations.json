@@ -332,7 +332,7 @@
         "properties": {},
         "additionalProperties": false
       },
-      "sideEffects": "打开现有办理界面；不自动提交",
+      "sideEffects": "打开现有登记界面；可选 followChoice=self|public（未选择保留原决策流程），不自动提交",
       "execution": "browser-only"
     },
     {
@@ -431,7 +431,7 @@
         "properties": {},
         "additionalProperties": false
       },
-      "sideEffects": "打开现有办理界面；不自动提交",
+      "sideEffects": "打开现有跟进界面；disposition 可选 high|medium|low|lost_cold，lost_cold 必须填写原因且清除下次回访时间，不自动提交",
       "execution": "browser-only"
     },
     {

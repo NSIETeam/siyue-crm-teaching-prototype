@@ -1,0 +1,47 @@
+/* Translucent sidebar; navigation permissions and page content stay unchanged. */
+body{background:#F5F8FA}
+body .sidebar{background:rgba(255,255,255,.38);backdrop-filter:blur(26px) saturate(100%);-webkit-backdrop-filter:blur(26px) saturate(100%);border-right:1px solid rgba(255,255,255,.80);box-shadow:inset -1px 0 0 rgba(130,174,198,.13),6px 0 28px rgba(52,79,93,.06);color:#344E5D;scrollbar-gutter:auto;transition:width .2s ease,flex-basis .2s ease}
+body .sidebar .brand-logo svg image{filter:brightness(0) saturate(100%) opacity(.72)}
+body .sidebar .sidebar-glass-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 16px}
+body .sidebar .sidebar-glass-header .brand{flex:1;min-width:0;padding:4px 4px!important}
+body .sidebar .sidebar-fold{display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;padding:6px;border:1px solid transparent;border-radius:10px;background:transparent;color:#426C84;box-shadow:none;cursor:pointer}
+body .sidebar .sidebar-fold svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+body .sidebar .sidebar-fold:hover{background:transparent;color:#24465A}
+body .sidebar :is(.menu-item,.nav-toggle){color:#344E5D;background:transparent}
+body .sidebar :is(.menu-item,.nav-toggle):hover,body .sidebar .nav-toggle.active-parent{background:rgba(255,255,255,.58);color:#24465A;box-shadow:inset 0 0 0 1px rgba(255,255,255,.65)}
+body .sidebar :is(.menu-item.active,.nav-level-3.active){background:rgba(130,174,198,.24);color:#24465A;box-shadow:inset 0 0 0 1px rgba(255,255,255,.8)}
+body .sidebar :is(.nav-chevron,.menu-title,.brand small,.nav-collapse-all){color:#587486}
+body .sidebar .nav-collapse-all{border-color:rgba(66,108,132,.14)}
+body .sidebar .nav-collapse-all:hover{color:#24465A}
+body .sidebar .nav-category-icon{width:20px;height:20px;stroke-width:1.65;opacity:1;flex:0 0 20px}
+body .sidebar :is(button,a):focus-visible{outline:2px solid #426C84;outline-offset:-2px}
+body .sidebar.is-collapsed{width:68px!important;flex-basis:68px!important;padding:20px 10px 16px}
+body .sidebar.is-collapsed .sidebar-glass-header{justify-content:center}
+body .sidebar.is-collapsed :is(.brand,.nav-children,.nav-collapse-all){display:none!important}
+body .sidebar.is-collapsed .sidebar-menu>.nav-level-1{justify-content:center;width:48px;padding:11px 0;gap:0}
+body .sidebar.is-collapsed .sidebar-menu>.nav-level-1>span{display:none}
+body .sidebar.is-collapsed .sidebar-fold svg{transform:scaleX(-1)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){body .sidebar{background:rgba(244,248,250,.97)}}
+@media(prefers-reduced-transparency:reduce){body .sidebar{background:#F1F6F8;backdrop-filter:none;-webkit-backdrop-filter:none}}
+@media(prefers-reduced-motion:reduce){body .sidebar{transition:none}}
+
+/* Return / search / account share one row, including when the sidebar folds. */
+body .topbar{grid-template-columns:minmax(44px,auto) minmax(100px,1fr) auto;grid-template-rows:auto;column-gap:18px;row-gap:0;min-height:72px}
+body .topbar>.crumb{grid-column:1;grid-row:1;max-width:220px;overflow:hidden}
+body .topbar #crumb{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body .topbar>.global-action{grid-column:2;grid-row:1;min-width:0;width:100%;max-width:none;margin:0}
+body .topbar>.user{grid-column:3;grid-row:1;min-width:30px}body .topbar .avatar{flex-shrink:0}body .topbar>.global-action>.input{min-width:0}
+body .topbar>.java-crm-resource-search:not([hidden]){grid-column:1/-1;grid-row:2;margin-top:10px}
+@media(max-width:760px){body .topbar{column-gap:8px;padding:12px;grid-template-columns:32px minmax(0,1fr) auto}body .topbar #crumb{display:none}body .topbar>.crumb{gap:0}body .topbar>.global-action>.input{padding-right:8px;font-size:12px}}
+
+/* Narrow screens use a navigation drawer instead of compressing the workspace. */
+@media(max-width:760px){
+ body .app{display:block}
+ body .main{width:100%;min-width:0}
+ body .sidebar,body .sidebar.is-collapsed{position:relative;width:100%!important;height:56px;min-height:56px;max-height:56px;padding:8px 12px;overflow:visible;z-index:50}
+ body .sidebar .sidebar-glass-header{height:40px;margin:0;justify-content:space-between}
+ body .sidebar.is-collapsed .sidebar-glass-header .brand{display:block!important}
+ body .sidebar .sidebar-menu{position:absolute;left:0;top:56px;width:min(300px,100vw);max-height:calc(100dvh - 56px);overflow:auto;padding:12px;background:#F5F8FA;border:1px solid #CBDDE7;box-shadow:6px 12px 24px #344e5d20}
+ body .sidebar.is-collapsed .sidebar-menu,body .sidebar .nav-collapse-all{display:none!important}
+ body .sidebar.is-collapsed .sidebar-fold{margin-left:auto}
+}

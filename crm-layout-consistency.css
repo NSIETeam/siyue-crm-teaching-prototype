@@ -1,0 +1,236 @@
+/* Load after the feature styles. Shared dimensions for the employee workspaces. */
+body :is(.content, .modal, .drawer) {
+  --crm-control-height: 40px;
+  --crm-note-height: 128px;
+  --crm-field-gap: 14px;
+}
+
+/* Native choice, file, range and colour controls keep their own presentation. */
+body :is(.content, .modal, .drawer) :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]):not([type="range"]):not([type="color"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"]),
+  select:not([multiple])
+) {
+  box-sizing: border-box;
+  height: var(--crm-control-height);
+  min-height: var(--crm-control-height);
+  max-height: none;
+  min-width: 0;
+  max-width: 100%;
+  line-height: 20px;
+}
+
+/* Equal tracks keep the search box the same width as the adjacent filters. */
+body :is(.content, .modal, .drawer) :is(
+  .filters, .scrm-filters, .business-lead-filters, .ap-selectors,
+  .ap-repeat-controls, .scrm-import-mapping
+) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: var(--crm-field-gap);
+  align-items: end;
+  min-width: 0;
+  max-width: 100%;
+}
+/* Keep the default CRM date range together in the eight-control filter grid. */
+body :is(.content, .modal, .drawer) .scrm-filters {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+body :is(.content, .modal, .drawer) :is(
+  .filters, .scrm-filters, .business-lead-filters, .ap-selectors,
+  .ap-repeat-controls, .scrm-import-mapping
+) > :is(label, .field, .business-field, .scrm-search) {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-self: end;
+  gap: 7px;
+  min-width: 0;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+}
+body :is(.content, .modal, .drawer) :is(.filters, .scrm-filters) .scrm-search {
+  flex: initial;
+  min-width: 0;
+  grid-column: auto;
+}
+body :is(.content, .modal, .drawer) :is(
+  .filters, .scrm-filters, .business-lead-filters, .ap-selectors,
+  .ap-repeat-controls, .scrm-import-mapping,
+  .form-grid, .business-form-grid, .business-fieldset, .business-array-fields, .scrm-followup-fields
+) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="color"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"]), select, textarea) {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+/* Help stays readable above the control so the control bottoms still align. */
+body :is(.content, .modal, .drawer) :is(.filters, .scrm-filters, .business-lead-filters) > label > :is(.help, small) {
+  order: -1;
+  margin: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+body :is(.content, .modal, .drawer) :is(
+  .form-grid, .business-form-grid, .business-fieldset, .business-array-fields, .scrm-followup-fields
+) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px var(--crm-field-gap);
+  align-items: start;
+  min-width: 0;
+  max-width: none;
+}
+body :is(.content, .modal, .drawer) :is(.form-grid, .business-form-grid, .business-array-fields, .scrm-followup-fields) > * {
+  min-width: 0;
+}
+body :is(.content, .modal, .drawer) :is(.form-grid, .business-form-grid, .scrm-followup-fields) > :is(.full, .business-fieldset, .scrm-followup-note) {
+  grid-column: 1 / -1;
+}
+/* Required marks belong to the label line, not a separate flex item. */
+body :is(.content, .modal, .drawer) .scrm-followup-fields > label {
+  display: block;
+}
+body :is(.content, .modal, .drawer) .scrm-followup-fields > label > .required-mark {
+  display: inline;
+}
+body :is(.content, .modal, .drawer) .scrm-followup-fields > label > :is(input, select, textarea) {
+  display: block;
+  margin-top: 8px;
+}
+body :is(.content, .modal, .drawer) textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: var(--crm-note-height);
+  min-height: var(--crm-note-height);
+  line-height: 1.65;
+  resize: vertical;
+}
+body :is(.content, .modal, .drawer) select[multiple] {
+  min-height: var(--crm-note-height);
+}
+body :is(.content, .modal, .drawer) input[type="file"] {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: auto;
+  min-height: var(--crm-control-height);
+  white-space: normal;
+}
+
+/* Equal-height peer cards remain free to grow with their actual content. */
+body :is(.content, .modal, .drawer) :is(.scrm-workbench-cards, .java-crm-cards, .ja-metrics, .workflow-metrics) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+  gap: var(--crm-field-gap);
+}
+body :is(.content, .modal, .drawer) :is(.scrm-workbench-cards, .java-crm-cards, .ja-metrics, .workflow-metrics) > * {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 112px;
+  height: auto;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+body :is(.content, .modal, .drawer) .bw-panels {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+}
+/* The injected home style uses 1.3fr/1fr; equal columns still grow naturally. */
+#view .home-columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: auto;
+  align-items: stretch;
+}
+/* CRM contains its own card grid; daily teaching and receivables are its peers. */
+#view .home-columns > .scrm-workbench {
+  grid-column: 1 / -1;
+}
+
+/* Peer actions use one baseline, including compact table and batch actions. */
+body :is(.content, .modal, .drawer) .btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--crm-control-height);
+  min-height: var(--crm-control-height);
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 20px;
+}
+body :is(.content, .modal, .drawer) :is(.actions, .form-actions, .business-submit-actions, .crm-followup-footer, .scrm-batch) {
+  flex-wrap: wrap;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+}
+body :is(.content, .modal, .drawer) :is(.filters, .scrm-filters, .business-lead-filters) > .btn {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Explicit tracks avoid narrow native date inputs widening the page. */
+@media (max-width: 1100px) {
+  body :is(.content, .modal, .drawer) .scrm-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  body :is(.content, .modal, .drawer) :is(
+    .filters, .scrm-filters, .business-lead-filters, .ap-selectors,
+    .ap-repeat-controls, .scrm-import-mapping,
+    .form-grid, .business-form-grid, .business-fieldset, .business-array-fields, .scrm-followup-fields,
+    .bw-panels
+  ) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #view .home-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  body :is(.content, .modal, .drawer) :is(.scrm-workbench-cards, .java-crm-cards, .ja-metrics, .workflow-metrics) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Page registry component contract: action groups align on a shared baseline and keep a visible gap. */
+body :is(.content, .modal, .drawer) :is(
+  .sy-component-button-group, .toolbar-left, .toolbar-right, .actions, .form-actions,
+  .business-submit-actions, .crm-followup-footer, .jn-toolbar, .java-crm-actions
+) {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sy-button-gap, 12px);
+  min-width: 0;
+  max-width: 100%;
+}
+body :is(.content, .modal, .drawer) :is(.toolbar, .subcard-head) {
+  align-items: center;
+  gap: var(--sy-section-gap, 16px);
+}
+body :is(.content, .modal, .drawer) :is(.sy-component-form-grid, .form-grid, .business-form-grid, .business-fieldset, .business-array-fields, .scrm-followup-fields) {
+  column-gap: var(--sy-field-gap, 14px);
+  row-gap: var(--sy-row-gap, 18px);
+}
+body :is(.content, .modal, .drawer) .sy-component-button-group > :is(button, .btn, a.link),
+body :is(.content, .modal, .drawer) :is(.actions, .form-actions, .business-submit-actions, .crm-followup-footer, .jn-toolbar) > :is(button, .btn) {
+  flex: 0 0 auto;
+  margin-inline: 0;
+}
+body :is(.content, .modal, .drawer) .sy-component-table-wrap {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}

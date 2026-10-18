@@ -3,20 +3,20 @@
 .content .schedule-panel .schedule-filters>*{width:100%;min-width:0;max-width:none;margin:0;height:40px}
 .caterpillar-legend{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;color:#6c7e95;font-size:12px;margin:0 0 15px}
 .caterpillar-legend span{display:inline-flex;align-items:center;gap:6px}
-.caterpillar-legend i{width:9px;height:9px;flex-shrink:0;border-radius:0;background:#315deb}.caterpillar-legend .done{background:#24a366}.caterpillar-legend i.conflict{background:#d8564b}
-.timeline-scroll{width:100%;min-width:0;overflow-x:auto;border:1px solid #e1e8f2;border-radius:0;overscroll-behavior-x:contain}
+.caterpillar-legend i{width:9px;height:9px;flex-shrink:0;border-radius:0;background:#426C84}.caterpillar-legend .done{background:#24a366}.caterpillar-legend i.conflict{background:#d8564b}
+.timeline-scroll{width:100%;min-width:0;overflow-x:auto;border:1px solid #CBDDE7;border-radius:0;overscroll-behavior-x:contain}
 .caterpillar-board{min-width:1160px;width:100%}
 .timeline-header,.caterpillar-lane{display:grid;grid-template-columns:160px minmax(0,1fr)}
-.timeline-header{height:46px;background:#f1f5fc;align-items:center;border-bottom:1px solid #dfe7f2;font-size:12px;color:#687b94}
-.timeline-header>div:first-child{padding:14px;position:sticky;left:0;background:#f1f5fc;z-index:3;height:46px}
+.timeline-header{height:46px;background:#EAF2F6;align-items:center;border-bottom:1px solid #CBDDE7;font-size:12px;color:#687b94}
+.timeline-header>div:first-child{padding:14px;position:sticky;left:0;background:#EAF2F6;z-index:3;height:46px}
 .timeline-hours{position:relative;margin-right:0;height:18px}
 .timeline-hours span{position:absolute;transform:translateX(-50%);white-space:nowrap}.timeline-hours span:first-child{transform:none}.timeline-hours span:last-child{transform:translateX(-100%)}
-.caterpillar-lane{border-bottom:1px solid #e4eaf3}.caterpillar-lane:last-child{border-bottom:0}
-.caterpillar-label{padding:18px 12px;background:#f8fafe;border-right:1px solid #e1e8f2;position:sticky;left:0;z-index:2}
+.caterpillar-lane{border-bottom:1px solid #EAF2F6}.caterpillar-lane:last-child{border-bottom:0}
+.caterpillar-label{padding:18px 12px;background:#EAF2F6;border-right:1px solid #CBDDE7;position:sticky;left:0;z-index:2}
 .caterpillar-label strong{display:block;color:#26364f;font-size:14px;margin-bottom:6px}.caterpillar-label span{display:block;color:#7a8ba2;font-size:12px;line-height:1.6}
-.caterpillar-track{position:relative;min-width:0;margin-right:0;background:repeating-linear-gradient(to right,transparent 0,transparent calc(var(--tick) - 1px),#e5ebf4 calc(var(--tick) - 1px),#e5ebf4 var(--tick))}
-.worm-segment{position:absolute;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;height:96px;min-width:0;overflow:hidden;padding:7px 9px;border:1px solid #96b5fa;border-left:1px solid #4b76e8;border-radius:0;background:#eaf1ff;color:#294f9a;text-align:left;cursor:pointer;box-sizing:border-box}
-.worm-segment>*{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.5}.worm-segment b{font-size:11px}.worm-segment strong{font-size:13px}.worm-segment span,.worm-segment small{font-size:11px}.worm-segment:hover,.worm-segment:focus-visible{filter:brightness(.97);outline:2px solid #315deb;outline-offset:1px;z-index:1}
+.caterpillar-track{position:relative;min-width:0;margin-right:0;background:repeating-linear-gradient(to right,transparent 0,transparent calc(var(--tick) - 1px),#EAF2F6 calc(var(--tick) - 1px),#EAF2F6 var(--tick))}
+.worm-segment{position:absolute;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;height:96px;min-width:0;overflow:hidden;padding:7px 9px;border:1px solid #CBDDE7;border-left:1px solid #426C84;border-radius:0;background:#EAF2F6;color:#426C84;text-align:left;cursor:pointer;box-sizing:border-box}
+.worm-segment>*{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.5}.worm-segment b{font-size:11px}.worm-segment strong{font-size:13px}.worm-segment span,.worm-segment small{font-size:11px}.worm-segment:hover,.worm-segment:focus-visible{filter:brightness(.97);outline:2px solid #426C84;outline-offset:1px;z-index:1}
 .worm-segment.is-done{border-color:#81caa3;border-left-color:#25a065;background:#e8f7ee;color:#20744a}
 .worm-segment.is-conflict{border-color:#e58f88;border-left-color:#d75249;background:#ffeded;color:#a52f2b}
 .timeline-no-time{display:block;padding:32px;color:#8a98aa}

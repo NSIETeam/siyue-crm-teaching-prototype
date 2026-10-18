@@ -1,7 +1,7 @@
 body .modal.batch-modal{width:min(1120px,calc(100vw - 32px));max-width:calc(100vw - 32px)}
 .batch-page .form-grid{max-width:none}.batch-page .table{min-width:820px}.batch-page .table .input{min-width:110px}.batch-page .table td:first-child .input{min-width:200px}
-#batch-candidates{max-height:42vh;overflow:auto;border:1px solid #e7edf5;border-radius:8px}
-.batch-candidate{display:flex;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid #edf1f6}.batch-candidate:last-child{border-bottom:0}
+#batch-candidates{max-height:42vh;overflow:auto;border:1px solid #EAF2F6;border-radius:8px}
+.batch-candidate{display:flex;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid #EAF2F6}.batch-candidate:last-child{border-bottom:0}
 .batch-candidate label{display:flex;gap:12px;align-items:center;flex:1;min-width:0;cursor:pointer}.batch-candidate small{display:block;color:#8291a6;margin-top:3px}.batch-candidate>.input{width:150px;flex:0 1 150px}
 .batch-candidate:has(label[hidden]){display:none}.batch-candidate [hidden]{display:none!important}.batch-shortcut{display:flex;justify-content:flex-end;margin-bottom:12px}
 
@@ -20,10 +20,10 @@ body .content .batch-page .batch-enrollment-preview table.table{min-width:1110px
 .batch-row-quote{margin-top:10px;font-size:13px;color:#34465f}
 .batch-row-errors{padding-left:18px;margin:0;font-size:13px;color:#b64a35}
 .batch-row-errors li+li{margin-top:6px}
-.batch-staged-note{display:block;margin-top:6px;font-size:12px;color:#456dc3}
+.batch-staged-note{display:block;margin-top:6px;font-size:12px;color:#426C84}
 .batch-row-actions{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
 .batch-suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .batch-suggestions>span{width:100%;font-size:12px;color:#71839e}
 .batch-page .batch-suggestions .btn{max-width:100%;height:auto;min-height:32px;white-space:normal;text-align:left;font-size:12px}
-.batch-removed{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid #e7edf5}
+.batch-removed{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid #EAF2F6}
 .batch-removed>span{font-size:13px;color:#71839e}

@@ -1,0 +1,51 @@
+/* One width and height for peer work tabs; long titles retain a full accessible label. */
+.work-tabs { padding: 10px 34px 0; background: #fff; border-bottom: 1px solid #CBDDE7; min-width: 0; }
+.work-tabs[hidden], .work-tabs-message[hidden] { display: none; }
+.work-tabs-track { display: flex; align-items: stretch; gap: 6px; min-width: 0; overflow-x: auto; padding: 0 0 8px; scrollbar-width: thin; }
+.work-tab-item { flex: 0 0 176px; width: 176px; height: 40px; display: flex; align-items: center; border: 1px solid #CBDDE7; border-radius: 6px; background: #EAF2F6; color: #58697f; }
+.work-tab-item.is-active { border-color: #426C84; background: #EAF2F6; color: #426C84; box-shadow: inset 0 -2px #426C84; }
+.work-tab-label { flex: 1 1 0; min-width: 0; height: 38px; border: 0; background: transparent; color: inherit; display: flex; align-items: center; gap: 6px; padding: 0 4px 0 12px; text-align: left; font: inherit; }
+.work-tab-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.work-tab-item.is-active .work-tab-label { font-weight: 600; }
+.work-tab-dirty { font-size: 8px; color: #b36b0b; flex: 0 0 auto; }
+.work-tab-close, .work-tab-spacer { width: 32px; height: 32px; flex: 0 0 32px; }
+.work-tab-close { display: grid; place-items: center; border: 0; border-radius: 4px; background: transparent; color: inherit; padding: 8px; }
+.work-tab-close:hover { background: #EAF2F6; }
+.work-tab-close svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.work-tab-label:focus-visible, .work-tab-close:focus-visible { outline: 2px solid #426C84; outline-offset: -2px; }
+.work-tabs-message { margin: 0; padding: 0 0 8px; color: #92530b; font-size: 12px; line-height: 1.6; }
+@media (max-width: 900px) { .work-tabs { padding-inline: 20px; } }
+@media (max-width: 680px) { .work-tabs { padding-inline: 18px; } .work-tab-item { flex-basis: 160px; width: 160px; } }
+
+/* Folder-shaped work tabs share a continuous white surface with their page. */
+body .main>#workspace-tabs{margin:18px 24px 0;padding:0;background:transparent;border:0;min-width:0}
+body #workspace-tabs .work-tabs-track{gap:6px;align-items:flex-end;padding:2px 1px 0;border-bottom:1px solid #CBDDE7;overflow-x:auto;scrollbar-width:thin}
+body #workspace-tabs .work-tab-item{position:relative;flex:0 0 176px;width:176px;height:42px;border:1px solid #CBDDE7;border-bottom:0;border-radius:12px 12px 0 0;background:#EAF2F6;color:#587486;box-shadow:none}
+body #workspace-tabs .work-tab-item.is-active{background:#fff;color:#24465A;border-color:#CBDDE7;box-shadow:0 1px 0 1px #fff;z-index:1}
+body #workspace-tabs .work-tab-label{height:40px;border-radius:11px 0 0 0}
+body #workspace-tabs .work-tab-close{margin-right:5px;width:28px;height:28px;flex-basis:28px;border-radius:8px}
+body #workspace-tabs .work-tab-close:hover{background:#FAF0E8;color:#895434}
+body .main>#workspace-tabs:not([hidden])~#view.content{width:calc(100% - 48px);margin:0 24px 24px;padding:24px;background:#fff;border:1px solid #CBDDE7;border-top:0;border-radius:0 0 12px 12px;min-height:calc(100dvh - 160px)}
+body #workspace-tabs .work-tabs-message:not([hidden]){padding:10px 14px;background:#FAF0E8;border-inline:1px solid #CBDDE7}
+@media(max-width:760px){body .main>#workspace-tabs{margin:12px 12px 0}body .main>#workspace-tabs:not([hidden])~#view.content{width:calc(100% - 24px);margin:0 12px 12px;padding:16px}body #workspace-tabs .work-tab-item{flex-basis:150px;width:150px}}
+body #workspace-tabs .work-tabs-track{border-bottom:0;box-shadow:inset 0 -1px #CBDDE7}
+body #workspace-tabs .work-tab-item:not(.is-active){border-bottom:1px solid #CBDDE7}
+body #workspace-tabs .work-tab-item.is-active{box-shadow:none}
+/* The work page already has a frame: avoid a second card border around a single list. */
+body .main>#workspace-tabs:not([hidden])~#view.content>.card:only-child{border:0;box-shadow:none;background:transparent;margin:0}
+body .main>#workspace-tabs:not([hidden])~#view.content>.card.pad:only-child{padding:0}
+/* A collapsed workflow precedes the sole page card; it must not restore nested padding. */
+body .main>#workspace-tabs:not([hidden])~#view.content:has(>#workflow-context):not(:has(>.card:not(.wf-context)~.card:not(.wf-context)))>.card:not(.wf-context){border:0;box-shadow:none;background:transparent;margin:0}
+body .main>#workspace-tabs:not([hidden])~#view.content:has(>#workflow-context):not(:has(>.card:not(.wf-context)~.card:not(.wf-context)))>.card:not(.wf-context).pad{padding:0}
+
+/* Safari-style equal tracks: fill the whole row; overflow only for many tabs. */
+body #workspace-tabs .work-tabs-track{gap:4px}
+body #workspace-tabs .work-tab-item{flex:1 1 0;width:0;min-width:112px;max-width:none}
+body #workspace-tabs .work-tab-label{justify-content:center;padding-left:12px}
+body .sidebar .sidebar-glass-header .brand.brand-logo{flex:0 1 124px;max-width:124px;margin-right:auto}
+body .sidebar .brand-logo svg{width:100%}
+.page-chrome-redundant{display:none!important}
+.page-chrome-empty{display:none!important}
+.scrm-queue-context{font-size:13px;color:#587486;margin:0 0 12px}
+body .content .scrm-filter-actions .scrm-scope{margin:0}
+@media(max-width:760px){body .sidebar .sidebar-glass-header .brand.brand-logo{max-width:104px}body #workspace-tabs .work-tab-item{min-width:100px}}
