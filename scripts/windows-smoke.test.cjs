@@ -60,7 +60,7 @@ test('portable CLI and MCP: encrypted login, Unicode paths, private output, prev
  assert.equal((await ok(['execute','--plan',plan],env)).commits,1);assert.equal((await ok(['execute','--plan',plan],env)).commits,1);
  const mcpPreview=(await rpc.call('tools/call',{name:'siyue_preview_lead_create',arguments:{name:'虚构测试'}})).structuredContent;assert.equal(mcpPreview.commit,false);assert.equal(commits,1);
  const mcpPlan=path.join(config,'mcp-plans',mcpPreview.planId+'.json');privateFiles.check(mcpPlan);
- for(let i=0;i<2;i++)assert.equal((await rpc.call('tools/call',{name:'siyue_execute',arguments:{planId:mcpPreview.planId}})).structuredContent.commits,2);
+ for(let i=0;i<2;i++){const executed=await rpc.call('tools/call',{name:'siyue_execute',arguments:{planId:mcpPreview.planId}});assert.equal(executed.isError,undefined,JSON.stringify(executed));assert.equal(executed.structuredContent.commits,2);}
  denied=true;const deniedCLI=await command(['execute','--plan',plan],env);assert.notEqual(deniedCLI.code,0);assert.match(deniedCLI.stderr,/FORBIDDEN/);
  assert.equal((await rpc.call('tools/call',{name:'siyue_execute',arguments:{planId:mcpPreview.planId}})).isError,true);assert.equal(commits,2);
  // The reserved credential output must be private BEFORE the remote request executes.

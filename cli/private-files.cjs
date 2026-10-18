@@ -5,29 +5,31 @@ const windows=process.platform==='win32';
 const script=String.raw`
 $ErrorActionPreference='Stop'
 $ProgressPreference='SilentlyContinue'
-[Console]::InputEncoding=New-Object System.Text.UTF8Encoding($false)
-[Console]::OutputEncoding=New-Object System.Text.UTF8Encoding($false)
-$p=[Console]::In.ReadToEnd() | ConvertFrom-Json
+[Console]::InputEncoding=[System.Text.UTF8Encoding]::new($false)
+[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false)
+$action=[Console]::In.ReadLine()
+$target=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String([Console]::In.ReadLine()))
+$data=[Console]::In.ReadLine()
 $me=[System.Security.Principal.WindowsIdentity]::GetCurrent().User
-$system=New-Object System.Security.Principal.SecurityIdentifier('S-1-5-18')
-if($p.path){
- $attributes=[IO.File]::GetAttributes($p.path)
+$system=[System.Security.Principal.SecurityIdentifier]::new('S-1-5-18')
+if($target){
+ $attributes=[IO.File]::GetAttributes($target)
  $directory=($attributes -band [IO.FileAttributes]::Directory) -ne 0
  if(($attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0){throw 'Reparse points are forbidden'}
- if($p.action -eq 'secure'){
+ if($action -eq 'secure'){
   if($directory){
-   $acl=New-Object System.Security.AccessControl.DirectorySecurity
+   $acl=[System.Security.AccessControl.DirectorySecurity]::new()
    $inherit=[System.Security.AccessControl.InheritanceFlags]'ContainerInherit,ObjectInherit'
-  }else{$acl=New-Object System.Security.AccessControl.FileSecurity;$inherit=[System.Security.AccessControl.InheritanceFlags]::None}
+  }else{$acl=[System.Security.AccessControl.FileSecurity]::new();$inherit=[System.Security.AccessControl.InheritanceFlags]::None}
   $acl.SetOwner($me)
   $acl.SetAccessRuleProtection($true,$false)
   foreach($sid in @($me,$system)){
-   $rule=New-Object System.Security.AccessControl.FileSystemAccessRule($sid,'FullControl',$inherit,'None','Allow')
+   $rule=[System.Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl',$inherit,'None','Allow')
    $acl.AddAccessRule($rule)
   }
-  if($directory){[IO.Directory]::SetAccessControl($p.path,$acl)}else{[IO.File]::SetAccessControl($p.path,$acl)}
+  if($directory){[IO.Directory]::SetAccessControl($target,$acl)}else{[IO.File]::SetAccessControl($target,$acl)}
  }
- if($directory){$acl=[IO.Directory]::GetAccessControl($p.path)}else{$acl=[IO.File]::GetAccessControl($p.path)}
+ if($directory){$acl=[IO.Directory]::GetAccessControl($target)}else{$acl=[IO.File]::GetAccessControl($target)}
  if($acl.GetOwner([System.Security.Principal.SecurityIdentifier]).Value -ne $me.Value){throw 'Owner must be the current user'}
  if(-not $acl.AreAccessRulesProtected){throw 'Inherited access is forbidden'}
  $own=$false
@@ -39,11 +41,11 @@ if($p.path){
  }
  if(-not $own){throw 'Current user needs full control'}
 }
-if($p.action -eq 'encrypt' -or $p.action -eq 'decrypt'){
- Add-Type -AssemblyName System.Security
- $bytes=[Convert]::FromBase64String($p.data)
+if($action -eq 'encrypt' -or $action -eq 'decrypt'){
+ [void][Reflection.Assembly]::LoadWithPartialName('System.Security')
+ $bytes=[Convert]::FromBase64String($data)
  $entropy=[Text.Encoding]::UTF8.GetBytes('siyue-cli-session-v1')
- if($p.action -eq 'encrypt'){$result=[Security.Cryptography.ProtectedData]::Protect($bytes,$entropy,[Security.Cryptography.DataProtectionScope]::CurrentUser)}
+ if($action -eq 'encrypt'){$result=[Security.Cryptography.ProtectedData]::Protect($bytes,$entropy,[Security.Cryptography.DataProtectionScope]::CurrentUser)}
  else{$result=[Security.Cryptography.ProtectedData]::Unprotect($bytes,$entropy,[Security.Cryptography.DataProtectionScope]::CurrentUser)}
  [Console]::Write([Convert]::ToBase64String($result))
 }else{[Console]::Write('ok')}
@@ -51,7 +53,7 @@ if($p.action -eq 'encrypt' -or $p.action -eq 'decrypt'){
 function win(action,file,data){
  const executable=path.join(process.env.SystemRoot||'C:\\Windows','System32','WindowsPowerShell','v1.0','powershell.exe');
  const env={...process.env};for(const key of Object.keys(env))if(key.toLowerCase()==='psmodulepath')delete env[key];env.PSModulePath=path.join(path.dirname(executable),'Modules');
- try{return execFileSync(executable,['-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',Buffer.from(script,'utf16le').toString('base64')],{env,input:JSON.stringify({action,path:file,data}),encoding:'utf8',windowsHide:true,timeout:30000,stdio:['pipe','pipe','pipe']}).trim();}
+ try{return execFileSync(executable,['-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',Buffer.from(script,'utf16le').toString('base64')],{env,input:[action,Buffer.from(file||'','utf8').toString('base64'),data||''].join('\n')+'\n',encoding:'utf8',windowsHide:true,timeout:30000,stdio:['pipe','pipe','pipe']}).trim();}
  catch(cause){throw Object.assign(new Error('Windows 私有文件保护失败；请使用本机 NTFS 用户目录，并检查系统 PowerShell 可用。',{cause}),{code:'PRIVATE_FILE_PROTECTION_FAILED'});}
 }
 function regularPath(target){
