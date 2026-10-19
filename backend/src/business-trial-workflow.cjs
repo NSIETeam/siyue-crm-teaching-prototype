@@ -15,6 +15,34 @@ function academicLead(s,actor,id){
  assert(lead.ownerId&&lead.decisionStatus!=='pending'&&!['cold','archived'].includes(lead.status)&&!['已流失','已归档'].includes(lead.stage),'请先确定跟进负责人并完成线索去向，归档线索须先恢复','INVALID_STATE',409);
  return lead;
 }
+// Student archive lookup is campus-scoped and read-only until the booking transaction.
+function studentFor(s,actor,id){
+ const student=(s.students||[]).find(row=>row.id===id);
+ assert(student&&student.active!==false&&manages(actor,student.campusId)&&actor.permissions?.includes('lead.create')&&(s.campuses||[]).some(row=>row.id===student.campusId&&row.active!==false),'学员不存在或不在授权校区','NOT_FOUND',404);
+ return student;
+}
+function studentLead(s,actor,student){
+ const key=crm.helpers.leadKey(student.name,crm.helpers.phone(student.phone));
+ const matches=(s.leads||[]).filter(l=>l.id===student.originLeadId||l.studentId===student.id||crm.helpers.leadKey(l.name,l.contactPhone||l.phone)===key);
+ assert(matches.length<=1,'关联档案存在冲突，请联系管理员核对','DUPLICATE_LEAD',409);
+ const lead=matches[0];
+ assert(!student.originLeadId||lead?.id===student.originLeadId,'关联线索已不存在，请联系管理员核对','INVALID_STATE',409);
+ if(lead){assert(lead.campusId===student.campusId&&(!lead.studentId||lead.studentId===student.id)&&!(s.students||[]).some(row=>row.id!==student.id&&row.originLeadId===lead.id),'关联档案存在冲突，请联系管理员核对','LEAD_SCOPE_CONFLICT',409);academicLead(s,actor,lead.id);}
+ return lead;
+}
+function studentOwners(directory,campusId){return (directory||[]).filter(person=>{try{if(!active(person))return false;crm.helpers.owner({directory},person.id,campusId);return true;}catch{return false;}}).map(person=>({id:person.id,name:scrub(person.name)}));}
+function bookStudent(s,i,c){
+ c.require('lead.create');const student=studentFor(s,c.actor,i.studentId);let lead=studentLead(s,c.actor,student);
+ if(!lead){
+  const person=crm.helpers.owner(c,i.ownerId,student.campusId);assert(active(person),'请选择有效的跟进负责人');
+  lead=crm.helpers.createLead(s,{name:student.name,phone:student.phone,grade:student.grade||'',campusId:student.campusId,source:'老学员试听',ownerId:person.id},c,false,{academicTrial:true});
+  lead.studentId=student.id;student.originLeadId=lead.id;student.updatedAt=c.now;student.version=(student.version||0)+1;
+  crm.helpers.event(lead,c,'关联学生',{studentId:student.id,reason:'老学员预约试听'});
+  // An existing positive receipt remains the only proof of conversion.
+  if((s.orders||[]).some(order=>order.studentId===student.id&&(Number(order.paidCents??order.paidMinor)||0)>0)){lead.stage='已报名';lead.status='converted';}
+ }else assert(!i.ownerId||i.ownerId===lead.ownerId,'请保留已有线索负责人','LEAD_OWNER_CHANGED',409);
+ return requestTrial(s,{...i,leadId:lead.id},c,true);
+}
 function communication(lead,r,c,pending=false){
  const kind=pending?'trial_pending':'trial_confirmed';
  if((lead.history||[]).some(e=>e.detail?.trialRequestId===r.id&&e.detail?.trialEvent===kind))return;
@@ -76,6 +104,7 @@ const operations=[
  }),
  operation('trial.request','预约试听','lead.follow',{leadId:string('本人线索'),classId:string('班级'),sessionId:string('上课时间'),note},['leadId','classId','sessionId'],(s,i,c)=>requestTrial(s,i,c,false)),
  operation('trial.academicRequest','教务预约试听','class.create',{leadId:string('线索'),classId:string('班级'),sessionId:string('上课时间'),note},['leadId','classId','sessionId'],(s,i,c)=>requestTrial(s,i,c,true)),
+ operation('trial.academicStudentRequest','老学员预约试听','class.create',{studentId:string('已有学员'),ownerId:string('跟进负责人'),classId:string('班级'),sessionId:string('上课时间'),note},['studentId','classId','sessionId'],bookStudent),
  operation('trial.review','复核满员试听申请','class.create',{requestId:string('申请'),decision:{type:'string',enum:['approve','reject']},expectedVersion:ver,classId:string('安排班级'),sessionId:string('安排课次'),note},['requestId','decision','expectedVersion','note'],(s,i,c)=>{
   const r=requestFor(s,c,i.requestId);assert(manages(c.actor,r.campusId),'仅对应校区教务可以复核','FORBIDDEN',403);version(r,i);assert(r.status==='pending'&&r.reviewRequired===true,'申请已处理或不需要复核','INVALID_STATE',409);assert(['approve','reject'].includes(i.decision),'复核结果无效');const reason=String(i.note||'').trim();assert(reason,'请填写复核说明');assert(!!i.classId===!!i.sessionId,'安排班级和课次须同时填写');
   if(i.decision==='approve'){
@@ -122,13 +151,21 @@ function searchLeads(snapshot,actor,directory,input){
  const query=input.search.normalize('NFKC').trim().toLocaleLowerCase(),digits=query.replace(/[\s()+-]/g,'').replace(/^(?:\+?86|0086)(?=1[3-9]\d{9}$)/,''),phoneQuery=/^\d+$/.test(digits);
  if(phoneQuery&&digits.length<4)return {items:[],hasMore:false,hint:'请输入至少四位电话号码，或按姓名搜索',revision:snapshot.revision};
  const s=snapshot.state,rows=(s.leads||[]).filter(l=>(s.campuses||[]).some(c=>c.id===l.campusId&&c.active!==false)&&manages(actor,l.campusId)).filter(l=>!query||String(l.name||'').normalize('NFKC').toLocaleLowerCase().includes(query)||phoneQuery&&String(l.contactPhone||l.phone||'').replace(/\D/g,'').includes(digits)).sort((a,b)=>String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||''))||String(a.id).localeCompare(String(b.id)));
- return {items:rows.slice(0,20).map(l=>{let reason='';try{academicLead(s,actor,l.id);}catch{reason=!l.ownerId?'请先在线索登记中指定跟进负责人':l.decisionStatus==='pending'?'请先完成线索去向决策':'该线索当前不可预约，请先处理线索状态';}const number=String(l.contactPhone||l.phone||'').replace(/\D/g,'');return {id:l.id,name:scrub(l.name),grade:scrub(l.grade),subject:scrub(l.subject),campusName:scrub((s.campuses||[]).find(c=>c.id===l.campusId)?.name),ownerName:personName({directory},l.ownerId),phoneMasked:number.length>=7?number.slice(0,3)+'****'+number.slice(-4):'未提供',canBook:!reason,reason};}),hasMore:rows.length>20,revision:snapshot.revision};
+ for(const student of s.students||[]){
+  if(student.active===false||!manages(actor,student.campusId)||!(s.campuses||[]).some(c=>c.id===student.campusId&&c.active!==false))continue;
+  if(query&&!String(student.name||'').normalize('NFKC').toLocaleLowerCase().includes(query)&&!(phoneQuery&&String(student.phone||'').replace(/\D/g,'').includes(digits)))continue;
+  // A linked or exact lead is the canonical search result, including blocked leads.
+  if(rows.some(l=>l.id===student.originLeadId||l.studentId===student.id||String(l.name||'').normalize('NFKC').trim().toLocaleLowerCase()===String(student.name||'').normalize('NFKC').trim().toLocaleLowerCase()&&String(l.contactPhone||l.phone||'')===String(student.phone||'')))continue;
+  rows.push({...student,id:'student:'+student.id,studentId:student.id,recordType:'student'});
+ }
+ rows.sort((a,b)=>String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||''))||String(a.id).localeCompare(String(b.id)));
+ return {items:rows.slice(0,20).map(l=>{let reason='';try{if(l.recordType==='student'){const linked=studentLead(s,actor,{...l,id:l.studentId});assert(linked||studentOwners(directory,l.campusId).length,'请先配置有效的跟进负责人');}else academicLead(s,actor,l.id);}catch{reason=l.recordType==='student'?'学员关联档案或负责人需先处理':!l.ownerId?'请先在线索登记中指定跟进负责人':l.decisionStatus==='pending'?'请先完成线索去向决策':'该线索当前不可预约，请先处理线索状态';}const number=String(l.contactPhone||l.phone||'').replace(/\D/g,'');return {id:l.id,...(l.recordType==='student'?{studentId:l.studentId,recordType:'student'}:{}),name:scrub(l.name),grade:scrub(l.grade),subject:scrub(l.subject),campusName:scrub((s.campuses||[]).find(c=>c.id===l.campusId)?.name),ownerName:l.recordType==='student'?'预约时确认':personName({directory},l.ownerId),phoneMasked:number.length>=7?number.slice(0,3)+'****'+number.slice(-4):'未提供',canBook:!reason,reason};}),hasMore:rows.length>20,revision:snapshot.revision};
 }
 function read(snapshot,actor,directory,path,params,now=new Date().toISOString()){
- assert(active(actor),'账号当前不可用','FORBIDDEN',403);for(const k of params.keys())assert((path.endsWith('/slots')?['leadId','requestId','campusId','courseId','grade','subject','teacherId','date','from','to']:['leadId','status','page','pageSize','date','subject']).includes(k)&&params.getAll(k).length===1&&params.get(k).length<=120&&!/[\u0000-\u001f]/.test(params.get(k)),'查询参数无效','INVALID_QUERY',400);
+ assert(active(actor),'账号当前不可用','FORBIDDEN',403);for(const k of params.keys())assert((path.endsWith('/slots')?['leadId','studentId','requestId','campusId','courseId','grade','subject','teacherId','date','from','to']:['leadId','status','page','pageSize','date','subject']).includes(k)&&params.getAll(k).length===1&&params.get(k).length<=120&&!/[\u0000-\u001f]/.test(params.get(k)),'查询参数无效','INVALID_QUERY',400);
  const s=snapshot.state;
  if(path.endsWith('/slots')){
-  const review=params.get('requestId')?requestFor(s,{actor},params.get('requestId')):null;if(review)assert(manages(actor,review.campusId)&&review.status==='pending'&&review.reviewRequired,'仅对应校区教务可以安排待复核申请','FORBIDDEN',403);assert(!review||!params.get('leadId'),'安排查询不得混用线索和申请');const lead=review?(s.leads||[]).find(l=>l.id===review.leadId):(actor.roleIds?.some(r=>['academic','superadmin'].includes(r))&&actor.permissions?.includes('class.create')?academicLead(s,actor,params.get('leadId')):leadFor(s,actor,params.get('leadId'))),slots=[];assert(lead,'关联线索已不存在','NOT_FOUND',404);const date=params.get('date'),from=params.get('from'),to=params.get('to');
+  const review=params.get('requestId')?requestFor(s,{actor},params.get('requestId')):null;if(review)assert(manages(actor,review.campusId)&&review.status==='pending'&&review.reviewRequired,'仅对应校区教务可以安排待复核申请','FORBIDDEN',403);assert(!review||!params.get('leadId'),'安排查询不得混用线索和申请');assert([params.has('leadId'),params.has('studentId'),params.has('requestId')].filter(Boolean).length===1,'请选择一个线索、学员或复核申请','INVALID_QUERY',400);const student=params.has('studentId')?studentFor(s,actor,params.get('studentId')):null,linked=student?studentLead(s,actor,student):null;const lead=student?(linked||student):review?(s.leads||[]).find(l=>l.id===review.leadId):(actor.roleIds?.some(r=>['academic','superadmin'].includes(r))&&actor.permissions?.includes('class.create')?academicLead(s,actor,params.get('leadId')):leadFor(s,actor,params.get('leadId'))),slots=[];assert(lead,'关联线索已不存在','NOT_FOUND',404);const date=params.get('date'),from=params.get('from'),to=params.get('to');
   const validDate=value=>/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value+'T12:00:00Z'))&&new Date(value+'T12:00:00Z').toISOString().slice(0,10)===value;
   assert((!params.has('date')||validDate(date))&&(!params.has('from')||validDate(from))&&(!params.has('to')||validDate(to)),'日期无效','INVALID_QUERY',400);
   assert(!!from===!!to&&!(date&&(from||to))&&(!from||from<=to&&Date.parse(to)-Date.parse(from)<=6*86400000),'课表范围须为连续七天以内，且不能混用单日筛选','INVALID_QUERY',400);
@@ -140,7 +177,7 @@ function read(snapshot,actor,directory,path,params,now=new Date().toISOString())
   const grades=choices('grade',x=>({id:x.grade,name:x.grade})),subjects=choices('subject',x=>({id:x.subject,name:x.subject})),campuses=choices('campusId',x=>({id:x.campusId,name:x.campusName})),courses=choices('courseId',x=>({id:x.courseId,name:x.courseName,grade:x.grade,subject:x.subject})),teachers=choices('teacherId',x=>({id:x.teacherId,name:x.teacherName||'授课老师'}));
   const matching=candidates.filter(item=>matches(item)).sort((a,b)=>a.start-b.start||a.classId.localeCompare(b.classId));
   const filtered=matching.filter(x=>(!date||x.date===date)&&(!from||x.date>=from&&x.date<=to));
-  return {lead:basic(lead),grades,subjects,campuses,courses,teachers,slots:filtered.slice(0,200),total:filtered.length,matchingTotal:matching.length,nextAvailableDate:matching[0]?.date||null,hasMore:filtered.length>200,revision:snapshot.revision};
+  return {lead:basic(lead),...(student?{studentId:student.id,owners:linked?[]:studentOwners(directory,student.campusId),ownerRequired:!linked,defaultOwnerId:linked?.ownerId||studentOwners(directory,student.campusId).find(person=>person.id===student.ownerId)?.id||''}:{}),grades,subjects,campuses,courses,teachers,slots:filtered.slice(0,200),total:filtered.length,matchingTotal:matching.length,nextAvailableDate:matching[0]?.date||null,hasMore:filtered.length>200,revision:snapshot.revision};
  }
  assert(path.endsWith('/requests'),'不存在此接口','NOT_FOUND',404);
  const status=params.get('status')||'all';assert(['all','pending','approved','rejected','cancelled'].includes(status),'状态无效');const page=Number(params.get('page')||1),pageSize=Number(params.get('pageSize')||25);assert(Number.isSafeInteger(page)&&page>=1&&page<=1000000&&Number.isSafeInteger(pageSize)&&pageSize>=1&&pageSize<=50,'分页参数无效');
