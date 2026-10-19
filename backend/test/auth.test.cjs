@@ -160,14 +160,16 @@ test('authenticated CLI includes settings and browser commands only under their 
 test('publish-only marketing permission includes page discovery without creating activities',async t=>{const f=await fixture(t),admin=await adminReady(f),created=await employee(f,admin,{additionalPermissions:['promotion.publish'],deniedPermissions:['promotion.create']}),token=await activate(f,created);const response=await f.call(token,'/v1/catalog');assert.equal(response.status,200);for(const page of ['mallGroup','mallJoint','mallCoupon'])assert.ok(response.body.frontendOperations.some(x=>x.id==='page.'+page));assert.ok(!response.body.frontendOperations.some(x=>x.label==='创建拼团'));});
 
 
-test('password minimum accepts ten characters while preserving complexity and username checks',()=>{
+test('password policy accepts ten lowercase letters and preserves length, username and control-character checks',()=>{
  const {strongPassword}=require('../src/auth-credentials.cjs');
  const accepted='Abcdef12!3';assert.equal(accepted.length,10);assert.equal(strongPassword(accepted,'employee01'),true);
- for(const rejected of ['Abcde12!3','abcdef12!3','ABCDEF12!3','Abcdefgh!?','Abcdef1234'])assert.equal(strongPassword(rejected,'employee01'),false,rejected);
+ for(const accepted of ['abcdefghij','abcdef12!3','ABCDEF12!3','Abcdefgh!?','Abcdef1234'])assert.equal(strongPassword(accepted,'employee01'),true);
+ for(const rejected of ['Abcde12!3','          ','abcdefghij\n','abcdefghij\u0000','x'.repeat(257)])assert.equal(strongPassword(rejected,'employee01'),false);
+ assert.equal(strongPassword('abcdefghij'),true);
  assert.equal(strongPassword(accepted,'ABC'),false);
 });
-test('nine-character password is rejected, ten-character password can be saved and used to log in',async t=>{
- const f=await fixture(t),password='Abcdef12!3';
+test('nine-character password is rejected, ten lowercase characters can be saved and used to log in',async t=>{
+ const f=await fixture(t),password='abcdefghij';
  const short=await f.call(f.initial.body.token,'/v1/auth/password','POST',{currentPassword:f.credentials.initialPassword,newPassword:'Abcde12!3'});
  assert.equal(short.status,400);assert.equal(short.body.code,'WEAK_PASSWORD');assert.match(short.body.message,/至少 10 位/);
  const changed=await f.call(f.initial.body.token,'/v1/auth/password','POST',{currentPassword:f.credentials.initialPassword,newPassword:password});

@@ -152,7 +152,7 @@ function createAuthService(options){
    if(pathname==='/v1/auth/password'&&req.method==='POST'){
     action='auth.password';limit('password:'+actor.id,8,15*60000);const body=await jsonBody(req);({user:actor,session}=reauthenticate(req,{allowInitialPassword:true}));fields(body,['currentPassword','newPassword']);
     if(typeof body.currentPassword!=='string'||Buffer.byteLength(body.currentPassword)>256||!verifyPassword(body.currentPassword,actor.passwordHash))reject(403,'CURRENT_PASSWORD_INVALID','当前密码不正确');
-    if(!strongPassword(body.newPassword,actor.username))reject(400,'WEAK_PASSWORD','密码至少 10 位，需包含大小写字母、数字和符号，且不能包含账号');
+    if(!strongPassword(body.newPassword,actor.username))reject(400,'WEAK_PASSWORD','密码至少 10 位，可使用纯字母，不能包含账号或控制字符');
     if(body.newPassword===body.currentPassword)reject(400,'PASSWORD_UNCHANGED','新密码不能与当前密码相同');
     const passwordHash=hashPassword(body.newPassword);
     const continueBrowser=session.client==='browser'&&actor.mustChangePassword;let issued;
