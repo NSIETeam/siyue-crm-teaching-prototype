@@ -76,3 +76,10 @@ test('group wizard rejects incomplete class selection and cannot mutate a locked
  h.ctx.disabled=true;assert.equal(h.api.groupPrevious(),false);assert.equal(h.api.groupNext(),false);assert.equal(h.api.groupChoose(true),false);
  assert.match(h.api.renderGroupForm(h.ctx,{uncertain:true,hasPreview:true}),/重试确认提交结果/);
 });
+test('group directory keeps compact columns after shared table normalization without affecting other pages',()=>{
+ const fs=require('node:fs'),path=require('node:path'),css=fs.readFileSync(path.join(__dirname,'../business-commerce-selection.css'),'utf8');
+ assert.match(css,/body #view \.bcs-group table\.bcs-group-table\[data-sy-layout\]\{table-layout:fixed!important;min-width:860px!important\}/);
+ for(const [i,width] of [[1,12],[2,22],[3,17],[4,9]])assert(css.includes(`col:nth-child(${i}){width:${width}%!important}`));
+ assert(css.includes('col:nth-child(n+5){width:8%!important}'));
+ assert.match(css,/td\.bcs-group-id\{white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis\}/);
+});
