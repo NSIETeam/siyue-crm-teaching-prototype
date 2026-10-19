@@ -12,10 +12,10 @@ async function app(t,page='mallGroup'){
  const document={addEventListener(){},scrollingElement:view,querySelector:selector=>selector==='#view'?view:selector==='#crumb'?crumb:null,querySelectorAll:selector=>selector==='#business-form [data-business-path]'?controls:[],getElementById:()=>null};
  const calls=[],sandbox={SIYUE_AUTH_API:'/',URLSearchParams,document,state:{page},a:{},leadState:{},mallState:{},mfState:{},workflowState:{},sysRules:{},permissionCanVisit:()=>true,render(){},nav(){},accountOpen(){},workspaceBack(){},workflowSearchEntries(){},toast(){},crypto:{randomUUID:()=>crypto.randomUUID()},employeeAuth:{subscribe:fn=>{subscriber=fn},current:()=>f.admin.user,has:p=>f.admin.user.permissions.includes(p),async request(endpoint,init={}){calls.push({endpoint,input:init.body});const response=await f.call(f.admin,'/'+endpoint,init.method||'GET',init.body,init.headers);if(response.status!==200)throw Object.assign(Error(response.body.message),response.body,{status:response.status});return response.body}}};
  sandbox.window=sandbox;vm.createContext(sandbox);for(const name of ['page-layouts.js','business-presenter.js','academic-planner.js','business-academic.js','business-commerce-selection.js','business-commerce-checkout.js','business-api.js'])vm.runInContext(source(name),sandbox,{filename:name});subscriber(f.admin.user);await until(()=>sandbox.businessAPI.catalog().length&&sandbox.businessAPI.snapshot()?.commerceCheckouts);
- return {...fixture,offer,api:sandbox.businessAPI,module:sandbox.SiyueBusinessCommerceCheckout,calls,get html(){return html},field:p=>controls.find(control=>control.dataset.businessPath===JSON.stringify(p))};
+ return {...fixture,offer,api:sandbox.businessAPI,module:sandbox.SiyueBusinessCommerceCheckout,selection:sandbox.SiyueBusinessCommerceSelection,calls,get html(){return html},field:p=>controls.find(control=>control.dataset.businessPath===JSON.stringify(p))};
 }
 test('real adapter activity edit preserves saved terms/classes through name-only preview execute and reopen',async t=>{
- const a=await app(t);assert.match(a.html,/editOffer/);const before=plain((await a.f.state()).state.activities.group[0]);assert.equal(a.module.editOffer('group',a.offer.id),true);assert.deepEqual(plain(a.api.academicDraft().draft.patch.selections),before.selections);assert.deepEqual(plain(a.api.academicDraft().draft.patch.courseIds),before.courseIds);a.field(['patch','name']).value='只修改活动名称';assert.equal(await a.api.preview(),true);assert.equal(await a.api.execute(),true);const after=(await a.f.state()).state.activities.group[0];assert.equal(after.name,'只修改活动名称');assert.deepEqual(after.selections,before.selections);assert.equal(after.published,false);a.module.editOffer('group',after.id);assert.deepEqual(plain(a.api.academicDraft().draft.patch.selections),before.selections);assert.equal(a.api.academicDraft().draft.patch.name,'只修改活动名称');
+ const a=await app(t);assert.match(a.html,/editOffer/);const before=plain((await a.f.state()).state.activities.group[0]);assert.equal(a.module.editOffer('group',a.offer.id),true);assert.deepEqual(plain(a.api.academicDraft().draft.patch.selections),before.selections);assert.deepEqual(plain(a.api.academicDraft().draft.patch.courseIds),before.courseIds);a.field(['patch','name']).value='只修改活动名称';assert.equal(a.selection.groupNext(),true);assert.equal(await a.api.preview(),true,JSON.stringify({draft:a.api.academicDraft().draft,errors:a.html.match(/business-error[\s\S]*?<\/p>/g)}));assert.equal(await a.api.execute(),true);const after=(await a.f.state()).state.activities.group[0];assert.equal(after.name,'只修改活动名称');assert.deepEqual(after.selections,before.selections);assert.equal(after.published,false);a.module.editOffer('group',after.id);assert.deepEqual(plain(a.api.academicDraft().draft.patch.selections),before.selections);assert.equal(a.api.academicDraft().draft.patch.name,'只修改活动名称');
 });
 test('real adapter cart hooks preview exact amounts, accept pending enrollment and route whole receipt without fake preview success',async t=>{
  const a=await app(t);assert.equal(a.module.openCreate('group',a.offer.id),true);assert.equal(a.module.buyer(0,'studentId',a.students[0].id),true);assert.equal(a.module.buyer(1,'studentId',a.students[1].id),true);assert.equal(a.module.chooseClass(a.klass.id),true);assert.equal(await a.api.preview(),true);assert.match(a.html,/报名申请预览/);assert.match(a.html,/¥180\.00/);assert.match(a.html,/商城学生0/);assert.match(a.html,/尚未确认提交或入账/);assert.equal((await a.f.state()).state.commerceCheckouts.length,0);assert.equal(await a.api.execute(),true);const row=a.api.snapshot().commerceCheckouts[0];assert.equal(row.status,'awaiting_verification');assert.equal(a.module.openAccept(row.id),true);assert.equal(await a.api.preview(),true);assert.match(a.html,/商城学生0/);assert.match(a.html,/待核对收款/);assert.equal(await a.api.execute(),true);assert.equal((await a.f.state()).state.enrollments.length,2);assert.equal((await a.f.state()).state.receipts.length,0);
@@ -41,4 +41,32 @@ test('real adapter selects one coupon per student line, previews exact stacked p
  const a=await app(t);await a.f.execute('promotion.update',{type:'group',promotionId:a.offer.id,patch:{stackCoupon:true}});await a.f.execute('promotion.publish',{type:'group',promotionId:a.offer.id});
  const coupon=(await a.f.execute('promotion.create',{type:'coupon',name:'真实页面叠加券',start:'2020-01-01',end:'2099-12-31',discountMinor:1000,total:5,maxPerUser:1,courseIds:[a.course.id]})).result.record;await a.f.execute('promotion.publish',{type:'coupon',promotionId:coupon.id});await a.api.reload();
  a.module.openCreate('group',a.offer.id);a.module.buyer(0,'studentId',a.students[0].id);a.module.buyer(1,'studentId',a.students[1].id);a.module.chooseClass(a.klass.id);assert.match(a.html,/学生1课程优惠券/);assert.equal(a.module.coupon(0,coupon.id),true);assert.equal(await a.api.preview(),true);assert.match(a.html,/¥170\.00/);assert.equal(await a.api.execute(),true);const row=a.api.snapshot().commerceCheckouts[0];assert.equal(row.quote.lines[0].couponId,coupon.id);assert.equal(row.quote.lines[0].amountCents,8000);assert.equal(row.quote.lines[1].amountCents,9000);assert.equal(row.quote.amountCents,17000);
+});
+
+test('group two-step editor keeps both steps through preview, invalidates preview on back, and persists exact class scope',async t=>{
+ const a=await app(t);
+ a.selection.newGroup();
+ const fill=(path,v,type)=>{a.field(path).value=v;a.api.input(path,v,type);};
+ fill(['name'],'截图布局验收拼团','string');
+ fill(['start'],'2026-10-30','string');fill(['end'],'2026-11-30','string');
+ fill(['discountMinor'],'10.01','money');
+ a.selection.selectCourse(a.course.id,true);
+ assert.equal(a.selection.groupNext(),true);
+ assert.match(a.html,/活动总额度/);
+ fill(['description'],'第二步说明','string');fill(['maxPerUser'],'2','integer');
+ assert.equal(await a.selection.groupNext(),true);
+ assert.match(a.html,/确认活动内容/);
+ assert.equal(a.selection.groupPrevious(),true);
+ assert.doesNotMatch(a.html,/确认活动内容/);
+ assert.equal(await a.api.execute(),false);
+ fill(['name'],'修改后截图布局拼团','string');
+ assert.equal(a.selection.groupNext(),true);
+ assert.match(a.html,/第二步说明/);
+ assert.equal(await a.selection.groupNext(),true);assert.equal(await a.api.execute(),true);
+ const saved=(await a.f.state()).state.activities.group.find(r=>r.name==='修改后截图布局拼团');
+ assert(saved);assert.equal(saved.description,'第二步说明');assert.equal(saved.discountMinor,1001);
+ assert.equal(saved.maxPerUser,2);assert.equal(saved.groupSize,2);assert.equal(saved.validHours,24);
+ assert.deepEqual(saved.selections,[{courseId:a.course.id,classIds:[a.klass.id]}]);assert.equal(saved.published,false);
+ a.selection.groupAction('promotion.update',saved.id);
+ assert.match(a.html,/修改后截图布局拼团/);assert.equal(a.api.academicDraft().draft.expectedVersion,saved.version);
 });

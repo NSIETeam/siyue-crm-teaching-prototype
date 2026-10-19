@@ -6,7 +6,7 @@ const {runInNewContext}=require('node:vm');
 const source=readFileSync(require('node:path').join(__dirname,'../business-commerce-selection.js'),'utf8');
 function harness(id='product.publish',draft={}){
  const ctx={operation:{id},draft,data:{courses:[{id:'C1',name:'数学<一年级>',grade:'一年级',subject:'数学',version:4,storefront:{classIds:['K1','K2']}},{id:'C2',name:'英语',version:2,storefront:{classIds:['K4']}},{id:'C3',name:'停用课程',active:false},{id:'C4',name:'无班级课程'}],classes:[{id:'K1',name:'周六班',courseId:'C1',campusId:'N1'},{id:'K2',name:'周日班',courseId:'C1'},{id:'K3',name:'停用班',courseId:'C1',active:false},{id:'K4',name:'英语班',courseId:'C2'},{id:'K5',name:'未上架班',courseId:'C1'}],campuses:[{id:'N1',name:'北校区'}],shelved:['C1','C2'],hiddenShelved:[]},disabled:false};
- const calls=[];const root={businessAPI:{academicDraft:()=>structuredClone(ctx),academicSet(path,value){assert.deepEqual(Array.from(path),[]);ctx.draft=JSON.parse(JSON.stringify(value));calls.push(structuredClone(value));return true},open(...args){calls.push(JSON.parse(JSON.stringify(args)));return true}}};
+ const calls=[];const root={businessAPI:{redraw(){},preview(){calls.push("preview");return true},academicDraft:()=>structuredClone(ctx),academicSet(path,value){assert.deepEqual(Array.from(path),[]);ctx.draft=JSON.parse(JSON.stringify(value));calls.push(structuredClone(value));return true},open(...args){calls.push(JSON.parse(JSON.stringify(args)));return true}}};
  runInNewContext(source,{window:root,Set,Map,JSON,Array,String,Number});
  return {ctx,calls,api:root.SiyueBusinessCommerceSelection};
 }
@@ -56,4 +56,23 @@ test('shelf editing reads exact persisted exclusions and passes version to serve
 });
 test('hidden products cannot be selected for a promotion',()=>{
  const h=harness('promotion.create',{type:'group'});h.ctx.data.hiddenShelved=['C1'];assert.equal(h.api.selectCourse('C1',true),false);assert.doesNotMatch(field(h,'courseIds'),/数学&lt;/);
+});
+
+test('group filters combine name, ID and status and never render unsanitized names',()=>{
+ const h=harness();const ctx={...h.ctx,page:'mallGroup',user:{permissions:[]},operations:[],data:{...h.ctx.data,activities:{group:[
+  {id:'G1',name:'数学<script>',start:'2020-01-01',end:'2099-12-31',published:true,courseIds:['C1']},
+  {id:'G2',name:'数学草稿',start:'2020-01-01',end:'2099-12-31',published:false,courseIds:['C1']}
+ ]}}};
+ let html=h.api.renderPage(ctx);assert.match(html,/数学&lt;script&gt;/);assert.doesNotMatch(html,/<script>/);
+ assert.match(html,/<td>—<\/td>/);assert.doesNotMatch(html,/新增活动/);
+ h.api.groupFilter('name','数学');h.api.groupFilter('status','草稿');h.api.groupFilter('id','G2');
+ html=h.api.renderPage(ctx);assert.match(html,/数学草稿/);assert.doesNotMatch(html,/数学&lt;script&gt;/);
+ h.api.groupFilter('id','missing');assert.match(h.api.renderPage(ctx),/暂无符合筛选条件/);
+});
+test('group wizard rejects incomplete class selection and cannot mutate a locked submission',()=>{
+ const h=harness('promotion.create',{type:'group',name:'活动',start:'2026-10-30',end:'2026-11-30',discountMinor:1000,groupSize:2,validHours:24});
+ assert.equal(h.api.groupNext(),false);h.api.selectCourse('C1',true);h.api.toggleClass('C1','K1',false);h.api.toggleClass('C1','K2',false);assert.equal(h.api.groupNext(),false);
+ h.api.toggleClass('C1','K1',true);assert.equal(h.api.groupNext(),true);
+ h.ctx.disabled=true;assert.equal(h.api.groupPrevious(),false);assert.equal(h.api.groupNext(),false);assert.equal(h.api.groupChoose(true),false);
+ assert.match(h.api.renderGroupForm(h.ctx,{uncertain:true,hasPreview:true}),/重试确认提交结果/);
 });

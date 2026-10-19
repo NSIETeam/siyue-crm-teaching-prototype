@@ -116,20 +116,20 @@ const baseSeed={name:'微信昵称',phone:'13900001241',source:'合成测试',su
 test('registration uses a single name field, free course text and defaults to the current follower without a follow-choice control',async()=>{
  const ui=await app({permissions:['lead.create','lead.follow'],extraOperations:[registration]});
  ui.api.open('lead.create',{...baseSeed,guardian:'不应提交',followChoice:'public'});
- assert.match(ui.html,/aria-label="名称"/);assert.match(ui.html,/昵称或微信名/);assert.match(ui.html,/aria-label="负责人"/);assert.equal(ui.field('ownerId').value,'sales-1');
+ assert.match(ui.html,/aria-label="名称"/);assert.match(ui.html,/昵称或微信名/);assert.match(ui.html,/aria-label="负责人归属"/);assert.equal(ui.field('ownerId').value,'sales-1');
  assert.doesNotMatch(ui.html,/家长姓名|登记后的跟进方式|data-business-path="\[&quot;followChoice|data-business-path="\[&quot;guardian/);
  assert.equal(ui.field('subject').type,'text');assert.equal(ui.field('subject').value,baseSeed.subject);
  assert.equal(await ui.api.preview(),true);const input=ui.calls.find(c=>c.endpoint.endsWith('/preview'))!.options.body.input;
  assert.equal(input.ownerId,'sales-1');assert.equal(input.name,'微信昵称');assert.equal(input.followChoice,undefined);assert.equal(input.guardian,undefined);
 });
 test('clearing owner sends an explicit public-pool selection, including for non-following registrars',async()=>{
- for(const permissions of [['lead.create','lead.follow'],['lead.create']]){const ui=await app({permissions,extraOperations:[registration]});ui.api.open('lead.create',baseSeed);ui.field('ownerId').value='';assert.equal(await ui.api.preview(),true);const input=ui.calls.find(c=>c.endpoint.endsWith('/preview'))!.options.body.input;assert.equal(input.ownerId,'');assert.equal(input.followChoice,undefined);}
+ for(const permissions of [['lead.create','lead.follow'],['lead.create']]){const ui=await app({permissions,extraOperations:[registration]});ui.api.open('lead.create',baseSeed);assert.equal(ui.api.setLeadOwnerMode('public'),true);assert.equal(await ui.api.preview(),true);const input=ui.calls.find(c=>c.endpoint.endsWith('/preview'))!.options.body.input;assert.equal(input.ownerId,'');assert.equal(input.followChoice,undefined);}
 });
 test('operations registration can select only vetted eligible owners for the chosen campus',async()=>{
  const ui=await app({permissions:['lead.create'],roleIds:['operations'],scope:{type:'campus',campusIds:['a']},extraOperations:[registration],state:(payload:any)=>{payload.state.campuses=[{id:'a',name:'甲校区'},{id:'b',name:'乙校区'}];payload.state.directory=[{id:'invalid',name:'无资格员工'}];payload.state.leadOwnerOptions=[{id:'sales-eligible',name:'合成合格销售',campusIds:['a']},{id:'sales-other-campus',name:'异校区员工',campusIds:['b']}];return payload;}});
- ui.api.open('lead.create',{...baseSeed,campusId:'a'});assert.match(ui.html,/合成合格销售/);assert.doesNotMatch(ui.html,/无资格员工|异校区员工/);
+ ui.api.open('lead.create',{...baseSeed,campusId:'a'});assert.doesNotMatch(ui.html,/搜索销售姓名或工号/);assert.equal(ui.api.setLeadOwnerMode('assigned'),true);assert.match(ui.html,/合成合格销售/);assert.equal(await ui.api.preview(),false);assert.match(ui.html,/请选择招生负责人/);assert.doesNotMatch(ui.html,/无资格员工|异校区员工/);
  ui.field('ownerId').value='sales-eligible';assert.equal(await ui.api.preview(),true);assert.equal(ui.calls.find(c=>c.endpoint.endsWith('/preview'))!.options.body.input.ownerId,'sales-eligible');
- ui.api.change(['campusId'],'b','string');assert.equal(ui.field('ownerId').value,'');
+ ui.api.change(['campusId'],'b','string');assert.equal(ui.field('ownerId').value,'');assert.equal(await ui.api.preview(),false);assert.equal(ui.api.setLeadOwnerMode('public'),true);assert.equal(await ui.api.preview(),true);
 });
 test('registration confirmation does not ask the registrar to judge intent or sales decisions',async()=>{
  const ui=await app({permissions:['lead.create','lead.follow'],extraOperations:[registration],preview:()=>({record:{id:'preview',name:'合成',ownerId:'sales-1',stage:'跟进中',intent:'未标记',decisionStatus:'retained',decisionByName:'合成登记人',decisionHistory:[{kind:'created',decision:'public'}]}})});ui.api.open('lead.create',baseSeed);await ui.api.preview();assert.match(ui.html,/跟进中/);assert.doesNotMatch(ui.html,/销售决策|意向度|decisionHistory|decisionByName/);
