@@ -1,10 +1,14 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const base=path.resolve(__dirname,'..'),shared=require('../promotion-content.js');
+const {setup}=require('../backend/test/helpers/commerce-fixture.cjs'),{request}=require('../backend/test/helpers/remaining-http.cjs');
+class FixedDate extends Date{constructor(...args){super(...(args.length?args:['2026-10-30T00:00:00Z']))}static now(){return Date.parse('2026-10-30T00:00:00Z')}}
 const offer=(extra={})=>({id:'PROMO_target',type:'group',name:'正确活动',description:'兼容介绍',start:'2026-10-30',end:'2026-11-30',groupSize:2,discountMinor:1000,courseIds:['course'],selections:[{courseId:'course',classIds:['klass']}],...extra});
-function harness(catalog,{url='https://www.siyuejn.com/crm/commerce-store.html?promotionId=PROMO_target&type=group',status=200}={}){
+const klass=(extra={})=>({id:'klass',name:'可选班级',campusId:'A',campusName:'甲校区',remainingSeats:3,schedule:[{date:'2026-10-31',time:'09:00–10:00',status:'未开始'}],...extra});
+const product=(extra={})=>({id:'course',name:'可用课程',grade:'小四',subject:'数学',priceCents:10001,availableForApplication:true,classes:[klass()],...extra});
+function harness(catalog,{url='https://www.siyuejn.com/crm/commerce-store.html?promotionId=PROMO_target&type=group',status=200,responses,fetch:fetcher}={}){
  const host={innerHTML:''},requests=[],qrUrls=[];
- const root={URL,URLSearchParams,console,location:{href:url},crypto:{randomUUID:()=> 'public-request-12345'},document:{readyState:'loading',title:'',body:{dataset:{apiBase:'/crm-api'}},getElementById:id=>id==='commerce-store'?host:null,addEventListener(){}},fetch:async (url,options)=>{requests.push({url,options});return {ok:status===200,status,json:async()=>structuredClone(catalog)}}};
+ const root={Date:FixedDate,URL,URLSearchParams,console,location:{href:url},crypto:{randomUUID:()=> 'public-request-12345'},document:{readyState:'loading',title:'',body:{dataset:{apiBase:'/crm-api'}},getElementById:id=>id==='commerce-store'?host:null,addEventListener(){}},fetch:async (url,options)=>{requests.push({url,options});if(fetcher)return fetcher(url,options);const next=responses?responses[requests.length-1]:{status,body:catalog};assert(next,'unexpected fetch '+url);if(next.error)throw next.error;return {ok:next.status===200,status:next.status,json:async()=>structuredClone(next.body)}}};
  root.window=root;const context=vm.createContext(root);
  vm.runInContext(fs.readFileSync(path.join(base,'promotion-content.js'),'utf8'),context);
  vm.runInContext(fs.readFileSync(path.join(base,'qrcode-vendor.js'),'utf8'),context);
@@ -24,12 +28,44 @@ test('public activity link binds form, poster and actual local QR to the same ac
  assert.equal(h.api.mode('standard'),false);assert.equal(h.api.offer('other'),false);
  assert.equal(h.api.snapshot().promotionId,row.id);
 });
-test('invalid, unpublished or removed activity never falls back to other activities',async()=>{
- const other={decor:{title:'不应展示的商城'},products:[],promotions:[offer({id:'other',name:'其他活动'})]};
- for(const options of [{},{status:404},{url:'https://www.siyuejn.com/crm/commerce-store.html?promotionId=PROMO_target&type=group&type=joint'}]){
-  const h=harness(options.status?{message:'此活动未开放'}:other,options);await h.api.load();
-  assert.equal(h.api.snapshot().catalog,null);assert(h.host.innerHTML.includes('活动暂不可用'));assert(!h.host.innerHTML.includes('其他活动'));assert(!h.host.innerHTML.includes('不应展示的商城'));
+test('404 loads a separate current directory with correct fresh links and never reuses the expired promotion or its application',async()=>{
+ const current=offer({id:'PROMO_current',name:'当前拼团',thresholdMinor:10001}),joint=offer({id:'PROMO_joint',type:'joint',name:'当前联报',thresholdMinor:20000,courseIds:['course','second'],selections:[{courseId:'course',classIds:['klass']},{courseId:'second',classIds:['second-class']}]}),directory={products:[product(),product({id:'second',name:'第二课程',classes:[klass({id:'second-class'})]})],promotions:[offer({name:'不能沿用的原优惠'}),current,joint]};
+ const h=harness(null,{responses:[{status:404,body:{message:'此活动未开放'}},{status:200,body:directory}]});await h.api.load();
+ assert.deepEqual(h.requests.map(r=>r.url),['/crm-api/v1/public/store?promotionId=PROMO_target&type=group','/crm-api/v1/public/store']);
+ assert.equal(h.api.snapshot().catalog,null);assert.equal(h.api.snapshot().discoveryReason,'unavailable');assert.equal(h.api.snapshot().promotionId,'');assert.match(h.host.innerHTML,/原活动已失效或暂不可报名/);assert.match(h.host.innerHTML,/当前拼团|当前联报|可用课程/);assert.match(h.host.innerHTML,/每人课程原价满 ¥100\.01 可享此优惠/);assert.match(h.host.innerHTML,/课程原价合计满 ¥200\.00 可享此优惠/);
+ const links=[...h.host.innerHTML.matchAll(/href="([^"]+)"/g)].map(m=>new URL(m[1].replace(/&amp;/g,'&')));
+ assert(links.some(u=>u.searchParams.get('promotionId')==='PROMO_current'&&u.searchParams.get('type')==='group'));assert(links.some(u=>u.searchParams.get('promotionId')==='PROMO_joint'&&u.searchParams.get('type')==='joint'));
+ assert(links.some(u=>!u.search&&u.hash==='#cs-course-course'));assert(!links.some(u=>u.searchParams.get('promotionId')==='PROMO_target'));
+ assert.doesNotMatch(h.host.innerHTML,/不能沿用的原优惠|cs-application|提交报名申请|cs-poster/);assert.equal(h.api.choose('klass'),false);assert.equal(await h.api.quote(),false);assert.equal(await h.api.submit(),false);assert.equal(h.requests.length,2);
+ const normal=harness(directory,{url:links.find(u=>u.hash==='#cs-course-course').href});await normal.api.load();assert.match(normal.host.innerHTML,/id="cs-course-course"/);assert.match(normal.host.innerHTML,/id="courses"/);assert.equal(normal.api.choose('klass'),undefined);
+});
+test('directory excludes stale, full or past classes and activities without enough same-class or every-course capacity',async()=>{
+ const products=[product({name:'有余位未来课',classes:[klass(),klass({id:'another-class'})]}),product({id:'stale',name:'旧教学版本',availableForApplication:false}),product({id:'full',name:'满班',classes:[klass({remainingSeats:0})]}),product({id:'past',name:'仅过去课',classes:[klass({schedule:[{date:'2026-10-29',time:'09:00–10:00'}]})]}),product({id:'cancelled',name:'仅取消未来课',classes:[klass({schedule:[{date:'2026-10-31',time:'09:00–10:00',status:'已取消'}]})]}),product({id:'completed',name:'仅完成未来课',classes:[klass({schedule:[{date:'2026-10-31',time:'09:00–10:00',status:'completed'}]})]}),product({id:'starting',name:'课次此刻已开始',classes:[klass({schedule:[{date:'2026-10-30',time:'08:00–09:00'}]})]}),product({id:'one-seat',name:'单席课程',classes:[klass({id:'one-seat-class',remainingSeats:1})]})];
+ const promotions=[offer({id:'valid',name:'有余位整团',campusId:'A'}),offer({id:'wrong-campus',name:'活动校区不符',campusId:'B'}),offer({id:'too-large',name:'不可跨班拼余位',groupSize:4,selections:[{courseId:'course',classIds:['klass','another-class']}]}),offer({id:'wrong-class',name:'不在活动班级范围',selections:[{courseId:'course',classIds:['unselected']}]}),offer({id:'one-seat-group',name:'整团席位不足',courseIds:['one-seat'],selections:[{courseId:'one-seat',classIds:['one-seat-class']}]}),offer({id:'missing-joint',type:'joint',name:'联报缺课程',courseIds:['course','stale'],selections:[{courseId:'course',classIds:['klass']},{courseId:'stale',classIds:['klass']}]})];
+ const h=harness(null,{responses:[{status:404,body:{}},{status:200,body:{products,promotions}}]});await h.api.load();assert.match(h.host.innerHTML,/有余位未来课|有余位整团|单席课程/);assert.doesNotMatch(h.host.innerHTML,/旧教学版本|满班|仅过去课|仅取消未来课|仅完成未来课|课次此刻已开始|活动校区不符|不可跨班拼余位|不在活动班级范围|整团席位不足|联报缺课程/);assert.doesNotMatch(h.host.innerHTML,/可享此优惠/);
+});
+test('empty directory has independent empty states and directory failures can retry without requesting the expired activity again',async()=>{
+ for(const failed of [{status:503,body:{message:'不要把服务错误当作空目录'}},{error:new TypeError('directory network unavailable')},{status:200,body:{products:[]}}]){
+  const h=harness(null,{responses:[{status:404,body:{}},failed,{status:200,body:{products:[],promotions:[]}}]});await h.api.load();assert.match(h.host.innerHTML,/当前课程与优惠暂时加载失败|重试加载课程与优惠/);assert.doesNotMatch(h.host.innerHTML,/暂无可报名课程/);assert.equal(h.api.snapshot().directory,null);
+  assert.equal(await h.api.loadRecommendations(),true);assert.deepEqual(h.requests.map(r=>r.url),['/crm-api/v1/public/store?promotionId=PROMO_target&type=group','/crm-api/v1/public/store','/crm-api/v1/public/store']);assert.match(h.host.innerHTML,/暂无可报名课程/);assert.match(h.host.innerHTML,/暂无可查看的优惠活动/);assert.doesNotMatch(h.host.innerHTML,/cs-application/);
  }
+});
+test('target 500, network failure and incomplete success keep the original error and retry without a silent directory fallback',async()=>{
+ for(const failed of [{status:500,body:{message:'暂时服务失败'}},{error:new TypeError('network unavailable')},{status:200,body:{products:[],promotions:[offer({id:'another'})]}}]){
+  const h=harness(null,{responses:[failed,{status:200,body:{products:[],promotions:[offer()]}}]});await h.api.load();assert.equal(h.requests.length,1);assert.equal(h.api.snapshot().directory,null);assert.equal(h.api.snapshot().discoveryReason,'');assert.match(h.host.innerHTML,/活动暂时加载失败/);assert.doesNotMatch(h.host.innerHTML,/原活动已失效|当前课程与优惠|cs-application/);
+  await h.api.load();assert.equal(h.requests.length,2);assert(h.requests.every(r=>r.url.includes('?promotionId=PROMO_target&type=group')));assert.equal(h.api.snapshot().promotionId,'PROMO_target');assert.match(h.host.innerHTML,/本活动报名/);
+ }
+});
+test('malformed activity links safely show the generic directory, and recommendation text and links cannot inject HTML or reuse raw parameters',async()=>{
+ const marker='<img src=x onerror=alert(1)>',evilId='course" onclick="alert(1)',row=offer({id:'safe-current',promotionTitle:marker,promotionIntroduction:'<script>alert(2)</script>'}),catalog={products:[product({id:evilId,name:marker,classes:[klass({name:marker,campusName:marker})]}),product()],promotions:[row]};
+ const h=harness(catalog,{url:'https://www.siyuejn.com/crm/commerce-store.html?promotionId='+encodeURIComponent('<script>rawTarget</script>')+'&type=group&type=joint'});await h.api.load();assert.deepEqual(h.requests.map(r=>r.url),['/crm-api/v1/public/store']);assert.equal(h.api.snapshot().discoveryReason,'invalid');assert.match(h.host.innerHTML,/活动链接无效/);assert.doesNotMatch(h.host.innerHTML,/rawTarget|<img src=x|<script>|" onclick="alert/);assert.match(h.host.innerHTML,/&lt;img src=x onerror=alert\(1\)&gt;/);assert.match(h.host.innerHTML,/&lt;script&gt;alert\(2\)&lt;\/script&gt;/);
+ for(const m of h.host.innerHTML.matchAll(/href="([^"]+)"/g)){const u=new URL(m[1].replace(/&amp;/g,'&'));assert.equal(u.origin,'https://www.siyuejn.com');assert.equal(u.pathname,'/crm/commerce-store.html');assert(!u.href.includes('rawTarget'));assert(!u.searchParams.has('promotionId')||u.searchParams.get('promotionId')==='safe-current')}
+});
+test('real isolated HTTP unavailable activity loads only current catalog cards while valid targets stay bound to their own form',async t=>{
+ const {f,course,promotion}=await setup(t),expired=await promotion('group',{name:'已停止旧活动'}),current=await promotion('group',{name:'可查看新活动'});await f.execute('promotion.unpublish',{type:'group',promotionId:expired.id});
+ const fetcher=async(url,init)=>{const response=await request(f.server,url.replace(/^\/crm-api/,''),init.method);return {ok:response.status===200,status:response.status,json:async()=>response.body}};
+ const h=harness(null,{url:'https://www.siyuejn.com/crm/commerce-store.html?promotionId='+expired.id+'&type=group',fetch:fetcher});await h.api.load();assert.equal(h.requests.length,2);assert.match(h.host.innerHTML,/可查看新活动/);assert(!h.host.innerHTML.includes('已停止旧活动'));assert(h.host.innerHTML.includes(course.name));assert.equal(h.api.snapshot().catalog,null);assert.doesNotMatch(h.host.innerHTML,/cs-application/);
+ const valid=harness(null,{url:'https://www.siyuejn.com/crm/commerce-store.html?promotionId='+current.id+'&type=group',fetch:fetcher});await valid.api.load();assert.equal(valid.requests.length,1);assert.equal(valid.api.snapshot().promotionId,current.id);assert.equal(valid.api.snapshot().directory,null);assert.match(valid.host.innerHTML,/本活动报名/);assert.equal(valid.api.mode('standard'),false);assert.equal(valid.api.offer(expired.id),false);
 });
 test('background boundary is shared by browser and server and legacy fallback is retained',()=>{
  assert.equal(shared.count('😀'.repeat(20)),20);assert.equal(shared.submitted({promotionTitle:'😀'.repeat(20)}).promotionTitle,'😀'.repeat(20));assert.throws(()=>shared.submitted({promotionTitle:'😀'.repeat(21)}));
