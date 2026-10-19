@@ -69,10 +69,12 @@ class DeploymentTests(unittest.TestCase):
         self.deploy = module.Deployment(self.root, self.data, self.backups, self.services)
         self.baseline = self.deploy.source()
 
-    def package(self, backend=True, frontend=True):
+    def package(self, backend=True, frontend=True, promotion=False):
         revision = 'a' * 40
         manifest = {'schemaVersion': 1, 'revision': revision, 'baseline': self.baseline, 'packages': {}}
         for kind, contents in [('frontend', {'public/index.html': b'new frontend' if frontend else b'old frontend', 'public/academic-dictionary.js': b'shared'}), ('backend', {'backend/src/server.cjs': b'new backend' if backend else b'old backend', 'academic-dictionary.js': b'shared'})]:
+            if promotion:
+                contents[('public/' if kind == 'frontend' else '') + 'promotion-content.js'] = b'shared promotion'
             rid = ('auth-' if kind == 'backend' else '') + 'github-' + revision[:12] + '-17-1'
             info = {'revision': revision, 'releaseId': rid, 'files': [{'path': name[7:] if kind == 'frontend' else name, 'bytes': len(value), 'sha256': module.sha(value)} for name, value in contents.items()]}
             contents['release-manifest.json' if kind == 'frontend' else 'auth-release-manifest.json'] = json.dumps(info).encode()
@@ -94,6 +96,24 @@ class DeploymentTests(unittest.TestCase):
             stream.write(b'tampered')
         with self.assertRaisesRegex(ValueError, 'checksum'):
             module.load_bundle(self.stage)
+
+    def test_shared_promotion_module_is_packaged_and_requires_backend_activation(self):
+        bundle = self.package(backend=False, frontend=False, promotion=True)
+        self.assertTrue(self.deploy.plan(bundle)['backendChanged'])
+        self.assertEqual(module.expected_source(bundle)['promotion-content.js'], module.sha(b'shared promotion'))
+        self.assertTrue(module.valid_member('promotion-content.js', 'backend'))
+        self.assertFalse(module.valid_member('unlisted-shared.js', 'backend'))
+
+    def test_shared_promotion_module_drift_and_links_are_rejected(self):
+        (self.front / 'public/promotion-content.js').write_text('reviewed')
+        shared = self.back / 'promotion-content.js'
+        shared.write_text('tampered')
+        with self.assertRaisesRegex(ValueError, 'Shared module drift'):
+            self.deploy.source()
+        shared.unlink()
+        shared.symlink_to(self.front / 'public/promotion-content.js')
+        with self.assertRaisesRegex(ValueError, 'Linked production source'):
+            self.deploy.source()
 
     def test_archive_traversal_links_and_private_paths_are_rejected(self):
         for path in ('../auth.json', '/etc/passwd', 'public/../auth.json', 'public/.env', 'public/auth.json', 'backend/src/../../auth.json', 'backend/src/auth.json', 'public/x\\y.js'):

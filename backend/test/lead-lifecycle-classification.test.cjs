@@ -21,10 +21,10 @@ function twoOrders(f){const c=customer(f),math=f.run('opportunity.create',{custo
 test('unified lifecycle classifies historical rows and only assigned unconverted leads as active',()=>{
  const f=fixture();const first=f.run('lead.create',{name:'合成未分配',phone:'13900001001',source:'test'}).record;
  const second=f.run('lead.create',{name:'合成已分配',phone:'13900001002',source:'test',ownerId:f.sales.id}).record;
- assert.equal(first.intent,'未标记');assert.equal(second.stage,'跟进中');
- let all=f.query(f.admin,{resource:'leads',scope:'team'});assert.equal(all.items.find(r=>r.id===first.id).stage,'待分配');assert.equal(all.items.find(r=>r.id===second.id).stage,'跟进中');
+ assert.equal(first.intent,'未标记');assert.equal(second.stage,'新线索');
+ let all=f.query(f.admin,{resource:'leads',scope:'team'});assert.equal(all.items.find(r=>r.id===first.id).stage,'新线索');assert.equal(all.items.find(r=>r.id===second.id).stage,'新线索');
  const active=f.query(f.admin,{resource:'leads',scope:'team',queue:'active'});assert.deepEqual(active.items.map(r=>r.id),[second.id]);assert.equal(active.total,1);
- const projected=f.view(f.admin);assert.equal(projected.leads.find(r=>r.id===first.id).stage,'待分配');assert.equal(projected.leads.find(r=>r.id===second.id).stage,'跟进中');
+ const projected=f.view(f.admin);assert.equal(projected.leads.find(r=>r.id===first.id).stage,'新线索');assert.equal(projected.leads.find(r=>r.id===second.id).stage,'新线索');
 });
 test('intent is explicitly recorded, audited and filterable without changing lifecycle',()=>{
  const f=fixture();const lead=f.run('lead.create',{name:'合成意向',phone:'13900001003',source:'test',ownerId:f.sales.id}).record;

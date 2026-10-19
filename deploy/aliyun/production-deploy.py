@@ -5,7 +5,7 @@ from pathlib import Path, PurePosixPath
 
 ORIGIN = 'https://www.siyuejn.com'
 FRONT_FILE = re.compile(r'(?:[A-Za-z0-9_-]+\.(?:html|js|css|csv)|assets/[A-Za-z0-9_.-]+\.(?:png|svg|jpg|webp|woff2))\Z')
-BACK_FILE = re.compile(r'(?:academic-dictionary\.js|backend/src/[A-Za-z0-9_-]+\.cjs|backend/contracts/(?:build\.cjs|(?:operations|openapi)\.json)|cli/(?:[A-Za-z0-9_-]+\.cjs|operations\.json)|deploy/aliyun/[A-Za-z0-9_.-]+\.(?:sh|service|timer|conf))\Z')
+BACK_FILE = re.compile(r'(?:(?:academic-dictionary|promotion-content)\.js|backend/src/[A-Za-z0-9_-]+\.cjs|backend/contracts/(?:build\.cjs|(?:operations|openapi)\.json)|cli/(?:[A-Za-z0-9_-]+\.cjs|operations\.json)|deploy/aliyun/[A-Za-z0-9_.-]+\.(?:sh|service|timer|conf))\Z')
 
 
 def sha(data):
@@ -170,9 +170,12 @@ class Deployment:
                 if file.is_file():
                     name = str(file.relative_to(base)) if not prefix else str(file.relative_to(back))
                     files[name] = sha(file.read_bytes())
-        shared = back / 'academic-dictionary.js'
-        if shared.exists() and files.get(shared.name) != sha(shared.read_bytes()):
-            raise ValueError('Shared dictionary drift')
+        for name in ('academic-dictionary.js', 'promotion-content.js'):
+            shared = back / name
+            if shared.is_symlink():
+                raise ValueError('Linked production source')
+            if shared.exists() and files.get(shared.name) != sha(shared.read_bytes()):
+                raise ValueError('Shared module drift: ' + name)
         return {'frontendRelease': front.name, 'backendRelease': back.name, 'files': dict(sorted(files.items()))}
 
     def plan(self, manifest):
@@ -190,8 +193,8 @@ class Deployment:
         if observed != baseline:
             raise ValueError('Production drift: sync current server source into GitHub before deploying')
         desired = expected_source(manifest)
-        current_backend = {name: value for name, value in observed['files'].items() if name.startswith(('backend/', 'cli/', 'deploy/')) or name == 'academic-dictionary.js'}
-        next_backend = {name: value for name, value in desired.items() if name.startswith(('backend/', 'cli/', 'deploy/')) or name == 'academic-dictionary.js'}
+        current_backend = {name: value for name, value in observed['files'].items() if name.startswith(('backend/', 'cli/', 'deploy/')) or name in ('academic-dictionary.js', 'promotion-content.js')}
+        next_backend = {name: value for name, value in desired.items() if name.startswith(('backend/', 'cli/', 'deploy/')) or name in ('academic-dictionary.js', 'promotion-content.js')}
         return {'schemaVersion': 1, 'revision': manifest['revision'], 'baselineFingerprint': fingerprint(observed), 'bundleFingerprint': fingerprint(manifest), 'deployedCommit': deployed, 'current': observed, 'backendChanged': current_backend != next_backend, 'sourceChanged': observed['files'] != desired}
 
     def switch(self, name, target):

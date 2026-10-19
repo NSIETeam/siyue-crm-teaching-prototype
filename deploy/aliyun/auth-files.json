@@ -21,6 +21,7 @@
   "backend/src/business-form-rewards.cjs",
   "backend/src/business-lead-owners.cjs",
   "backend/src/business-lead-reports.cjs",
+  "backend/src/business-lead-stage.cjs",
   "backend/src/business-materials.cjs",
   "backend/src/business-reception.cjs",
   "backend/src/business-scrm-core.cjs",
@@ -50,5 +51,6 @@
   "deploy/aliyun/auth-api.nginx.conf",
   "deploy/aliyun/siyue-crm-auth.service",
   "deploy/aliyun/siyue-crm-backup.service",
-  "deploy/aliyun/siyue-crm-backup.timer"
+  "deploy/aliyun/siyue-crm-backup.timer",
+  "promotion-content.js"
 ]

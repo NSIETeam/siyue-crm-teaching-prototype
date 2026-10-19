@@ -1,4 +1,5 @@
 'use strict';
+const leadProgress=require('./business-lead-stage.cjs');
 
 // A single server query powers the workbench, browser lists, CLI and MCP.
 const {assert,canAccess,canReadFormSubmission}=require('./business-common.cjs');
@@ -20,12 +21,21 @@ const canTeam=actor=>['all','campus'].includes(actor.scope?.type)&&has(actor,'le
 const day=at=>new Date(at).toLocaleDateString('en-CA',{timeZone:'Asia/Shanghai'});
 const stamp=value=>Date.parse(value);
 const coldPool=row=>row.stage==='已流失'||row.stage==='冷宫'||row.status==='cold'&&row.stage!=='已归档';
-const archived=row=>['cold','archived'].includes(row.status)||['已归档','已流失'].includes(row.stage);
+const archived=row=>leadProgress.closed(row);
 function converted(state,row){return (state.orders||[]).some(order=>order.conversionSnapshot?.leadId===(row.id||row.leadId)&&Number.isFinite(stamp(order.conversionSnapshot.convertedAt)));}
-function leadStage(state,row){return converted(state,row)?'已成单':coldPool(row)?'冷宫':archived(row)?'已归档':row.ownerId?(row.stage==='待报名'?'待报名':'跟进中'):'待分配';}
+function leadStage(state,row){return converted(state,row)?'已成单':coldPool(row)?'冷宫':archived(row)?'已归档':leadProgress.stage(row);}
+function stageMatches(state,row,value){
+ const current=leadStage(state,row);
+ if(current===value)return true;
+ if(value==='已报名')return current==='已成单';
+ if(value==='已流失')return current==='冷宫';
+ if(value==='新分配')return !!row.ownerId&&current==='新线索';
+ if(value==='待分配')return !row.ownerId&&current==='新线索';
+ return false;
+}
 function timing(state,row,now){
  const assigned=stamp(row.assignedAt||row.createdAt),follow=stamp(row.assignmentFollowAt||row.firstFollowAt),last=stamp(row.lastFollowAt),next=stamp(row.nextFollowAt),p=state.leadPolicy||{};
- const active=!!row.ownerId&&!archived(row)&&!converted(state,row),waiting=active&&Number.isFinite(assigned)&&(!Number.isFinite(follow)||follow<assigned),firstDeadline=assigned+Number(p.firstFollowHours??4)*3600000;
+ const active=!!row.ownerId&&!archived(row)&&row.stage!=='已报名'&&!converted(state,row),waiting=active&&Number.isFinite(assigned)&&(!Number.isFinite(follow)||follow<assigned),firstDeadline=assigned+Number(p.firstFollowHours??4)*3600000;
  const reclaimAt=Math.max(assigned+Number(p.reserveDays??14)*86400000,(Number.isFinite(last)&&last>=assigned?last:assigned)+Number(p.reclaimDays??21)*86400000);
  return {active,firstContact:waiting,firstOverdue:waiting&&firstDeadline<=now,today:active&&Number.isFinite(next)&&day(next)===day(now),overdue:active&&(waiting&&firstDeadline<=now||Number.isFinite(next)&&next<now),future:active&&Number.isFinite(next)&&day(next)>day(now),recycle:active&&reclaimAt<=now,recycleSoon:active&&reclaimAt>now&&reclaimAt<=now+3*86400000,reclaimAt:Number.isFinite(reclaimAt)?new Date(reclaimAt).toISOString():null};
 }
@@ -75,7 +85,7 @@ function queueMatches(state,row,resource,queue,now){
   if(queue==='converted')return converted(state,row);
   if(queue==='cold')return coldPool(row)&&!converted(state,row);
   if(queue==='archived')return archived(row)&&!coldPool(row)&&!converted(state,row);
-  if(queue==='active')return !!row.ownerId&&!archived(row)&&row.stage!=='已流失'&&!converted(state,row);
+  if(queue==='active')return !!row.ownerId&&!archived(row)&&row.stage!=='已报名'&&!converted(state,row);
  }
  if(queue==='unmatched')return resource==='orders'&&!row.opportunityId;
  if(queue==='unassigned')return !row.ownerId&&!row.assigneeId;
@@ -98,7 +108,7 @@ function rowsFor(state,actor,f,projection,now){
   if(f.resource==='campaigns'&&f.queue==='created'&&row.createdBy!==actor.id)return false;
   if(f.resource==='campaigns'&&f.queue==='participated'&&!row.participantIds?.includes(actor.id)&&!row.promoterIds?.includes(actor.id))return false;
   if(!queueMatches(state,row,f.resource,f.queue,now)||f.followupQueue&&!queueMatches(state,row,f.resource,f.followupQueue,now))return false;
-  for(const key of ['id','customerId','campaignId','ownerId','campusId','stage','intent','status','taskType'])if(f[key]&&(key==='stage'&&f.resource==='leads'?leadStage(state,row):key==='intent'?(row.intent||'未标记'):row[key])!==(key==='stage'&&f.resource==='leads'?({'新线索':'待分配','新分配':'跟进中','已报名':'已成单'}[f[key]]||f[key]):f[key])){if(key==='campaignId'&&f.resource==='leads'&&(state.touchpoints||[]).some(touch=>touch.leadId===row.id&&touch.campaignId===f.campaignId&&canAccess(state,actor,touch,'touchpoints',{access:'read'})))continue;if(key==='customerId'&&['orders','enrollments','refunds','receipts'].includes(f.resource)){const customer=(state.customers||[]).find(c=>c.id===f.customerId&&canAccess(state,actor,c,'customers',{access:'read'}));if(customer&&[customer.studentId,...customer.studentIds||[]].filter(Boolean).includes(row.studentId))continue;}return false;}
+  for(const key of ['id','customerId','campaignId','ownerId','campusId','stage','intent','status','taskType'])if(f[key]&&(key==='stage'&&f.resource==='leads'?!stageMatches(state,row,f[key]):(key==='intent'?(row.intent||'未标记'):row[key])!==f[key])){if(key==='campaignId'&&f.resource==='leads'&&(state.touchpoints||[]).some(touch=>touch.leadId===row.id&&touch.campaignId===f.campaignId&&canAccess(state,actor,touch,'touchpoints',{access:'read'})))continue;if(key==='customerId'&&['orders','enrollments','refunds','receipts'].includes(f.resource)){const customer=(state.customers||[]).find(c=>c.id===f.customerId&&canAccess(state,actor,c,'customers',{access:'read'}));if(customer&&[customer.studentId,...customer.studentIds||[]].filter(Boolean).includes(row.studentId))continue;}return false;}
   const at=row[f.dateField];if(f.from||f.to){if(!Number.isFinite(stamp(at))||f.from&&stamp(at)<stamp(f.from)||f.to&&stamp(at)>stamp(f.to))return false;}
   if(needle){const student=(state.students||[]).find(s=>s.id===row.studentId),customer=(state.customers||[]).find(c=>c.id===row.customerId&&canAccess(state,actor,c,'customers',{access:'read'}));const values=[row.id,row.leadId,row.name,row.title,row.phone,row.contactPhone,row.studentNo,row.studentCode,row.source,row.subject,row.term,row.guardian,student?.studentNo,student?.studentCode,customer?.name,customer?.studentName,...(row.contacts||[]).flatMap(c=>[c.name,c.phone,c.value]),...(row.guardians||[]).flatMap(c=>[c.name,c.phone])];if(!values.filter(Boolean).join(' ').normalize('NFKC').toLowerCase().includes(needle))return false;}
   return true;

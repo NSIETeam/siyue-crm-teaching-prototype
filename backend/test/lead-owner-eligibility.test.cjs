@@ -32,3 +32,5 @@ test('assignment validation still rejects a teacher who has registration but no 
  const f=fixture(),ctx=context(f.state,f.admin,f.directory,{now:'2030-10-10T02:00:00Z',id:prefix=>prefix+'-test'});
  assert.throws(()=>operations.find(op=>op.id==='lead.create').run(f.state,{name:'模拟学员',phone:'13900001111',source:'模拟验收',campusId:'campus-a',ownerId:'teacher'},ctx),/跟进权限/);
 });
+
+test('archived people are absent from owner choices and rejected by authoritative assignment validation',()=>{const f=fixture();f.sales.archivedAt='2030-10-01T00:00:00Z';assert(!projected({state:f.state,revision:1},f.admin,f.directory).state.leadOwnerOptions.some(row=>row.id==='sales'));const ctx=context(f.state,f.admin,f.directory,{now:'2030-10-10T02:00:00Z',id:prefix=>prefix+'-test'});assert.throws(()=>operations.find(op=>op.id==='lead.create').run(f.state,{name:'新线索',phone:'13900001111',source:'模拟验收',campusId:'campus-a',ownerId:'sales'},ctx),/有效并具有跟进权限/)});
