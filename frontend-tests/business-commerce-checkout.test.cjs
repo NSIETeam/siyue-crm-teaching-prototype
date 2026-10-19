@@ -10,7 +10,7 @@ async function app(t,page='mallGroup'){
  const view={scrollTop:0,scrollLeft:0,setAttribute(){},removeAttribute(){},get innerHTML(){return html},set innerHTML(value){html=value;controls=[];for(const match of value.matchAll(/<(input|select|textarea)\b([^>]*)(?:>([\s\S]*?)<\/\1>|>)/g)){const[,tag,attrs,body='']=match;if(!attrs.includes('data-business-path='))continue;const selected=tag==='select'?[...body.matchAll(/<option\b([^>]*)>([\s\S]*?)<\/option>/g)].find(option=>/\bselected\b/.test(option[1])):null;controls.push({type:attr(attrs,'type')||tag,disabled:/\bdisabled\b/.test(attrs),checked:/\bchecked\b/.test(attrs),dataset:{businessPath:attr(attrs,'data-business-path'),businessType:attr(attrs,'data-business-type')},value:tag==='textarea'?decode(body):tag==='select'?(selected?attr(selected[1],'value'):''):attr(attrs,'value')})}},querySelector(){return null}};
  const crumb={textContent:'',setAttribute(){}};
  const document={addEventListener(){},scrollingElement:view,querySelector:selector=>selector==='#view'?view:selector==='#crumb'?crumb:null,querySelectorAll:selector=>selector==='#business-form [data-business-path]'?controls:[],getElementById:()=>null};
- const calls=[],sandbox={SIYUE_AUTH_API:'/',URL,URLSearchParams,location:{href:origin+'/crm/'},document,state:{page},a:{},leadState:{},mallState:{},mfState:{},workflowState:{},sysRules:{},permissionCanVisit:()=>true,render(){},nav(){},accountOpen(){},workspaceBack(){},workflowSearchEntries(){},toast(){},crypto:{randomUUID:()=>crypto.randomUUID()},employeeAuth:{subscribe:fn=>{subscriber=fn},current:()=>f.admin.user,has:p=>f.admin.user.permissions.includes(p),async request(endpoint,init={}){calls.push({endpoint,input:init.body});const response=await f.call(f.admin,'/'+endpoint,init.method||'GET',init.body,init.headers);if(response.status!==200)throw Object.assign(Error(response.body.message),response.body,{status:response.status});return response.body}}};
+ const calls=[],sandbox={SIYUE_AUTH_API:'/',URL,URLSearchParams,Date,location:{href:origin+'/crm/'},document,state:{page},a:{},leadState:{},mallState:{},mfState:{},workflowState:{},sysRules:{},permissionCanVisit:()=>true,render(){},nav(){},accountOpen(){},workspaceBack(){},workflowSearchEntries(){},toast(){},crypto:{randomUUID:()=>crypto.randomUUID()},employeeAuth:{subscribe:fn=>{subscriber=fn},current:()=>f.admin.user,has:p=>f.admin.user.permissions.includes(p),async request(endpoint,init={}){calls.push({endpoint,input:init.body});const response=await f.call(f.admin,'/'+endpoint,init.method||'GET',init.body,init.headers);if(response.status!==200)throw Object.assign(Error(response.body.message),response.body,{status:response.status});return response.body}}};
  sandbox.window=sandbox;vm.createContext(sandbox);for(const name of ['page-layouts.js','business-presenter.js','academic-planner.js','business-academic.js','promotion-content.js','business-commerce-selection.js','business-commerce-checkout.js','business-api.js'])vm.runInContext(source(name),sandbox,{filename:name});subscriber(f.admin.user);await until(()=>sandbox.businessAPI.catalog().length&&sandbox.businessAPI.snapshot()?.commerceCheckouts);
  return {...fixture,offer,api:sandbox.businessAPI,module:sandbox.SiyueBusinessCommerceCheckout,selection:sandbox.SiyueBusinessCommerceSelection,calls,get html(){return html},field:p=>controls.find(control=>control.dataset.businessPath===JSON.stringify(p))};
 }
@@ -90,4 +90,21 @@ test('real two-step adapter persists promotion text and clears all four dedicate
  assert.equal(a.module.editOffer('group',a.offer.id),true);assert.equal(a.selection.groupNext(),true);
  for(const key of Object.keys(fields))assert.equal(a.field(['patch',key]).value,'');
  assert.equal(saved.published,false);
+});
+
+for(const type of ['group','joint'])test('real adapter switching ordinary enrollment to '+type+' excludes unavailable offers and rejects stale activity selection',async t=>{
+ const a=await app(t),active=type==='group'?a.offer:await a.promotion(type);
+ const future=await a.promotion(type,{name:'尚未开始的合成活动',start:'2026-11-01'}),expired=await a.promotion(type,{name:'已过期的合成活动',end:'2026-10-30'}),stale=await a.promotion(type,{name:'版本已变化的合成活动'}),stopped=await a.promotion(type,{name:'已停止的合成活动'});
+ await a.f.execute('promotion.unpublish',{type,promotionId:stopped.id});a.f.seed(state=>{state.activities[type].find(row=>row.id===stale.id).publishedVersion=0});
+ a.f.clock='2026-10-31T00:00:00Z';await a.f.refresh(a.f.admin);await a.api.reload();
+ assert.equal(a.module.openCreate('standard'),true);assert.equal(a.module.mode(type),true);assert(a.html.includes('<option value="'+active.id+'"'));
+ for(const row of [future,expired,stale,stopped]){assert(!a.html.includes('<option value="'+row.id+'"'));const before=plain(a.api.academicDraft().draft);assert.equal(a.module.offer(row.id),false);assert.deepEqual(plain(a.api.academicDraft().draft),before);}
+ assert.equal(a.module.chooseClass(a.klass.id),false);assert.equal(a.module.offer(active.id),true);assert.equal(a.module.chooseClass(a.klass.id),true);
+ a.f.clock='2026-12-01T00:00:00Z';const before=plain(a.api.academicDraft().draft);assert.equal(a.module.offer(active.id),false);assert.equal(a.module.chooseClass(a.klass.id),false);assert.deepEqual(plain(a.api.academicDraft().draft),before);
+ a.api.redraw();assert.match(a.html,/原选活动已失效或暂不可报名，请重新选择/);assert.doesNotMatch(a.html,/name="bcc-course-/);
+ assert.equal(a.module.mode('standard'),true);assert.equal(a.module.chooseClass(a.klass.id),true);assert.equal(a.api.academicDraft().draft.promotionId,undefined);
+});
+test('real adapter joint publish button rendered before midnight cannot open an expired publication afterward',async t=>{
+ const a=await app(t,'mallJoint'),row=await a.promotion('joint',{end:'2026-10-30'});await a.f.execute('promotion.unpublish',{type:'joint',promotionId:row.id});await a.api.reload();
+ assert.match(a.html,/SiyueBusinessCommerceCheckout.publishOffer/);const count=a.calls.length;a.f.clock='2026-10-30T16:00:00Z';assert.equal(a.module.publishOffer('joint',row.id),false);assert.equal(a.calls.length,count);assert.equal(a.api.academicDraft().operation,null);
 });

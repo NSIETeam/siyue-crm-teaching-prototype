@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
+import crmContract from '../backend/src/business-crm.cjs';
+import businessStore from '../backend/src/business-store.cjs';
 
 const source = (file: string) => readFileSync(new URL('../' + file, import.meta.url), 'utf8');
 const decode = (text: string) => text.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
@@ -144,4 +146,32 @@ for(const matched of [false,true])test('academic trial intake reuses registratio
  assert(ui.api.open('lead.trialIntake',{...baseSeed,ownerId:'eligible'}));assert.equal(ui.field('campusId').value,'a');assert.match(ui.html,/跟进销售/);assert.match(ui.html,/按名称和联系电话匹配/);assert.match(ui.html,/保留原负责人/);assert.match(ui.html,/新线索或公海线索须选择有效负责人/);assert.match(ui.html,/确认后进入预约课表/);
  assert.equal(await ui.api.preview(),true);assert.match(ui.html,matched?/已命中现有线索/:/未发现同名同电话线索/);assert.equal(opened.length,0);
  assert.equal(await ui.api.execute(),true);assert.deepEqual(opened,[['lead-result',true]]);
+});
+
+const profileUpdate={...clone(crmContract.operations.find((op:any)=>op.id==='lead.update')),execution:'server'};
+test('full lead edit uses registration identity fields and never resubmits hidden historical guardian data',async()=>{
+ for(const entry of ['profile','more-actions']){
+  const row=lead('A',{name:'合成昵称',guardian:'历史家长资料',campusId:'campus-1',intent:'未标记',nextFollowAt:'2020-01-01T00:00:00Z',allowedOperationIds:['lead.update']});
+  const ui=await app({rows:[row],permissions:['lead.read','lead.create','lead.follow'],extraOperations:[profileUpdate]});
+  if(entry==='profile')assert.equal(await ui.api.showLead('A','edit'),true);
+  else ui.crm.operate('lead.update','leads','A');
+  assert.match(ui.html,/aria-label="名称"/);assert.match(ui.html,/aria-label="意向课程"/);
+  assert.doesNotMatch(ui.html,/家长姓名|历史家长资料|data-business-path="\[&quot;patch&quot;,&quot;guardian/);
+  assert.equal(await ui.api.preview(),true);
+  const preview=ui.calls.find(c=>c.endpoint==='v1/operations/lead.update/preview')!.options.body.input;
+  assert.equal(preview.patch.name,row.name);assert.equal(preview.patch.subject,row.subject);assert.equal(Object.hasOwn(preview.patch,'guardian'),false);
+  assert.deepEqual(Object.keys(preview.patch).sort(),['grade','name','note','phone','subject']);businessStore.validate(profileUpdate.inputSchema,preview);
+  assert.doesNotMatch(ui.html,/家长姓名|历史家长资料/);assert.equal(Object.hasOwn(profileUpdate.inputSchema.properties.patch.properties,'guardian'),true);
+  assert.equal(await ui.api.execute(),true);
+  const submitted=ui.calls.find(c=>c.endpoint==='v1/operations/lead.update/execute')!.options.body.input;
+  assert.equal(Object.hasOwn(submitted.patch,'guardian'),false);assert.equal(row.guardian,'历史家长资料');
+ }
+});
+
+test('explicit single-field lead edit still supports intent without resubmitting other profile data',async()=>{
+ const row=lead('A',{intent:'高意向',guardian:'历史家长资料',allowedOperationIds:['lead.update']});
+ const ui=await app({rows:[row],permissions:['lead.read','lead.create','lead.follow'],extraOperations:[profileUpdate]});
+ assert.equal(await ui.api.showLead('A','edit','intent'),true);assert.equal(await ui.api.preview(),true);
+ const input=ui.calls.find(c=>c.endpoint==='v1/operations/lead.update/preview')!.options.body.input;
+ assert.deepEqual(input.patch,{intent:'高意向'});businessStore.validate(profileUpdate.inputSchema,input);
 });

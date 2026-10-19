@@ -28,7 +28,7 @@ test('group list computes authorized activity summary and all nine cells across 
  assert.deepEqual(t.rows.map(r=>r.slice(0,9)),[
   ['GROUP-A','数学A','2026-10-01 至 2026-11-30','进行中','2','6','1','3','2'],
   ['GROUP-B','数学B','2026-11-01 至 2026-12-01','未开始','1','2','1','0','3'],
-  ['GROUP-C','结束活动','2026-10-01 至 2026-10-29','已结束','3','1','0','1','0'],
+  ['GROUP-C','结束活动','2026-10-01 至 2026-10-29','已过期','3','1','0','1','0'],
   ['GROUP-D','草稿活动','2026-10-01 至 2026-11-30','草稿','0','0','0','0','0']]);
  h.api.groupFilter('name','数学');h.api.groupFilter('id','group-a');h.api.groupFilter('status','进行中');
  assert.deepEqual(table(h.render()).rows.map(r=>r.slice(0,9)),[t.rows[0].slice(0,9)]);assert.deepEqual(metrics(h.render()),metrics(html));assert.match(h.render(),/共 1 条活动/);
