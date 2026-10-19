@@ -120,3 +120,20 @@ test('background boundary is shared by browser and server and legacy fallback is
  const legacy={name:'旧标题'.repeat(20),description:'旧说明'.repeat(40),posterBackground:'javascript:alert(1)'};
  assert.deepEqual(shared.presentation(legacy),{promotionTitle:legacy.name,promotionSubtitle:'',promotionIntroduction:legacy.description,posterBackground:''});
 });
+test('illustrated parent application preserves exact class selection, all lesson dates and price invalidation before submission',async()=>{
+ const lessons=[{date:'2026-10-31',time:'09:00–10:00'},{date:'2026-11-07',time:'10:00–11:00'},{date:'2026-11-14',time:'11:00–12:00'}];
+ const h=harness(null,{url:'https://www.siyuejn.com/crm/commerce-store.html',responses:[{status:200,body:{products:[product({classes:[klass({schedule:lessons}),klass({id:'full-class',name:'已满班级',remainingSeats:0})]})],promotions:[]}},{status:200,body:{quote:{baseCents:10001,discountCents:0,amountCents:10001},quoteHash:'verified-hash'}}]});
+ await h.api.load();assert.match(h.host.innerHTML,/data-course-art="math"/);assert(h.host.innerHTML.indexOf('id="courses"')<h.host.innerHTML.indexOf('填写学生信息'));assert(h.host.innerHTML.indexOf('填写学生信息')<h.host.innerHTML.indexOf('aria-label="学生1姓名"'));
+ assert.match(h.host.innerHTML,/type="radio" name="cs-single"[^>]*onchange="SiyueCommerceStore.choose\(&quot;klass&quot;\)"/);assert.match(h.host.innerHTML,/type="radio"[^>]*disabled[^>]*onchange="SiyueCommerceStore.choose\(&quot;full-class&quot;\)"/);
+ assert.match(h.host.innerHTML,/<details class="cs-schedule"><summary>全部课次（3 讲）<\/summary>/);for(const s of lessons)assert(h.host.innerHTML.includes(s.date+' '+s.time));
+ h.api.choose('klass');h.api.buyer(0,'name','测试学生');h.api.buyer(0,'phone','13800000001');await h.api.quote();
+ assert.deepEqual(JSON.parse(h.requests[1].options.body),{type:'standard',buyers:[{name:'测试学生',phone:'13800000001'}],items:[{buyerIndex:0,classId:'klass'}]});assert.equal(h.api.snapshot().quoteHash,'verified-hash');
+ h.api.buyer(0,'name','修改后的学生');assert.equal(h.api.snapshot().quoteHash,null);assert.equal(h.api.snapshot().pendingInput,null);assert.equal(await h.api.submit(),false);assert.equal(h.requests.length,2);
+});
+test('compact activity form keeps every group member, exact activity and same locked idempotent retry after uncertain submission',async()=>{
+ const h=harness(null,{responses:[{status:200,body:{products:[product()],promotions:[offer({promotionTitle:'家长活动标题',promotionSubtitle:'活动副标题',promotionIntroduction:'课程活动完整介绍'})]}},{status:200,body:{quote:{baseCents:20002,discountCents:2000,amountCents:18002},quoteHash:'group-hash'}},{status:503,body:{message:'临时失败'}},{status:200,body:{checkout:{id:'checkout-test',status:'awaiting_verification',quote:{amountCents:18002},paidCents:0,refundedCents:0}}}]});
+ await h.api.load();assert.match(h.host.innerHTML,/class="cs-activity-heading"/);assert(h.host.innerHTML.indexOf('class="cs-activity-heading"')<h.host.innerHTML.indexOf('cs-application'));assert.match(h.host.innerHTML,/<details id="cs-poster-preview" class="cs-poster-preview"><summary>查看 \/ 保存活动海报<\/summary>/);assert.equal((h.host.innerHTML.match(/aria-label="学生[12]姓名"/g)||[]).length,2);assert(h.qrUrls.every(u=>new URL(u).searchParams.get('promotionId')==='PROMO_target'));
+ h.api.choose('klass');for(let i=0;i<2;i++){h.api.buyer(i,'name','测试团员'+i);h.api.buyer(i,'phone','1380000000'+i)}await h.api.quote();await h.api.submit();
+ const pending=h.api.snapshot();assert(pending.uncertain);assert.equal(h.api.buyer(0,'name','不应修改'),false);assert.equal(h.api.choose('klass'),false);assert.match(h.host.innerHTML,/aria-label="学生1姓名" disabled/);assert.match(h.host.innerHTML,/type="radio"[^>]*disabled/);await h.api.submit();
+ assert.equal(h.requests[2].options.body,h.requests[3].options.body);assert.equal(h.requests[2].options.headers['Idempotency-Key'],h.requests[3].options.headers['Idempotency-Key']);assert.equal(JSON.parse(h.requests[3].options.body).promotionId,'PROMO_target');assert.equal(JSON.parse(h.requests[3].options.body).items.length,2);assert.equal(h.api.snapshot().checkout.id,'checkout-test');assert.match(h.host.innerHTML,/勿把申请收到视为已支付/);
+});
