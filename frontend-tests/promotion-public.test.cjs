@@ -7,15 +7,38 @@ const offer=(extra={})=>({id:'PROMO_target',type:'group',name:'正确活动',des
 const klass=(extra={})=>({id:'klass',name:'可选班级',campusId:'A',campusName:'甲校区',remainingSeats:3,schedule:[{date:'2026-10-31',time:'09:00–10:00',status:'未开始'}],...extra});
 const product=(extra={})=>({id:'course',name:'可用课程',grade:'小四',subject:'数学',priceCents:10001,availableForApplication:true,classes:[klass()],...extra});
 function harness(catalog,{url='https://www.siyuejn.com/crm/commerce-store.html?promotionId=PROMO_target&type=group',status=200,responses,fetch:fetcher}={}){
- const host={innerHTML:''},requests=[],qrUrls=[];
- const root={Date:FixedDate,URL,URLSearchParams,console,location:{href:url},crypto:{randomUUID:()=> 'public-request-12345'},document:{readyState:'loading',title:'',body:{dataset:{apiBase:'/crm-api'}},getElementById:id=>id==='commerce-store'?host:null,addEventListener(){}},fetch:async (url,options)=>{requests.push({url,options});if(fetcher)return fetcher(url,options);const next=responses?responses[requests.length-1]:{status,body:catalog};assert(next,'unexpected fetch '+url);if(next.error)throw next.error;return {ok:next.status===200,status:next.status,json:async()=>structuredClone(next.body)}}};
+ const host={innerHTML:''},requests=[],qrUrls=[],scrolls=[],lookups=[];
+ const root={Date:FixedDate,URL,URLSearchParams,console,location:{href:url},crypto:{randomUUID:()=> 'public-request-12345'},document:{readyState:'loading',title:'',body:{dataset:{apiBase:'/crm-api'}},getElementById(id){lookups.push(id);if(id==='commerce-store')return host;if((id==='courses'||id.startsWith('cs-course-'))&&host.innerHTML.includes('id="'+id+'"'))return {scrollIntoView(options){scrolls.push({id,options:JSON.parse(JSON.stringify(options)),html:host.innerHTML})}};return null},addEventListener(){}},fetch:async (url,options)=>{requests.push({url,options});if(fetcher)return fetcher(url,options);const next=responses?responses[requests.length-1]:{status,body:catalog};assert(next,'unexpected fetch '+url);if(next.error)throw next.error;return {ok:next.status===200,status:next.status,json:async()=>structuredClone(next.body)}}};
  root.window=root;const context=vm.createContext(root);
  vm.runInContext(fs.readFileSync(path.join(base,'promotion-content.js'),'utf8'),context);
  vm.runInContext(fs.readFileSync(path.join(base,'qrcode-vendor.js'),'utf8'),context);
  const factory=root.qrcode;root.qrcode=(...args)=>{const qr=factory(...args),add=qr.addData;qr.addData=value=>{qrUrls.push(value);return add.call(qr,value)};return qr};
  vm.runInContext(fs.readFileSync(path.join(base,'commerce-store.js'),'utf8'),context);
- return {root,host,requests,qrUrls,api:root.SiyueCommerceStore};
+ return {root,host,requests,qrUrls,scrolls,lookups,api:root.SiyueCommerceStore};
 }
+test('ordinary course anchor scrolls to the actual rendered target only after async catalog load, never during edits or reloads',async()=>{
+ let release;const response=new Promise(resolve=>{release=resolve}),catalog={products:[product()],promotions:[]};
+ const h=harness(null,{url:'https://www.siyuejn.com/crm/commerce-store.html#cs-course-%63ourse',fetch:()=>response}),loading=h.api.load();
+ assert.equal(h.scrolls.length,0);assert.doesNotMatch(h.host.innerHTML,/id="cs-course-course"/);assert.equal(h.api.snapshot().catalog,null);
+ release({ok:true,status:200,json:async()=>structuredClone(catalog)});await loading;
+ assert.equal(h.scrolls.length,1);assert.equal(h.scrolls[0].id,'cs-course-course');assert.deepEqual(h.scrolls[0].options,{block:'start'});assert.match(h.scrolls[0].html,/<fieldset id="cs-course-course">/);assert.match(h.scrolls[0].html,/id="courses"/);assert.doesNotMatch(h.scrolls[0].html,/正在加载课程/);
+ assert.equal(h.api.snapshot().items.length,0);assert.equal(h.api.snapshot().quote,null);assert.equal(h.requests.length,1);
+ h.api.buyer(0,'name','输入不抢滚动');h.api.choose('klass');await h.api.load();assert.equal(h.scrolls.length,1);assert.equal(h.requests.length,2);assert(h.requests.every(r=>r.url==='/crm-api/v1/public/store'));
+});
+test('only existing ordinary course anchors may scroll; invalid hashes and activity pages never scroll',async()=>{
+ const catalog={products:[product()],promotions:[]},ordinary='https://www.siyuejn.com/crm/commerce-store.html';
+ const all=harness(catalog,{url:ordinary+'#courses'});await all.api.load();assert.deepEqual(all.scrolls.map(s=>s.id),['courses']);
+ for(const hash of ['','#cs-course-missing','#cs-submit','#%E0%A4%A','#cs-course-course%22%5Donclick%3Dalert(1)']){
+  const h=harness(catalog,{url:ordinary+hash});await h.api.load();assert.deepEqual(h.scrolls,[]);assert(!h.lookups.some(id=>id!=='commerce-store'));
+ }
+ for(const options of [{url:ordinary+'?promotionId=PROMO_target&type=group#cs-course-course'},{url:ordinary+'?promotionId=PROMO_target&type=group#courses',responses:[{status:404,body:{}},{status:200,body:catalog}]},{url:ordinary+'?promotionId=invalid&type=group&type=joint#courses'}]){
+  const h=harness({...catalog,promotions:[offer()]},options);await h.api.load();assert.deepEqual(h.scrolls,[]);
+ }
+});
+test('ordinary anchor remains pending after a failed initial catalog request and positions after a successful retry',async()=>{
+ const h=harness(null,{url:'https://www.siyuejn.com/crm/commerce-store.html#cs-course-course',responses:[{status:503,body:{message:'临时失败'}},{status:200,body:{products:[product()],promotions:[]}}]});
+ await h.api.load();assert.equal(h.scrolls.length,0);await h.api.load();assert.deepEqual(h.scrolls.map(s=>s.id),['cs-course-course']);assert.equal(h.api.snapshot().items.length,0);assert.equal(h.api.snapshot().quote,null);
+});
 test('public activity link binds form, poster and actual local QR to the same activity and escapes content',async()=>{
  const row=offer({promotionTitle:'<img src=x>',promotionSubtitle:'小班活动',promotionIntroduction:'<script>alert(1)</script>',posterBackground:'https://images.example.org/bg.jpg?caption=%22onerror'}),
  h=harness({decor:{title:'通用商城'},promotions:[row,offer({id:'other',name:'不能回落的其他活动'})],products:[]});

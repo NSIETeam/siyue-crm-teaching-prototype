@@ -10,6 +10,7 @@
   return {promotionId,type};
  }
  const target=requestedPromotion();
+ let initialCoursePositioned=false;
  const state={catalog:null,discoveryReason:'',directory:null,directoryError:'',type:'standard',promotionId:'',buyers:[{name:'',phone:''}],items:[],quote:null,quoteHash:null,key:null,pendingInput:null,checkout:null,error:'',busy:false,uncertain:false,version:0};
  const container=()=>root.document?.getElementById('commerce-store');
  function apiBase(){const raw=root.SIYUE_AUTH_API||root.document?.body?.dataset?.apiBase||'/crm-api';if(!/^\/[A-Za-z0-9/_-]*$/.test(raw))throw Error('商城接口地址无效');return raw.replace(/\/$/,'')}
@@ -20,6 +21,12 @@
  function changed(redraw=true){state.quote=null;state.quoteHash=null;state.key=null;state.pendingInput=null;state.error='';state.version++;if(redraw)render();else{const submit=root.document?.getElementById('cs-submit');if(submit)submit.disabled=true;const quote=root.document?.getElementById('cs-quote');if(quote)quote.innerHTML=''}}
  function promotionUrl(offer){const url=new URL('commerce-store.html',root.location?.href||'https://www.siyuejn.com/crm/commerce-store.html');url.searchParams.set('promotionId',offer.id);url.searchParams.set('type',offer.type);return url.href}
  function courseUrl(id){const url=new URL('commerce-store.html',root.location?.href||'https://www.siyuejn.com/crm/commerce-store.html');url.hash=id?'cs-course-'+id:'courses';return url.href}
+ function positionInitialCourse(){
+  if(initialCoursePositioned||target||!state.catalog||state.discoveryReason||state.type!=='standard')return;
+  initialCoursePositioned=true;let id;try{id=decodeURIComponent(new URL(root.location?.href||'https://www.siyuejn.com/crm/commerce-store.html').hash.slice(1))}catch{return}
+  if(id!=='courses'&&!(state.catalog.products||[]).some(product=>id==='cs-course-'+product.id))return;
+  root.document?.getElementById(id)?.scrollIntoView?.({block:'start'});
+ }
  function promotionThreshold(offer){return offer.thresholdMinor>0?'<p class="cs-help">'+(offer.type==='group'?'每人课程原价满 ':'课程原价合计满 ')+money(offer.thresholdMinor)+' 可享此优惠</p>':''}
  function futureClass(klass){return (klass.schedule||[]).some(s=>!['已取消','已结束','已完成','cancelled','ended','completed'].includes(s.status)&&Date.parse(String(s.date)+'T'+String(s.time||'').slice(0,5)+':00+08:00')>Date.now())}
  function directoryProducts(){return (state.directory?.products||[]).filter(p=>p.availableForApplication===true).map(p=>({...p,classes:(p.classes||[]).filter(c=>Number.isSafeInteger(c.remainingSeats)&&c.remainingSeats>0&&futureClass(c))})).filter(p=>p.classes.length)}
@@ -70,7 +77,7 @@
   if(state.busy){render();return false}if(target?.error)state.discoveryReason='invalid';if(state.discoveryReason)return loadRecommendations();state.busy=true;state.error='';render();
   try{const query=target?'?'+new URLSearchParams(target):'',catalog=await request(query);if(target){const selected=catalog.promotions?.filter(p=>p.id===target.promotionId&&p.type===target.type)||[];if(selected.length!==1)throw Error('活动信息暂时无法核对，请重新加载。');catalog.promotions=selected;state.type=target.type;state.promotionId=target.promotionId;state.buyers=Array.from({length:state.type==='group'?selected[0].groupSize:1},(_,i)=>state.buyers[i]||{name:'',phone:''});}state.catalog=catalog;}
   catch(error){if(target&&error.status===404){state.catalog=null;state.discoveryReason='unavailable';state.promotionId='';state.items=[];state.quote=null;state.quoteHash=null;state.pendingInput=null;state.key=null;render();await readDirectory()}else{state.error=error.message;if(target)state.catalog=null}}
-  finally{state.busy=false;render()}
+  finally{state.busy=false;render();positionInitialCourse()}
  }
  function mode(type){if(target||!mutable()||!['standard','group','joint'].includes(type))return false;state.type=type;state.promotionId='';state.items=[];state.buyers=[state.buyers[0]||{name:'',phone:''}];changed()}
  function selectOffer(id){if(target||!mutable())return false;const offer=state.catalog.promotions.find(p=>p.id===id&&p.type===state.type);if(id&&!offer)return false;state.promotionId=id;state.items=[];state.buyers=Array.from({length:state.type==='group'?offer?.groupSize||1:1},(_,i)=>state.buyers[i]||{name:'',phone:''});changed()}
