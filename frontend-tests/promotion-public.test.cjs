@@ -39,6 +39,29 @@ test('ordinary anchor remains pending after a failed initial catalog request and
  const h=harness(null,{url:'https://www.siyuejn.com/crm/commerce-store.html#cs-course-course',responses:[{status:503,body:{message:'临时失败'}},{status:200,body:{products:[product()],promotions:[]}}]});
  await h.api.load();assert.equal(h.scrolls.length,0);await h.api.load();assert.deepEqual(h.scrolls.map(s=>s.id),['cs-course-course']);assert.equal(h.api.snapshot().items.length,0);assert.equal(h.api.snapshot().quote,null);
 });
+test('course cards use safe configured images above permanent subject artwork and the actual image-error handler restores artwork without changing enrollment',async()=>{
+ const image='https://images.example.org/course.jpg?caption=%22quoted%22&size=small',catalog={products:[product({image})],promotions:[]},h=harness(null,{responses:[{status:404,body:{}},{status:200,body:catalog}]});await h.api.load();
+ const tag=h.host.innerHTML.match(/<img class="cs-course-image"[^>]*>/)?.[0];assert(tag);assert.match(tag,/referrerpolicy="no-referrer"/);assert.match(tag,/loading="lazy"/);assert.match(tag,/decoding="async"/);assert.match(tag,/src="https:\/\/images.example.org\/course.jpg\?caption=%22quoted%22&amp;size=small"/);assert.match(h.host.innerHTML,/data-course-art="math"/);assert.match(h.host.innerHTML,/<svg viewBox="0 0 320 240"/);
+ const handler=tag.match(/onerror="([^"]+)"/)[1],media={hasImage:true,hasArtwork:true},imageElement={tagName:'IMG',classList:{contains:name=>name==='cs-course-image'},remove(){media.hasImage=false}};
+ vm.runInNewContext('(function(){'+handler+'}).call(imageElement)',{SiyueCommerceStore:h.api,imageElement});assert.deepEqual(media,{hasImage:false,hasArtwork:true});
+ assert.equal(h.api.snapshot().items.length,0);assert.equal(h.api.snapshot().quote,null);assert.equal(h.requests.length,2);assert.equal(await h.api.submit(),false);
+ let unrelatedRemoved=false;h.api.courseImageFailed({tagName:'DIV',classList:{contains:()=>true},remove(){unrelatedRemoved=true}});assert.equal(unrelatedRemoved,false);
+});
+test('missing course images produce complete subject covers while preserving real course names, prices and compact class counts',async()=>{
+ const subjects=['数学','英语','语文','科学'],products=subjects.map((subject,i)=>product({id:'cover-'+i,subject,name:subject+'完整课程名称',classes:[klass({id:'class-A',name:'很长的班级说明无需堆在目录',campusId:'A'}),klass({id:'class-B',name:'另一段班级说明无需堆在目录',campusId:'B'})]})),h=harness(null,{responses:[{status:404,body:{}},{status:200,body:{products,promotions:[]}}]});await h.api.load();
+ for(const kind of ['math','english','book','general'])assert(h.host.innerHTML.includes('data-course-art="'+kind+'"'));
+ assert.equal((h.host.innerHTML.match(/<svg viewBox="0 0 320 240"/g)||[]).length,4);assert.doesNotMatch(h.host.innerHTML,/<img class="cs-course-image"|很长的班级说明|另一段班级说明/);assert.equal((h.host.innerHTML.match(/2 个班级 · 2 个校区/g)||[]).length,4);
+ for(const p of products){assert(h.host.innerHTML.includes(p.name));assert(h.host.innerHTML.includes('#cs-course-'+p.id))}assert.equal((h.host.innerHTML.match(/¥100\.01/g)||[]).length,4);assert.match(h.host.innerHTML,/原活动优惠不能继续使用/);
+});
+test('course image URLs accept safe HTTPS or same-origin relative paths and reject unsafe values without injecting attributes',async()=>{
+ const unsafe=['javascript:alert(1)','data:image/svg+xml,<svg onload=alert(1)>','data:image/png;base64,AA','blob:https://www.siyuejn.com/id','file:///tmp/a.jpg','http://images.example.org/a.jpg','//images.example.org/a.jpg','https://user:secret@images.example.org/a.jpg','https://localhost/a.jpg','https://192.168.1.1/a.jpg','https://[::1]/a.jpg','https://images.example.org/a.jpg" onload="alert(1)','/\\images.example.org/a.jpg'];
+ const safe=['https://images.example.org/a.jpg?caption="safe"&n=1','assets/course.jpg','/assets/course.jpg','../assets/course.jpg'];
+ for(const image of [...unsafe,...safe]){
+  const h=harness(null,{responses:[{status:404,body:{}},{status:200,body:{products:[product({image,name:'课程<img src=x onerror=alert(1)>'})],promotions:[]}}]});await h.api.load();
+  const tags=[...h.host.innerHTML.matchAll(/<img class="cs-course-image"[^>]*>/g)];assert.equal(tags.length,safe.includes(image)?1:0,image);assert.match(h.host.innerHTML,/data-course-art="math"/);assert.doesNotMatch(h.host.innerHTML,/ onload=|<img src=x/);assert.match(h.host.innerHTML,/课程&lt;img src=x onerror=alert\(1\)&gt;/);
+  if(tags.length){const src=tags[0][0].match(/src="([^"]+)"/)[1].replace(/&amp;/g,'&');const parsed=new URL(src);assert.equal(parsed.protocol,'https:');assert.equal(parsed.username,'');assert.equal(parsed.password,'');assert.equal(parsed.origin,image.startsWith('https:')?'https://images.example.org':'https://www.siyuejn.com');assert(!src.includes('"'))}
+ }
+});
 test('public activity link binds form, poster and actual local QR to the same activity and escapes content',async()=>{
  const row=offer({promotionTitle:'<img src=x>',promotionSubtitle:'小班活动',promotionIntroduction:'<script>alert(1)</script>',posterBackground:'https://images.example.org/bg.jpg?caption=%22onerror'}),
  h=harness({decor:{title:'通用商城'},promotions:[row,offer({id:'other',name:'不能回落的其他活动'})],products:[]});
