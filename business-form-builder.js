@@ -33,7 +33,7 @@
 
   function defaultFields(kind) {
     const rows = [
-      { id: 'student-name', type: 'name', title: '学生姓名', required: true },
+      { id: 'student-name', type: 'name', title: kind === 'lead' ? '名称' : '学生姓名', required: true },
       { id: 'contact-phone', type: 'phone', title: '联系电话', required: true }
     ];
     if (kind === 'survey') rows.push({ id: 'parent-needs', type: 'textarea', title: '希望了解或改善哪些方面？', required: true });

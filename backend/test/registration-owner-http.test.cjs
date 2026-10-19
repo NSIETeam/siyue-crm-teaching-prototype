@@ -4,7 +4,7 @@ const {fixture}=require('./helpers/remaining-http.cjs');
 test('real role authentication, registration preview/commit/replay and campus routing enforce the same ownership policy',async t=>{
  const f=await fixture(t),sales=await f.employee({roleIds:['sales'],scope:{type:'own'}}),operator=await f.employee({roleIds:['operations'],scope:{type:'campus',campusIds:['A']}});
  assert(!sales.user.permissions.includes('lead.assign'));assert(!operator.user.permissions.includes('lead.assign'));
- const own=await f.execute('lead.create',{name:'HTTP昵称',phone:'13900001301',source:'隔离验证',campusId:'A',ownerId:sales.user.id},sales);assert.equal(own.result.record.ownerId,sales.user.id);assert.equal(own.result.record.stage,'跟进中');
+ const own=await f.execute('lead.create',{name:'HTTP昵称',phone:'13900001301',source:'隔离验证',campusId:'A',ownerId:sales.user.id},sales);assert.equal(own.result.record.ownerId,sales.user.id);assert.equal(own.result.record.stage,'新线索');assert.equal(own.result.record.nextFollowAt,null);
  const replay=await f.commit('lead.create',own.plan,sales);assert.equal(replay.status,200);
  const unassigned=await f.execute('lead.create',{name:'HTTP公海',phone:'13900001302',source:'隔离验证',campusId:'A',ownerId:''},sales);assert.equal(unassigned.result.record.decisionStatus,'public');assert.equal(unassigned.result.record.ownerId,null);
  const state=await f.state(operator);assert(state.state.leadOwnerOptions.some(row=>row.id===sales.user.id));

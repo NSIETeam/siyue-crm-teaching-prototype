@@ -1,6 +1,7 @@
 'use strict';
 // All mutations run inside BusinessStore's preview clone / SQLite transaction.
 const crypto=require('node:crypto');
+const promotionContent=require('../../promotion-content.js');
 const {assert,requirePermission,context}=require('./business-common.cjs');
 const {validate}=require('./business-store.cjs');
 const academic=require('./business-academic.cjs');
@@ -33,12 +34,18 @@ function publishable(state,type,record){
  cents(record.discountMinor);assert(record.discountMinor>0,'优惠金额必须大于0');if(type==='group'){assert(Number.isInteger(record.groupSize)&&record.groupSize>=2&&record.groupSize<=50,'整团人数须为2至50人');assert(Number.isInteger(record.validHours)&&record.validHours>=1,'成团有效期无效');assert(record.total===undefined||record.total>=Math.max(record.groupSize,record.used||0),'拼团总额度（人次）不能少于一整团或已占用人数','PROMOTION_EXHAUSTED',409)}
  return true;
 }
-function livePromotion(state,type,id,now){const record=state.activities?.[type]?.find(p=>p.id===id);assert(record&&record.published===true&&record.publishedVersion===record.version,'活动未发布或版本已变化','PROMOTION_UNAVAILABLE',409);assert(today(now)>=record.start&&today(now)<=record.end,'活动不在有效期','PROMOTION_EXPIRED',409);publishable(state,type,record);return record}
+function livePromotion(state,type,id,now){const record=state.activities?.[type]?.find(p=>p.id===id);assert(record&&record.published===true&&record.publishedVersion===record.version&&!['已结束','ended','cancelled','closed'].includes(record.status),'活动未发布或版本已变化，已结束的活动不可报名','PROMOTION_UNAVAILABLE',409);assert(today(now)>=record.start&&today(now)<=record.end,'活动不在有效期','PROMOTION_EXPIRED',409);publishable(state,type,record);return record}
 function remainingSeats(state,klass,now){let limit=klass.capacity-(state.enrollments||[]).filter(e=>e.classId===klass.id&&['active','pending'].includes(e.status)).length;for(const session of sessions(klass).filter(s=>activeSession(s)&&starts(s)>=Date.parse(now))){const rosterCount=(state.enrollments||[]).filter(e=>e.classId===klass.id&&['active','pending'].includes(e.status)).length;limit=Math.min(limit,academic.sessionSeatLimit(state,session)-rosterCount,academic.sessionTrialSeatLimit(state,session)-academic.occupiedSeats(state,session,{now}))}return Math.max(0,limit)}
-function publicCatalog(state,now=new Date().toISOString()){
+function publicCatalog(state,now=new Date().toISOString(),target=null){
  const products=(state.courses||[]).filter(c=>c.active!==false&&isShelved(state,c.id)&&c.storefront?.content&&c.storefront.status==='上架').map(course=>{const content=course.storefront.content,available=currentProduct(state,course),classes=(state.classes||[]).filter(c=>c.courseId===course.id&&activeClass(c)&&course.storefront.classIds?.includes(c.id)&&(state.campuses||[]).some(site=>site.id===c.campusId&&site.active!==false)).map(c=>({id:c.id,courseId:course.id,name:c.name,campusId:c.campusId,campusName:(state.campuses||[]).find(site=>site.id===c.campusId)?.name||c.campus,durationMinutes:c.durationMinutes,remainingSeats:remainingSeats(state,c,now),schedule:sessions(c).map(s=>({id:s.id,date:s.date,time:s.time,room:s.room,status:s.status}))}));return {id:course.id,name:content.title,title:content.title,grade:content.grade,subject:content.subject,courseType:course.publishedSnapshot?.courseType||course.courseType||'onsite',priceCents:content.priceCents??content.priceMinor,availableForApplication:available&&classes.length>0,...(!available||!classes.length?{unavailableReason:'销售或教学版本待重新发布，暂不能提交报名申请'}:{}),version:course.storefront.courseVersion,classIds:classes.map(c=>c.id),classes,...(content.image?{image:content.image}:{}),...(content.description?{description:content.description}:{})}});
- const promotions=[];for(const type of ['group','joint'])for(const record of state.activities?.[type]||[]){try{livePromotion(state,type,record.id,now);promotions.push({...promotionTerms(record),name:record.name,description:record.description||'',enrollmentMode:type==='group'?'整团登记，满员后统一核对收款':'同一学生联报活动内全部课程'})}catch(error){if(!error.code)throw error}}
- return {decor:clone(state.decor?.published||{}),products,promotions,capabilities:{paymentProviderReady:false,checkoutMode:'manual_verified_receipt',groupMode:'complete_group_registration'}};
+ const promotions=[];for(const type of ['group','joint'])for(const record of state.activities?.[type]||[]){try{livePromotion(state,type,record.id,now);promotions.push({...promotionTerms(record),name:record.name,description:record.description||'',...promotionContent.presentation(record),enrollmentMode:type==='group'?'整团登记，满员后统一核对收款':'同一学生联报活动内全部课程'})}catch(error){if(!error.code)throw error}}
+ let visibleProducts=products,visiblePromotions=promotions;
+ if(target){
+  const offer=promotions.find(row=>row.id===target.promotionId&&row.type===target.type);
+  assert(offer,'此活动未开放、已结束或当前不可报名','PROMOTION_UNAVAILABLE',404);
+  visiblePromotions=[offer];visibleProducts=products.filter(product=>offer.courseIds.includes(product.id)).map(product=>{const classes=product.classes.filter(klass=>offer.selections.some(selection=>selection.courseId===product.id&&selection.classIds.includes(klass.id))&&(!offer.campusId||klass.campusId===offer.campusId));return {...product,classes,classIds:classes.map(klass=>klass.id)};});
+ }
+ return {decor:clone(state.decor?.published||{}),products:visibleProducts,promotions:visiblePromotions,...(target?{selectedPromotionId:target.promotionId,selectedPromotionType:target.type}:{}),capabilities:{paymentProviderReady:false,checkoutMode:'manual_verified_receipt',groupMode:'complete_group_registration'}};
 }
 function allocation(amount,weights){cents(amount);const total=weights.reduce((sum,w)=>sum+cents(w),0);assert(amount<=total,'分摊金额不能超过总额');if(!total)return weights.map(()=>0);const n=BigInt(amount),den=BigInt(total),parts=weights.map((weight,index)=>{const product=n*BigInt(weight);return {index,value:Number(product/den),remainder:product%den}});let residual=amount-parts.reduce((sum,p)=>sum+p.value,0);for(const part of [...parts].sort((a,b)=>a.remainder===b.remainder?a.index-b.index:a.remainder>b.remainder?-1:1)){if(residual--<=0)break;part.value++}return parts.map(p=>p.value)}
 function normalizedBuyers(state,input,ctx,isPublic){return input.buyers.map(raw=>{keys(raw,['studentId','name','phone','grade']);if(raw.studentId){assert(!isPublic,'公开申请不能指定已有学生编号','IDENTITY_VERIFICATION_REQUIRED',403);assert(Object.keys(raw).every(key=>key==='studentId'),'已有学生选择不允许同时提交身份草稿');const student=ctx.get('students',raw.studentId,{access:'read'});return {name:normalize(student.name),phone:phone(student.phone),...(student.grade?{grade:student.grade}:{}),studentId:student.id}}const name=text(raw.name,'学生姓名',80),number=phone(raw.phone);return {name,phone:number,...(raw.grade?{grade:text(raw.grade,'年级',40)}:{})}})}
@@ -99,7 +106,13 @@ async function handlePublic({req,res,pathname,respond,store,visitor,limit,body,o
  const send=(status,data)=>{respond(status,data);return true};
  try{
   assert(!req.headers.origin||req.headers.origin===origin,'请求来源未授权','ORIGIN_REJECTED',403);limit(req,'public',60);const snapshot=store.snapshot();
-  if(pathname==='/v1/public/store'){assert(req.method==='GET','不支持该请求方式','METHOD_NOT_ALLOWED',405);return send(200,publicCatalog(snapshot.state))}
+  if(pathname==='/v1/public/store'){
+   assert(req.method==='GET','不支持该请求方式','METHOD_NOT_ALLOWED',405);
+   const params=new URL(req.url,'https://public.invalid').searchParams;
+   assert([...params.keys()].every(key=>['promotionId','type'].includes(key))&&['promotionId','type'].every(key=>params.getAll(key).length<=1),'活动链接参数无效','INVALID_QUERY',400);
+   let target=null;if(params.has('promotionId')||params.has('type')){const promotionId=params.get('promotionId'),type=params.get('type');assert(typeof promotionId==='string'&&/^[A-Za-z0-9][A-Za-z0-9_.-]{0,119}$/.test(promotionId)&&['group','joint'].includes(type),'活动链接参数无效','INVALID_QUERY',400);target={promotionId,type};}
+   return send(200,publicCatalog(snapshot.state,undefined,target));
+  }
   const visitorKey=visitor(req,res);
   if(pathname.startsWith('/v1/public/store/checkouts/')){assert(req.method==='GET','不支持该请求方式','METHOD_NOT_ALLOWED',405);const id=pathname.split('/').at(-1),row=stored(snapshot.state).find(c=>c.id===id&&c.visitorHash===hash(visitorKey));assert(row,'商城申请不存在','NOT_FOUND',404);return send(200,{checkout:checkoutSummary(snapshot.state,row)})}
   assert(req.method==='POST','不支持该请求方式','METHOD_NOT_ALLOWED',405);assert(req.headers.origin===origin,'公开报价或申请须从授权商城页面提交','ORIGIN_REJECTED',403);const input=await body(req),ctx=context(snapshot.state,publicActor,[],{publicStoreCheckout:true,visitorKey});

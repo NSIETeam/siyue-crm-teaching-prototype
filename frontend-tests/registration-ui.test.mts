@@ -135,13 +135,13 @@ test('registration confirmation does not ask the registrar to judge intent or sa
  const ui=await app({permissions:['lead.create','lead.follow'],extraOperations:[registration],preview:()=>({record:{id:'preview',name:'合成',ownerId:'sales-1',stage:'跟进中',intent:'未标记',decisionStatus:'retained',decisionByName:'合成登记人',decisionHistory:[{kind:'created',decision:'public'}]}})});ui.api.open('lead.create',baseSeed);await ui.api.preview();assert.match(ui.html,/跟进中/);assert.doesNotMatch(ui.html,/销售决策|意向度|decisionHistory|decisionByName/);
 });
 
-test('public registration confirmation uses the unified pending-assignment label without exposing old status bookkeeping',async()=>{const ui=await app({permissions:['lead.create'],extraOperations:[registration],preview:()=>({record:{id:'preview',name:'合成公海',ownerId:null,stage:'新线索',status:'new',intent:'未标记',decisionStatus:'public'}})});ui.api.open('lead.create',baseSeed);assert.equal(await ui.api.preview(),true);assert.match(ui.html,/待分配/);assert.match(ui.html,/未分配，进入公海/);assert.doesNotMatch(ui.html,/新线索|销售决策/);});
+test('public registration confirmation separates unassigned ownership from new callback stage without exposing bookkeeping',async()=>{const ui=await app({permissions:['lead.create'],extraOperations:[registration],preview:()=>({record:{id:'preview',name:'合成公海',ownerId:null,stage:'新线索',status:'new',intent:'未标记',decisionStatus:'public'}})});ui.api.open('lead.create',baseSeed);assert.equal(await ui.api.preview(),true);assert.match(ui.html,/<dt>线索阶段<\/dt><dd>新线索<\/dd>/);assert.match(ui.html,/未分配，进入公海/);assert.doesNotMatch(ui.html,/销售决策|decisionStatus|decisionHistory|<dt>状态<\/dt>/);});
 
 for(const matched of [false,true])test('academic trial intake reuses registration fields and opens calendar after '+(matched?'match':'creation'),async()=>{
  const opened:any[]=[];const intake={...registration,id:'lead.trialIntake',label:'预约试听 · 登记或匹配线索'};
  const record={id:'lead-result',name:baseSeed.name,phone:baseSeed.phone,ownerId:'eligible',stage:'跟进中'};
  const ui=await app({permissions:['lead.create','class.create'],roleIds:['academic'],scope:{type:'campus',campusIds:['a']},extraOperations:[intake],trialOpen:(...args:any[])=>opened.push(args),preview:()=>({matched,record}),execute:()=>({matched,record}),state:(payload:any)=>{payload.state.campuses=[{id:'a',name:'甲校区'}];payload.state.leadOwnerOptions=[{id:'eligible',name:'跟进销售',campusIds:['a']}];return payload;}});
- assert(ui.api.open('lead.trialIntake',{...baseSeed,ownerId:'eligible'}));assert.equal(ui.field('campusId').value,'a');assert.match(ui.html,/跟进销售/);assert.match(ui.html,/按学生姓名和联系电话匹配/);
+ assert(ui.api.open('lead.trialIntake',{...baseSeed,ownerId:'eligible'}));assert.equal(ui.field('campusId').value,'a');assert.match(ui.html,/跟进销售/);assert.match(ui.html,/按名称和联系电话匹配/);assert.match(ui.html,/保留原负责人/);assert.match(ui.html,/新线索或公海线索须选择有效负责人/);assert.match(ui.html,/确认后进入预约课表/);
  assert.equal(await ui.api.preview(),true);assert.match(ui.html,matched?/已命中现有线索/:/未发现同名同电话线索/);assert.equal(opened.length,0);
  assert.equal(await ui.api.execute(),true);assert.deepEqual(opened,[['lead-result',true]]);
 });
