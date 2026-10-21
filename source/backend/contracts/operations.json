@@ -1,0 +1,1796 @@
+{
+  "version": "0.1.0",
+  "mode": "design-only",
+  "authorizationFiltered": false,
+  "description": "公开功能定义，不包含身份授权结果。执行前须由服务器重新鉴权；当前所有业务尚未实现。",
+  "operations": [
+    {
+      "id": "lead.create",
+      "label": "创建线索",
+      "group": "crm",
+      "execution": "planned",
+      "permission": "lead.create",
+      "inputSchema": {
+        "$ref": "#/components/schemas/LeadCreateInput"
+      },
+      "frontendAliases": [
+        "action.quickRegister.f299e5f6"
+      ]
+    },
+    {
+      "id": "lead.assign",
+      "label": "分配线索",
+      "group": "crm",
+      "execution": "planned",
+      "permission": "lead.assign",
+      "inputSchema": {
+        "$ref": "#/components/schemas/LeadAssignInput"
+      },
+      "frontendAliases": [
+        "action.leadManage.ff46b2a1"
+      ]
+    },
+    {
+      "id": "lead.transfer",
+      "label": "转移线索",
+      "group": "crm",
+      "execution": "planned",
+      "permission": "lead.transfer",
+      "inputSchema": {
+        "$ref": "#/components/schemas/LeadTransferInput"
+      },
+      "frontendAliases": [
+        "action.myLeads.dbf51d4d"
+      ]
+    },
+    {
+      "id": "lead.release",
+      "label": "释放线索到公海",
+      "group": "crm",
+      "execution": "planned",
+      "permission": "lead.release",
+      "inputSchema": {
+        "$ref": "#/components/schemas/LeadReleaseInput"
+      },
+      "frontendAliases": [
+        "action.myLeads.758e04a9"
+      ]
+    },
+    {
+      "id": "lead.follow",
+      "label": "记录跟进",
+      "group": "crm",
+      "execution": "planned",
+      "permission": "lead.follow",
+      "inputSchema": {
+        "$ref": "#/components/schemas/LeadFollowInput"
+      },
+      "frontendAliases": [
+        "action.myLeads.b7fe9ead"
+      ]
+    },
+    {
+      "id": "leadPolicy.preview",
+      "label": "试运行保留与回收规则",
+      "group": "crm",
+      "execution": "planned",
+      "permission": "leadPolicy.preview",
+      "inputSchema": {
+        "$ref": "#/components/schemas/LeadPolicyPreviewInput"
+      },
+      "frontendAliases": [
+        "action.leadManage.9abcab89"
+      ]
+    },
+    {
+      "id": "leadPolicy.publish",
+      "label": "发布保留与回收规则",
+      "group": "crm",
+      "execution": "planned",
+      "permission": "leadPolicy.publish",
+      "inputSchema": {
+        "$ref": "#/components/schemas/LeadPolicyPublishInput"
+      },
+      "frontendAliases": []
+    },
+    {
+      "id": "student.create",
+      "label": "创建学生档案",
+      "group": "archives",
+      "execution": "planned",
+      "permission": "student.create",
+      "inputSchema": {
+        "$ref": "#/components/schemas/StudentCreateInput"
+      },
+      "frontendAliases": [
+        "action.students.8fa829ca"
+      ]
+    },
+    {
+      "id": "student.archive",
+      "label": "查看学生档案",
+      "group": "archives",
+      "execution": "planned",
+      "permission": "student.archive",
+      "inputSchema": {
+        "$ref": "#/components/schemas/StudentArchiveInput"
+      },
+      "frontendAliases": [
+        "action.studentArchives.464c401d"
+      ],
+      "readOnly": true
+    },
+    {
+      "id": "teacher.archive",
+      "label": "查看老师档案",
+      "group": "archives",
+      "execution": "planned",
+      "permission": "teacher.archive",
+      "inputSchema": {
+        "$ref": "#/components/schemas/TeacherArchiveInput"
+      },
+      "frontendAliases": [
+        "action.teacherArchives.142b533b"
+      ],
+      "readOnly": true
+    },
+    {
+      "id": "staff.archive",
+      "label": "查看职工档案",
+      "group": "archives",
+      "execution": "planned",
+      "permission": "staff.archive",
+      "inputSchema": {
+        "$ref": "#/components/schemas/StaffArchiveInput"
+      },
+      "frontendAliases": [
+        "action.staffArchives.cd79c6d5"
+      ],
+      "readOnly": true
+    },
+    {
+      "id": "course.create",
+      "label": "创建课程与商品草稿",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "course.create",
+      "inputSchema": {
+        "$ref": "#/components/schemas/CourseCreateInput"
+      },
+      "frontendAliases": [
+        "action.course.151aed83"
+      ]
+    },
+    {
+      "id": "course.update",
+      "label": "更新课程草稿",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "course.update",
+      "inputSchema": {
+        "$ref": "#/components/schemas/CourseUpdateInput"
+      },
+      "frontendAliases": [
+        "action.course.cfe334b"
+      ]
+    },
+    {
+      "id": "course.publish",
+      "label": "发布课程版本",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "course.publish",
+      "inputSchema": {
+        "$ref": "#/components/schemas/CoursePublishInput"
+      },
+      "frontendAliases": []
+    },
+    {
+      "id": "class.create",
+      "label": "创建班级",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "class.create",
+      "inputSchema": {
+        "$ref": "#/components/schemas/ClassCreateInput"
+      },
+      "frontendAliases": [
+        "action.classes.schedule",
+        "action.classes.7a1e490"
+      ]
+    },
+    {
+      "id": "class.batchCreate",
+      "label": "批量创建班级",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "class.batchCreate",
+      "inputSchema": {
+        "$ref": "#/components/schemas/ClassBatchCreateInput"
+      },
+      "frontendAliases": [
+        "action.classes.ae5dc30c"
+      ]
+    },
+    {
+      "id": "class.relocate",
+      "label": "批量班级转校区",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "class.relocate",
+      "inputSchema": {
+        "$ref": "#/components/schemas/ClassRelocateInput"
+      },
+      "frontendAliases": [
+        "action.classes.3d6367f0"
+      ]
+    },
+    {
+      "id": "enrollment.create",
+      "label": "单个学生报名",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "enrollment.create",
+      "inputSchema": {
+        "$ref": "#/components/schemas/EnrollmentCreateInput"
+      },
+      "frontendAliases": [
+        "action.enroll.f10f7210"
+      ]
+    },
+    {
+      "id": "enrollment.batchCreate",
+      "label": "批量报名",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "enrollment.batchCreate",
+      "inputSchema": {
+        "$ref": "#/components/schemas/EnrollmentBatchCreateInput"
+      },
+      "frontendAliases": [
+        "action.enroll.7989793"
+      ]
+    },
+    {
+      "id": "enrollment.transfer",
+      "label": "永久转班",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "enrollment.transfer",
+      "inputSchema": {
+        "$ref": "#/components/schemas/EnrollmentTransferInput"
+      },
+      "frontendAliases": [
+        "action.transfer.26747ab"
+      ]
+    },
+    {
+      "id": "enrollment.batchTransfer",
+      "label": "批量学生转班",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "enrollment.batchTransfer",
+      "inputSchema": {
+        "$ref": "#/components/schemas/EnrollmentBatchTransferInput"
+      },
+      "frontendAliases": [
+        "action.transfer.aacdf591"
+      ]
+    },
+    {
+      "id": "session.move",
+      "label": "临时转班或调课",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "session.move",
+      "inputSchema": {
+        "$ref": "#/components/schemas/SessionMoveInput"
+      },
+      "frontendAliases": [
+        "action.schedule.39f66947"
+      ]
+    },
+    {
+      "id": "session.substitute",
+      "label": "指定代课老师",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "session.substitute",
+      "inputSchema": {
+        "$ref": "#/components/schemas/SessionSubstituteInput"
+      },
+      "frontendAliases": [
+        "action.schedule.21b713e"
+      ]
+    },
+    {
+      "id": "session.attendance",
+      "label": "点名与课消确认",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "session.attendance",
+      "inputSchema": {
+        "$ref": "#/components/schemas/SessionAttendanceInput"
+      },
+      "frontendAliases": [
+        "action.schedule.a3c3b028"
+      ]
+    },
+    {
+      "id": "session.record",
+      "label": "填写授课记录",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "session.record",
+      "inputSchema": {
+        "$ref": "#/components/schemas/SessionRecordInput"
+      },
+      "frontendAliases": [
+        "action.schedule.acade710"
+      ]
+    },
+    {
+      "id": "enrollment.withdraw",
+      "label": "办理退课并申请退款",
+      "group": "academic",
+      "execution": "planned",
+      "permission": "enrollment.withdraw",
+      "inputSchema": {
+        "$ref": "#/components/schemas/EnrollmentWithdrawInput"
+      },
+      "frontendAliases": [
+        "action.withdraw.2a2e2d00"
+      ],
+      "rules": [
+        "manual 时必须有 manualAmountMinor 和 evidenceIds",
+        "退课与退款支付独立；自动金额由服务器计算"
+      ]
+    },
+    {
+      "id": "order.paymentLink",
+      "label": "生成支付二维码",
+      "group": "finance",
+      "execution": "planned",
+      "permission": "order.paymentLink",
+      "inputSchema": {
+        "$ref": "#/components/schemas/OrderPaymentLinkInput"
+      },
+      "frontendAliases": [],
+      "rules": [
+        "只向渠道申请短时支付链接，不根据前端金额收款"
+      ]
+    },
+    {
+      "id": "order.confirmReceipt",
+      "label": "核验线下收款",
+      "group": "finance",
+      "execution": "planned",
+      "permission": "order.confirmReceipt",
+      "inputSchema": {
+        "$ref": "#/components/schemas/OrderConfirmReceiptInput"
+      },
+      "frontendAliases": [],
+      "rules": [
+        "需要独立财务权限，不能确认线上渠道付款"
+      ]
+    },
+    {
+      "id": "refund.approve",
+      "label": "核定退款申请",
+      "group": "finance",
+      "execution": "planned",
+      "permission": "refund.approve",
+      "inputSchema": {
+        "$ref": "#/components/schemas/RefundApproveInput"
+      },
+      "frontendAliases": [],
+      "rules": [
+        "财务审批人与退课申请人分离；检查退款预占上限"
+      ]
+    },
+    {
+      "id": "refund.submit",
+      "label": "提交渠道退款",
+      "group": "finance",
+      "execution": "planned",
+      "permission": "refund.submit",
+      "inputSchema": {
+        "$ref": "#/components/schemas/RefundSubmitInput"
+      },
+      "frontendAliases": [],
+      "rules": [
+        "须已审批；最终结果由验签回调或主动对账确认"
+      ]
+    },
+    {
+      "id": "promotion.create",
+      "label": "创建优惠策略草稿",
+      "group": "marketing",
+      "execution": "planned",
+      "permission": "promotion.create",
+      "inputSchema": {
+        "$ref": "#/components/schemas/PromotionCreateInput"
+      },
+      "frontendAliases": [
+        "action.mallCoupon.910e7a9d",
+        "action.mallGroup.6c88d849",
+        "action.mallJoint.9ddb2118"
+      ]
+    },
+    {
+      "id": "promotion.publish",
+      "label": "发布优惠版本",
+      "group": "marketing",
+      "execution": "planned",
+      "permission": "promotion.publish",
+      "inputSchema": {
+        "$ref": "#/components/schemas/PromotionPublishInput"
+      },
+      "frontendAliases": []
+    },
+    {
+      "id": "product.publish",
+      "label": "发布课程商品",
+      "group": "marketing",
+      "execution": "planned",
+      "permission": "product.publish",
+      "inputSchema": {
+        "$ref": "#/components/schemas/ProductPublishInput"
+      },
+      "frontendAliases": [
+        "action.mallShelf.1f3625ea"
+      ]
+    },
+    {
+      "id": "employee.create",
+      "label": "创建员工",
+      "group": "identity",
+      "execution": "planned",
+      "permission": "employee.create",
+      "inputSchema": {
+        "$ref": "#/components/schemas/EmployeeCreateInput"
+      },
+      "frontendAliases": [
+        "action.staff.7a742317"
+      ]
+    },
+    {
+      "id": "account.update",
+      "label": "设置账号状态和角色",
+      "group": "identity",
+      "execution": "planned",
+      "permission": "account.update",
+      "inputSchema": {
+        "$ref": "#/components/schemas/AccountUpdateInput"
+      },
+      "frontendAliases": [
+        "action.staff.6b40e914"
+      ]
+    },
+    {
+      "id": "role.grant",
+      "label": "设置角色功能与范围",
+      "group": "identity",
+      "execution": "planned",
+      "permission": "role.grant",
+      "inputSchema": {
+        "$ref": "#/components/schemas/RoleGrantInput"
+      },
+      "frontendAliases": [
+        "action.permissions.ce5f92b2"
+      ]
+    },
+    {
+      "id": "audit.query",
+      "label": "分类检索全员操作日志",
+      "group": "audit",
+      "execution": "planned",
+      "permission": "audit.query",
+      "inputSchema": {
+        "$ref": "#/components/schemas/AuditQueryInput"
+      },
+      "frontendAliases": [
+        "action.permissionLogs.6fdcc7d0"
+      ],
+      "readOnly": true,
+      "superadminOnly": true
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Empty": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "implemented": {
+            "const": false
+          }
+        },
+        "required": [
+          "requestId",
+          "code",
+          "message",
+          "implemented"
+        ],
+        "additionalProperties": false
+      },
+      "Health": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "const": "siyue-backend-blueprint"
+          },
+          "mode": {
+            "const": "design-only"
+          },
+          "businessReady": {
+            "const": false
+          }
+        },
+        "required": [
+          "service",
+          "mode",
+          "businessReady"
+        ],
+        "additionalProperties": false
+      },
+      "ExpectedVersion": {
+        "type": "object",
+        "properties": {
+          "entity": {
+            "type": "string",
+            "enum": [
+              "lead",
+              "course",
+              "class",
+              "session",
+              "student",
+              "enrollment",
+              "order",
+              "refund",
+              "account",
+              "role",
+              "policy",
+              "product",
+              "promotion",
+              "employee"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "entity",
+          "id",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "ClassInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "campusId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "courseVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "teacherId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          }
+        },
+        "required": [
+          "name",
+          "campusId",
+          "courseVersionId",
+          "teacherId",
+          "capacity"
+        ],
+        "additionalProperties": false
+      },
+      "EnrollmentInput": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "classId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "offerVersionIds": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "creditApprovalId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "studentId",
+          "classId"
+        ],
+        "additionalProperties": false
+      },
+      "LessonInput": {
+        "type": "object",
+        "properties": {
+          "ordinal": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "materialIds": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "ordinal",
+          "title",
+          "content"
+        ],
+        "additionalProperties": false
+      },
+      "CourseInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "subject": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "ageMin": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "ageMax": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "priceMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "人民币整数分，禁止浮点金额"
+          },
+          "lessons": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/LessonInput"
+            }
+          },
+          "materialIds": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "name",
+          "subject",
+          "priceMinor",
+          "lessons"
+        ],
+        "additionalProperties": false
+      },
+      "AssignmentInput": {
+        "type": "object",
+        "properties": {
+          "enrollmentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "targetClassId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "effectiveAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "enrollmentId",
+          "targetClassId",
+          "effectiveAt",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "RoleGrant": {
+        "type": "object",
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "own",
+              "campuses",
+              "tenant"
+            ]
+          },
+          "campusIds": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "uniqueItems": true,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "operationId",
+          "scope"
+        ],
+        "additionalProperties": false
+      },
+      "AuditFilter": {
+        "type": "object",
+        "properties": {
+          "actorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "category": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "succeeded",
+              "failed",
+              "denied",
+              "viewed"
+            ]
+          },
+          "objectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "PolicyInput": {
+        "type": "object",
+        "properties": {
+          "retainedDays": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 365
+          },
+          "firstFollowHours": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 720
+          },
+          "inactiveDays": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 365
+          },
+          "campusIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "retainedDays",
+          "firstFollowHours",
+          "inactiveDays",
+          "campusIds"
+        ],
+        "additionalProperties": false
+      },
+      "PromotionInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "template": {
+            "type": "string",
+            "enum": [
+              "referral",
+              "pair",
+              "renewal",
+              "custom"
+            ]
+          },
+          "courseVersionIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "campusIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "discountMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "人民币整数分，禁止浮点金额"
+          },
+          "discountBasisPoints": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "stackable": {
+            "type": "boolean"
+          },
+          "quota": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          }
+        },
+        "required": [
+          "name",
+          "template",
+          "courseVersionIds",
+          "campusIds",
+          "startsAt",
+          "endsAt",
+          "stackable"
+        ],
+        "additionalProperties": false
+      },
+      "LeadCreateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "contact": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "campusId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "sales",
+              "operations",
+              "street",
+              "private",
+              "event",
+              "other"
+            ]
+          },
+          "sourceRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "retainForSelf": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "contact",
+          "source"
+        ],
+        "additionalProperties": false
+      },
+      "LeadAssignInput": {
+        "type": "object",
+        "properties": {
+          "leadIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "assigneeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "leadIds",
+          "assigneeId",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "LeadTransferInput": {
+        "type": "object",
+        "properties": {
+          "leadIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "assigneeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "leadIds",
+          "assigneeId",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "LeadReleaseInput": {
+        "type": "object",
+        "properties": {
+          "leadIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "leadIds",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "LeadFollowInput": {
+        "type": "object",
+        "properties": {
+          "leadId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "nextFollowAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "intent": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low",
+              "unknown"
+            ]
+          }
+        },
+        "required": [
+          "leadId",
+          "content"
+        ],
+        "additionalProperties": false
+      },
+      "LeadPolicyPreviewInput": {
+        "$ref": "#/components/schemas/PolicyInput"
+      },
+      "LeadPolicyPublishInput": {
+        "type": "object",
+        "properties": {
+          "draftId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dryRunToken": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "draftId",
+          "dryRunToken"
+        ],
+        "additionalProperties": false
+      },
+      "StudentCreateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date"
+          },
+          "guardianName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "contact": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "name",
+          "guardianName",
+          "contact"
+        ],
+        "additionalProperties": false
+      },
+      "StudentArchiveInput": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "studentId"
+        ],
+        "additionalProperties": false
+      },
+      "TeacherArchiveInput": {
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "employeeId"
+        ],
+        "additionalProperties": false
+      },
+      "StaffArchiveInput": {
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "employeeId"
+        ],
+        "additionalProperties": false
+      },
+      "CourseCreateInput": {
+        "$ref": "#/components/schemas/CourseInput"
+      },
+      "CourseUpdateInput": {
+        "type": "object",
+        "properties": {
+          "courseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "draft": {
+            "$ref": "#/components/schemas/CourseInput"
+          }
+        },
+        "required": [
+          "courseId",
+          "draft"
+        ],
+        "additionalProperties": false
+      },
+      "CoursePublishInput": {
+        "type": "object",
+        "properties": {
+          "courseVersionId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "courseVersionId"
+        ],
+        "additionalProperties": false
+      },
+      "ClassCreateInput": {
+        "$ref": "#/components/schemas/ClassInput"
+      },
+      "ClassBatchCreateInput": {
+        "type": "object",
+        "properties": {
+          "classes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/ClassInput"
+            }
+          }
+        },
+        "required": [
+          "classes"
+        ],
+        "additionalProperties": false
+      },
+      "ClassRelocateInput": {
+        "type": "object",
+        "properties": {
+          "classIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "targetCampusId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "effectiveAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "classIds",
+          "targetCampusId",
+          "effectiveAt",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "EnrollmentCreateInput": {
+        "$ref": "#/components/schemas/EnrollmentInput"
+      },
+      "EnrollmentBatchCreateInput": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/EnrollmentInput"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "EnrollmentTransferInput": {
+        "$ref": "#/components/schemas/AssignmentInput"
+      },
+      "EnrollmentBatchTransferInput": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/AssignmentInput"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "SessionMoveInput": {
+        "type": "object",
+        "properties": {
+          "enrollmentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sourceSessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "targetSessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "chapterOverrideReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "enrollmentId",
+          "sourceSessionId",
+          "targetSessionId"
+        ],
+        "additionalProperties": false
+      },
+      "SessionSubstituteInput": {
+        "type": "object",
+        "properties": {
+          "sessionIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "teacherId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "sessionIds",
+          "teacherId",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "SessionAttendanceInput": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "properties": {
+                "rosterId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "attendance": {
+                  "type": "string",
+                  "enum": [
+                    "present",
+                    "absent",
+                    "leave"
+                  ]
+                },
+                "confirmConsumption": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "rosterId",
+                "attendance",
+                "confirmConsumption"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "sessionId",
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "SessionRecordInput": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "materialIds": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "sessionId",
+          "content"
+        ],
+        "additionalProperties": false
+      },
+      "EnrollmentWithdrawInput": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "enrollmentId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "effectiveAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "calculation": {
+                "const": "automatic"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "enrollmentId",
+              "effectiveAt",
+              "calculation",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "enrollmentId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "effectiveAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "calculation": {
+                "const": "manual"
+              },
+              "manualAmountMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991,
+                "description": "人民币整数分，禁止浮点金额"
+              },
+              "evidenceIds": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 100,
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "uniqueItems": true
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "enrollmentId",
+              "effectiveAt",
+              "calculation",
+              "manualAmountMinor",
+              "evidenceIds",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "OrderPaymentLinkInput": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "orderId"
+        ],
+        "additionalProperties": false
+      },
+      "OrderConfirmReceiptInput": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "人民币整数分，禁止浮点金额"
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "cash",
+              "bank"
+            ]
+          },
+          "evidenceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "orderId",
+          "amountMinor",
+          "receivedAt",
+          "channel",
+          "evidenceId",
+          "reference"
+        ],
+        "additionalProperties": false
+      },
+      "RefundApproveInput": {
+        "type": "object",
+        "properties": {
+          "refundId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "evidenceIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "refundId",
+          "evidenceIds",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "RefundSubmitInput": {
+        "type": "object",
+        "properties": {
+          "refundId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "refundId"
+        ],
+        "additionalProperties": false
+      },
+      "PromotionCreateInput": {
+        "$ref": "#/components/schemas/PromotionInput"
+      },
+      "PromotionPublishInput": {
+        "type": "object",
+        "properties": {
+          "promotionVersionId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "promotionVersionId"
+        ],
+        "additionalProperties": false
+      },
+      "ProductPublishInput": {
+        "type": "object",
+        "properties": {
+          "productVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "promotionVersionIds": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "productVersionId"
+        ],
+        "additionalProperties": false
+      },
+      "EmployeeCreateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "campusId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "teacher",
+              "staff",
+              "both"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "campusId",
+          "kind"
+        ],
+        "additionalProperties": false
+      },
+      "AccountUpdateInput": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "roleIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "accountId"
+        ],
+        "additionalProperties": false
+      },
+      "RoleGrantInput": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "grants": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/RoleGrant"
+            }
+          }
+        },
+        "required": [
+          "roleId",
+          "grants"
+        ],
+        "additionalProperties": false
+      },
+      "AuditQueryInput": {
+        "$ref": "#/components/schemas/AuditFilter"
+      }
+    }
+  }
+}

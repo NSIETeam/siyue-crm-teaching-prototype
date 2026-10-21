@@ -1,0 +1,1969 @@
+{
+  "format": 1,
+  "date": "2026-10-21",
+  "project": "siyue-crm-teaching-prototype",
+  "repository": "NSIETeam/siyue-crm-teaching-prototype",
+  "original_head": "225171342c63c2627a6c87a00c4b4321bb42e87e",
+  "original_branch": "main",
+  "source_files": [
+    {
+      "path": "source/.github/workflows/verify.yml",
+      "sha256": "655ed81a44275eb7b2de735f02799866189c8bb47b90b29326f450a1d26007c3",
+      "git_blob": "2331a720df9ee1cdd807e07fc12e2c7b6b94c7bd",
+      "bytes": 398,
+      "mode": "100644",
+      "original_path": ".github/workflows/verify.yml"
+    },
+    {
+      "path": "source/.gitignore",
+      "sha256": "2764f195a9f326c799eeb2f28bb7577c84b64e89274984302b8783605f061609",
+      "git_blob": "b400297cf011a2d6199638ec5172f76447c8a243",
+      "bytes": 315,
+      "mode": "100644",
+      "original_path": ".gitignore"
+    },
+    {
+      "path": "source/.nojekyll",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "mode": "100644",
+      "original_path": ".nojekyll"
+    },
+    {
+      "path": "source/README.md",
+      "sha256": "d286725a4f785585bb44ac567ee5daa736f2f5582c8b093feaee7251a42bbac0",
+      "git_blob": "0befeb70a6d25c244478dbbdf152352ec7d10014",
+      "bytes": 7502,
+      "mode": "100644",
+      "original_path": "README.md"
+    },
+    {
+      "path": "source/academic-class-audit.css",
+      "sha256": "96b73aa9a6627f3bc51a11efd3b31d94f3fdafbb1ffd71586873b2aefdbdece9",
+      "git_blob": "f84a05db257d92882b9f72880a5c01ca0dd02013",
+      "bytes": 2273,
+      "mode": "100644",
+      "original_path": "academic-class-audit.css"
+    },
+    {
+      "path": "source/academic-class-audit.js",
+      "sha256": "ede9cc03e737eb306ea1b36d3ef5fdd75a950134fbee91615bf86a3129b3525f",
+      "git_blob": "3f309a53a045e31540edbeaab9fa6e36ea2d196f",
+      "bytes": 23306,
+      "mode": "100644",
+      "original_path": "academic-class-audit.js"
+    },
+    {
+      "path": "source/academic-dictionary.js",
+      "sha256": "f66a4556e30c1abf736280553d6fce67985724024324904313d73630a24e4714",
+      "git_blob": "e4aaa54868ce30a0533bcec1cc5e75ee3ffb10ee",
+      "bytes": 1852,
+      "mode": "100644",
+      "original_path": "academic-dictionary.js"
+    },
+    {
+      "path": "source/academic-planner.css",
+      "sha256": "5bdc30ffba6769c693c3cb24bf7a6adfdd9e48a72dfc8ede862be59078f5c87b",
+      "git_blob": "d0523f281091db9483e6016140e0f62b9deabc36",
+      "bytes": 5209,
+      "mode": "100644",
+      "original_path": "academic-planner.css"
+    },
+    {
+      "path": "source/academic-planner.js",
+      "sha256": "6492b549d2a7c15416b0150dbe6160e48f6d4ba021848f177a30b66caeed40ec",
+      "git_blob": "ef8fe2c34bbc1c77b598537ef86c7b0396257a03",
+      "bytes": 23205,
+      "mode": "100644",
+      "original_path": "academic-planner.js"
+    },
+    {
+      "path": "source/academic-repairs.js",
+      "sha256": "84cf79f94d05c89dd2576ef4978cdfaac6a23867dab3ba891c98b451ad973338",
+      "git_blob": "f75631e7cb351138f6608c9b29bc9e2c9720b58c",
+      "bytes": 31088,
+      "mode": "100644",
+      "original_path": "academic-repairs.js"
+    },
+    {
+      "path": "source/academic-scheduling.js",
+      "sha256": "11d2d4db0d4f79943da8e7fbc553ce2a1201e2505b4ef345fd02e0d62d5b4d79",
+      "git_blob": "b5264ec221f3d2ada0e92485b33cc0cb323b3b0c",
+      "bytes": 16032,
+      "mode": "100644",
+      "original_path": "academic-scheduling.js"
+    },
+    {
+      "path": "source/academic-session-audit.js",
+      "sha256": "532ed4ac517857043752c25c3834c8420cc832e4307d544f5f4a59548f784599",
+      "git_blob": "006b6ab53ad357cbd7519f26e6ce36e3c0618d1f",
+      "bytes": 11798,
+      "mode": "100644",
+      "original_path": "academic-session-audit.js"
+    },
+    {
+      "path": "source/academic.css",
+      "sha256": "bbc5ed4d1766b7a4dbe0547df65ffa0a19dbe229a4536bb2fcf9dc9e89894c88",
+      "git_blob": "a5ee436bc9310c1a7d63fb35856441a3d229c090",
+      "bytes": 4384,
+      "mode": "100644",
+      "original_path": "academic.css"
+    },
+    {
+      "path": "source/academic.js",
+      "sha256": "0732064004acaae230ca43076bc01d1f60541b02f88f7214598952367e318e2f",
+      "git_blob": "b5632328f6e6819128d6c5cf03f2c1a5f7a695b2",
+      "bytes": 39539,
+      "mode": "100644",
+      "original_path": "academic.js"
+    },
+    {
+      "path": "source/account-settings.css",
+      "sha256": "b71273f1744caf968387cb33a05261fe239717a5de0a8bcb8f915c3b5454ccda",
+      "git_blob": "8144405a3d9dbc990fa4c8d89433950119c7d497",
+      "bytes": 3022,
+      "mode": "100644",
+      "original_path": "account-settings.css"
+    },
+    {
+      "path": "source/account-settings.js",
+      "sha256": "6ec4be0f9644628c31c31f53fcf95229d0fa31cce0bef55086af1fa91529efad",
+      "git_blob": "211edd4fe8c42c4d340777fa534656124b3df986",
+      "bytes": 6476,
+      "mode": "100644",
+      "original_path": "account-settings.js"
+    },
+    {
+      "path": "source/assets/siyue-peiyou-logo.png",
+      "sha256": "ddc6ba581a8f2cdb0c41182433b0c6ee1ea6f4bc51f09029b2406bd4219143fc",
+      "git_blob": "abba97c6a73ad1e265d95ed2b2612a536099dbc3",
+      "bytes": 107172,
+      "mode": "100644",
+      "original_path": "assets/siyue-peiyou-logo.png"
+    },
+    {
+      "path": "source/assets/vendor/README.md",
+      "sha256": "0a96e4b4481f1b9b15cf96616946ea7b09fb3bc153fb1216277f98fb8667a15c",
+      "git_blob": "2cfc839a79029e3b5ffe2f9073d154eeb7485acf",
+      "bytes": 543,
+      "mode": "100644",
+      "original_path": "assets/vendor/README.md"
+    },
+    {
+      "path": "source/assets/vendor/qrcode-generator-LICENSE",
+      "sha256": "3a850fa5f08101db6f40676c2786e10bd2cd5fff7b12ffdf1e0c434d4e49d90c",
+      "git_blob": "150770c0fc2994865ccdbef6662735cc083e780d",
+      "bytes": 1071,
+      "mode": "100644",
+      "original_path": "assets/vendor/qrcode-generator-LICENSE"
+    },
+    {
+      "path": "source/audit-repairs.js",
+      "sha256": "5ade2b47c1c0ee4285124a6ae79829f524a91ebd7d053ff1bb22df4fad38c5da",
+      "git_blob": "844bdd1706d961e013933ff62d9233c403a2c692",
+      "bytes": 8754,
+      "mode": "100644",
+      "original_path": "audit-repairs.js"
+    },
+    {
+      "path": "source/backend/README.md",
+      "sha256": "6a903ffeed19b7865b757e693aab222f2eacdd9f8163bd10501e5795eb2209b1",
+      "git_blob": "10fa236ad78fc2d28630dbbb4b1ef9a496d5f385",
+      "bytes": 12195,
+      "mode": "100644",
+      "original_path": "backend/README.md"
+    },
+    {
+      "path": "source/backend/architecture.md",
+      "sha256": "16bfb79fb725a2cd010b636b57189824f5f197004e39ca9731f381a5c661daa1",
+      "git_blob": "15077798a7cb6d1fa4880e78f4f5b3e1672829bc",
+      "bytes": 10529,
+      "mode": "100644",
+      "original_path": "backend/architecture.md"
+    },
+    {
+      "path": "source/backend/authentication.md",
+      "sha256": "cf50379f19d17f94f839d6729e2d5fd49b54b839688de1c7b6dfc377b1dbfc14",
+      "git_blob": "77899a3b60291d12b33ddc478c742308d9ef83bb",
+      "bytes": 14142,
+      "mode": "100644",
+      "original_path": "backend/authentication.md"
+    },
+    {
+      "path": "source/backend/contracts/build.cjs",
+      "sha256": "95b607f0e2e22c835d5c2fe3b96de0a4aa038da4c2dc0a299ea780a6284ad441",
+      "git_blob": "7a43fb7c8d7c97dbaac7ecee6cc75d205bb9ac37",
+      "bytes": 15225,
+      "mode": "100644",
+      "original_path": "backend/contracts/build.cjs"
+    },
+    {
+      "path": "source/backend/contracts/openapi.json",
+      "sha256": "d8d21f63ebebabc4143c65e860d6441a094e03140a87c8f78c2a88bce41b3f6e",
+      "git_blob": "8a5be8a63d2f88f76c40c0ba457727fb8006c79c",
+      "bytes": 150242,
+      "mode": "100644",
+      "original_path": "backend/contracts/openapi.json"
+    },
+    {
+      "path": "source/backend/contracts/operations.json",
+      "sha256": "41d4fa44053fa879ba25f805799b8f57cf8a0c42444f204487917f4caa3d0e28",
+      "git_blob": "6deb2d401ae572c7b416267fae8b475c5074a41e",
+      "bytes": 44497,
+      "mode": "100644",
+      "original_path": "backend/contracts/operations.json"
+    },
+    {
+      "path": "source/backend/migrations/001_initial.sql",
+      "sha256": "050439972386e49a220afe2f3082cd1a8e502c6b2f2698ebf664ec2940ebc211",
+      "git_blob": "e8d32ddfb4cb4f380e3af0146052b43357b0a39c",
+      "bytes": 21497,
+      "mode": "100644",
+      "original_path": "backend/migrations/001_initial.sql"
+    },
+    {
+      "path": "source/backend/package.json",
+      "sha256": "f457418187e3e87439157c8af1e184b82b31573ba5db99085d36f380e4bca6e6",
+      "git_blob": "4a836f9b9caa0e2b8b97ae577c4870aa4f4d8a5c",
+      "bytes": 273,
+      "mode": "100644",
+      "original_path": "backend/package.json"
+    },
+    {
+      "path": "source/backend/src/audit-query.cjs",
+      "sha256": "9fa0eb4e29227fa1cb5b0693f7c2c70934ec8a2e86824405a200faf32b263343",
+      "git_blob": "aa66c9c5276b3bb7f37300d50fdef3d7e5f9f048",
+      "bytes": 11077,
+      "mode": "100644",
+      "original_path": "backend/src/audit-query.cjs"
+    },
+    {
+      "path": "source/backend/src/auth-captcha.cjs",
+      "sha256": "37064548d850a954c89b335c9e1632bb2cb14cfacbc97b1a1d915bc84b8fe5f2",
+      "git_blob": "56b02c261cbb1a0e24c40d29303041177d3eef4b",
+      "bytes": 6424,
+      "mode": "100644",
+      "original_path": "backend/src/auth-captcha.cjs"
+    },
+    {
+      "path": "source/backend/src/auth-credentials.cjs",
+      "sha256": "4d71b92be1db1829be8ab828575b3702fa7abdf2a461117a83d48adef99549f9",
+      "git_blob": "2646c0c8684dd3abda5591bc7104638674d897fd",
+      "bytes": 1729,
+      "mode": "100644",
+      "original_path": "backend/src/auth-credentials.cjs"
+    },
+    {
+      "path": "source/backend/src/auth-policy.cjs",
+      "sha256": "50975196b032769fa463fc4485ab2b1ed5719dbec340ef9416de3667559f0857",
+      "git_blob": "a8bef33264edf03a558bbeda6efc251721b0e70a",
+      "bytes": 9129,
+      "mode": "100644",
+      "original_path": "backend/src/auth-policy.cjs"
+    },
+    {
+      "path": "source/backend/src/auth-service.cjs",
+      "sha256": "30b5bb14813f88a02ec67ee7f87fe7fc3c7212509aef2eb2fca6f1d2c28f8674",
+      "git_blob": "ca04721b95bdb9397c6d867efd1db60c80d97d5d",
+      "bytes": 24253,
+      "mode": "100644",
+      "original_path": "backend/src/auth-service.cjs"
+    },
+    {
+      "path": "source/backend/src/auth-store.cjs",
+      "sha256": "f9c3ae3e35c6e651be5139aa30261fddaa39d6539bf82de272aa16c6384e1b9e",
+      "git_blob": "a6b9095e825fed51e1f45cc64a38813ed7832e38",
+      "bytes": 3754,
+      "mode": "100644",
+      "original_path": "backend/src/auth-store.cjs"
+    },
+    {
+      "path": "source/backend/src/backup-business.cjs",
+      "sha256": "e65aab38fb54653c0e60f8d9b7d88074d3e5512ac1250ba6958f64c76407ad56",
+      "git_blob": "02e2ff1b1703a1fb0d5819b96347ac681411dc69",
+      "bytes": 1953,
+      "mode": "100644",
+      "original_path": "backend/src/backup-business.cjs"
+    },
+    {
+      "path": "source/backend/src/bootstrap-auth.cjs",
+      "sha256": "97e1ff3b8a6eaeb068ffd14538a55f929545e994886414bfd33f0c7ac745a0e3",
+      "git_blob": "90fa56cb36226804d56c75347c7f3491b6f75230",
+      "bytes": 2371,
+      "mode": "100644",
+      "original_path": "backend/src/bootstrap-auth.cjs"
+    },
+    {
+      "path": "source/backend/src/business-academic.cjs",
+      "sha256": "fb8e82876d08f13e31f0dbbf097436e7bdceffccfbf1a75f37c941a305789b22",
+      "git_blob": "4bcffedc12229dea65c06009207973f477c02dc6",
+      "bytes": 71036,
+      "mode": "100644",
+      "original_path": "backend/src/business-academic.cjs"
+    },
+    {
+      "path": "source/backend/src/business-commerce.cjs",
+      "sha256": "e485113b90e82c6fe867a7c83f62ca241fb9222954b47789814866b1d7b24b22",
+      "git_blob": "469d0b63db92d353a10947440590759ab9492cb6",
+      "bytes": 30949,
+      "mode": "100644",
+      "original_path": "backend/src/business-commerce.cjs"
+    },
+    {
+      "path": "source/backend/src/business-common.cjs",
+      "sha256": "83e3af7dc7b6c8079f3c0c92eb1f143fb359ab476373275341594938c26b4309",
+      "git_blob": "fc0d41ace11e7903e8c153ec17989231c88ff07b",
+      "bytes": 7661,
+      "mode": "100644",
+      "original_path": "backend/src/business-common.cjs"
+    },
+    {
+      "path": "source/backend/src/business-contract.cjs",
+      "sha256": "53429fc3ee711318d06397233a55afb9dad570c35874f1d64c9501430caa96a8",
+      "git_blob": "46e483a32ed2887be1abe3794853fb48e97332ae",
+      "bytes": 7638,
+      "mode": "100644",
+      "original_path": "backend/src/business-contract.cjs"
+    },
+    {
+      "path": "source/backend/src/business-crm.cjs",
+      "sha256": "5c62944426a3e432280ed486444d2b26e49972fc9f8dbe11682d3fcf4bd8e2db",
+      "git_blob": "2effe04ab817c1328c3ea8749da6d2396d5bee0d",
+      "bytes": 36788,
+      "mode": "100644",
+      "original_path": "backend/src/business-crm.cjs"
+    },
+    {
+      "path": "source/backend/src/business-form-rewards.cjs",
+      "sha256": "f654657d14a24817fba9b154589857d1dab9fddf70a799ce5d8ab217e8297822",
+      "git_blob": "f540a3a5a045c576f0a35a29cad197564187ae5d",
+      "bytes": 12515,
+      "mode": "100644",
+      "original_path": "backend/src/business-form-rewards.cjs"
+    },
+    {
+      "path": "source/backend/src/business-lead-reports.cjs",
+      "sha256": "519aae821a10ca76d57b3943af6e922316560162d6bb315caa3f5fc2d2547a8f",
+      "git_blob": "2f1fb55647c5a366ed96d5f128de7419b02edfac",
+      "bytes": 9019,
+      "mode": "100644",
+      "original_path": "backend/src/business-lead-reports.cjs"
+    },
+    {
+      "path": "source/backend/src/business-service.cjs",
+      "sha256": "1ee41ef3220c3bce10ca31769f4319d8553324deab5ed87d674df6b6f9b927f6",
+      "git_blob": "fd8aeecbd1a44072ec01dd21bca2cec9db82adda",
+      "bytes": 28271,
+      "mode": "100644",
+      "original_path": "backend/src/business-service.cjs"
+    },
+    {
+      "path": "source/backend/src/business-store.cjs",
+      "sha256": "910dd01be316692265b7b8b17ce2b8587b5591356a8a7f475603ba59275b04b4",
+      "git_blob": "6b0086b3cc43b26b92e85a4e465d584ebda58119",
+      "bytes": 10031,
+      "mode": "100644",
+      "original_path": "backend/src/business-store.cjs"
+    },
+    {
+      "path": "source/backend/src/business-teacher-workflow.cjs",
+      "sha256": "d58e19f6b22d04448b2ac07eb323b91d039381496acc58f3f3f679c7f5c65d03",
+      "git_blob": "5c4966b2fc75203be1cf2e6aac0c729a40e76953",
+      "bytes": 15052,
+      "mode": "100644",
+      "original_path": "backend/src/business-teacher-workflow.cjs"
+    },
+    {
+      "path": "source/backend/src/server.cjs",
+      "sha256": "04aee0fab7463caff34581ca7c7fa1ca5ffb82e5abd46f7d28692eba55a81249",
+      "git_blob": "17d9a7b8693b7f1c932d30c0b7b83aea20a4757d",
+      "bytes": 4333,
+      "mode": "100644",
+      "original_path": "backend/src/server.cjs"
+    },
+    {
+      "path": "source/backend/test/archive.test.cjs",
+      "sha256": "d3e73cf794b7a4aa1cad7f55a12ffdec0de259855b348dc42956a0613a0fa751",
+      "git_blob": "65a905e1b78b627acd81d7930037dabb2c85cc57",
+      "bytes": 8011,
+      "mode": "100644",
+      "original_path": "backend/test/archive.test.cjs"
+    },
+    {
+      "path": "source/backend/test/assigned-isolation.test.cjs",
+      "sha256": "275f7571f74f683b6694046a7588afb2fd2dbe7f14a6eb9b12591df42a93d0d1",
+      "git_blob": "d6c1d88bfa168aa8e84f28c4d83a2db3e7284884",
+      "bytes": 4712,
+      "mode": "100644",
+      "original_path": "backend/test/assigned-isolation.test.cjs"
+    },
+    {
+      "path": "source/backend/test/audit-isolation.test.cjs",
+      "sha256": "ecc7d217765d3d8841666aea4901afd491e1b30e9e99b96d8a455e90cd591f5e",
+      "git_blob": "efaa2ae4506dce3dce69a102436522bb5e91666c",
+      "bytes": 4159,
+      "mode": "100644",
+      "original_path": "backend/test/audit-isolation.test.cjs"
+    },
+    {
+      "path": "source/backend/test/auth.test.cjs",
+      "sha256": "4f4e4ae9f710fff1a6679567b1c4e440f8eb93a883ca17fcfd3d4504e421ccc7",
+      "git_blob": "da94ac3aae01af0f510b84ecd7c64f37258dab2a",
+      "bytes": 50753,
+      "mode": "100644",
+      "original_path": "backend/test/auth.test.cjs"
+    },
+    {
+      "path": "source/backend/test/business-academic.test.cjs",
+      "sha256": "c51035243c1de36b482a66f2906e073521615f6015f2e2f95a719229cb5b3c21",
+      "git_blob": "c8db2a95b2cb906d0ab5a3072393ba0e721208fa",
+      "bytes": 46963,
+      "mode": "100644",
+      "original_path": "backend/test/business-academic.test.cjs"
+    },
+    {
+      "path": "source/backend/test/business-commerce.test.cjs",
+      "sha256": "2ee45834366158e01d5eb618521fb82d8b4613107e18f883ab3e59842bd4441b",
+      "git_blob": "6edd3b0a4429829fa87877c42351836952b84c0b",
+      "bytes": 19604,
+      "mode": "100644",
+      "original_path": "backend/test/business-commerce.test.cjs"
+    },
+    {
+      "path": "source/backend/test/business-core.test.cjs",
+      "sha256": "88f05e9cff9df58848f75111823393cbf046711a54af612bd275885fec420b8d",
+      "git_blob": "8f2df5886bf9418ad6145f425e42e0c2b1a127d8",
+      "bytes": 21557,
+      "mode": "100644",
+      "original_path": "backend/test/business-core.test.cjs"
+    },
+    {
+      "path": "source/backend/test/business-crm.test.cjs",
+      "sha256": "2679aa9c9e5f883eb70e0573c7c5fb290c04e0260943dd581f6f0d142ebb7fa6",
+      "git_blob": "e9095f83e83d59c8e00bb9bb1172a971129be22d",
+      "bytes": 15727,
+      "mode": "100644",
+      "original_path": "backend/test/business-crm.test.cjs"
+    },
+    {
+      "path": "source/backend/test/business-form-rewards.test.cjs",
+      "sha256": "131336979e73138e3fffcc02979ef17d82b3b89ad2deca7dc4dee6b9749a8a7d",
+      "git_blob": "6afe7dd70a5a339c547825f3d294eb55c76d1d9e",
+      "bytes": 25461,
+      "mode": "100644",
+      "original_path": "backend/test/business-form-rewards.test.cjs"
+    },
+    {
+      "path": "source/backend/test/business-lead-workflow.test.cjs",
+      "sha256": "028692ac0c4071582cde7d6be31621dde11f238cdf3607be51be2dd9c2b34604",
+      "git_blob": "0805f79b4326039ca99c3e5d0d367dd77dbd42e9",
+      "bytes": 23205,
+      "mode": "100644",
+      "original_path": "backend/test/business-lead-workflow.test.cjs"
+    },
+    {
+      "path": "source/backend/test/business-security.test.cjs",
+      "sha256": "ea63fc4e25bbb21ea8b6fe3f708dae545da4fb60597a2d1e35f4c6c982fa1980",
+      "git_blob": "173cc2f5229b796436bdd1592e6add22badf0d45",
+      "bytes": 24844,
+      "mode": "100644",
+      "original_path": "backend/test/business-security.test.cjs"
+    },
+    {
+      "path": "source/backend/test/business-teacher-workflow.test.cjs",
+      "sha256": "5730d32cb2c837307a2a444871d1afad26b88a45b47a87985d0cfcbcbe172537",
+      "git_blob": "2b82d4c655c92c0650cf5b72099e0eb42151f934",
+      "bytes": 29637,
+      "mode": "100644",
+      "original_path": "backend/test/business-teacher-workflow.test.cjs"
+    },
+    {
+      "path": "source/backend/test/captcha.test.cjs",
+      "sha256": "5bd1295441f71eafa36abf8aab927be3bae34318e2531c4d58f0a9e42c2feba7",
+      "git_blob": "4344b404b55a0fbd52865d5c34816a46c8923aa2",
+      "bytes": 2271,
+      "mode": "100644",
+      "original_path": "backend/test/captcha.test.cjs"
+    },
+    {
+      "path": "source/backend/test/contract.test.cjs",
+      "sha256": "0b14564e011b6b073474cea4de16d8fd50025e6a1bf10ed1af5db8d2c256ccdc",
+      "git_blob": "d8051d596a3bf1e29bb560bdcd4841de8ca5523c",
+      "bytes": 6397,
+      "mode": "100644",
+      "original_path": "backend/test/contract.test.cjs"
+    },
+    {
+      "path": "source/backend/test/form-submission-privacy.test.cjs",
+      "sha256": "a6009fcd878deeb13ea1eb9b53543a0d7d22aa737c7c53a196c23f3582a617cf",
+      "git_blob": "e0553ead3e4723ad985e602069e376e617ce0e5c",
+      "bytes": 2216,
+      "mode": "100644",
+      "original_path": "backend/test/form-submission-privacy.test.cjs"
+    },
+    {
+      "path": "source/backend/test/role-business.test.cjs",
+      "sha256": "602d9c337a093feb27fb3247c09c2ea26f1bc1b79c15ac1afbc71a17a4f2fc8e",
+      "git_blob": "aa713f3535e943e7d76e7c06940bfef9c496d509",
+      "bytes": 9694,
+      "mode": "100644",
+      "original_path": "backend/test/role-business.test.cjs"
+    },
+    {
+      "path": "source/backend/test/sales-followups.test.cjs",
+      "sha256": "de97713895a5f75b2a44e79adad3fabff7577c5e0184b020b5ca60f8ec7b8084",
+      "git_blob": "f71c735eee3d3178ddbdf0d008417d3a0af2d38e",
+      "bytes": 4545,
+      "mode": "100644",
+      "original_path": "backend/test/sales-followups.test.cjs"
+    },
+    {
+      "path": "source/backup-manifest.json",
+      "sha256": "0a794ba1eddf347abfb6161fea61f70c1aeeccb0ad6423e1926132bdbc94fe0e",
+      "git_blob": "be59d515bbfabf5a20443a48e02e65fc22e3133d",
+      "bytes": 13730,
+      "mode": "100644",
+      "original_path": "backup-manifest.json"
+    },
+    {
+      "path": "source/batch-operations.css",
+      "sha256": "4c2376b3190c57edc4c6657fe325a85e722371f3b0099a69fcbd5c519e4cb4fa",
+      "git_blob": "35d6392f8f7485ada9baf2c52e36f1dcafa4587a",
+      "bytes": 2912,
+      "mode": "100644",
+      "original_path": "batch-operations.css"
+    },
+    {
+      "path": "source/batch-operations.js",
+      "sha256": "4e8618ce20e85a08bffa9bc700d980f421fe3b6e76c473b588ae4c2bb2618b06",
+      "git_blob": "db3b226413e2df87aae62f4eea75af960c51c754",
+      "bytes": 35856,
+      "mode": "100644",
+      "original_path": "batch-operations.js"
+    },
+    {
+      "path": "source/business-api.css",
+      "sha256": "2e48232623ffe2a65cda56af292205c12d990e1f0e0a620203b0c7ee365722c3",
+      "git_blob": "93990079f5496a6f2f6cc168a4348acf35be3063",
+      "bytes": 7772,
+      "mode": "100644",
+      "original_path": "business-api.css"
+    },
+    {
+      "path": "source/business-api.js",
+      "sha256": "2df80a83d617ab327a0196387c6e567fb0039fc2b7feb332ca6a11edc37de96c",
+      "git_blob": "4de518f9f1afb2fbc3a97f48bdaa05d7356598e1",
+      "bytes": 165458,
+      "mode": "100644",
+      "original_path": "business-api.js"
+    },
+    {
+      "path": "source/business-decor.css",
+      "sha256": "9376c7699c26e1e4913379c5468880113e0035e1711c415405f2ed22da97419f",
+      "git_blob": "5d2ecd53983333ca9305f1bb648ba4e63845c40b",
+      "bytes": 2922,
+      "mode": "100644",
+      "original_path": "business-decor.css"
+    },
+    {
+      "path": "source/business-decor.js",
+      "sha256": "f2d6a0aa2d9449c03d37b1ad811d586b94eb75f3a04601569b44d6011e36c4a2",
+      "git_blob": "545d0f7251f8e9d6579db8cc2fca03abc2c81652",
+      "bytes": 20524,
+      "mode": "100644",
+      "original_path": "business-decor.js"
+    },
+    {
+      "path": "source/business-enrollment.css",
+      "sha256": "54dc6a978591e510038edfe01cce610c67f820ae0a8cb2b6a4bf5802685e5c58",
+      "git_blob": "8d466c2f1a90b6dd2e91df9530dea509386d2db6",
+      "bytes": 2299,
+      "mode": "100644",
+      "original_path": "business-enrollment.css"
+    },
+    {
+      "path": "source/business-enrollment.js",
+      "sha256": "61e426f164a1bce67f1b3afb1db72a88f54cd7a6ae9d4485bd91c1e5bb792b3d",
+      "git_blob": "d0895179164c841aaa9cb986523ed0a49c9865f3",
+      "bytes": 25443,
+      "mode": "100644",
+      "original_path": "business-enrollment.js"
+    },
+    {
+      "path": "source/business-form-builder.css",
+      "sha256": "4b0aed04719c76565b01c51f6adf3a9625eb8c0612e149a937b0b07d5700ef6d",
+      "git_blob": "e3163f3364c7691312bca358d5e69ccf9046486f",
+      "bytes": 9225,
+      "mode": "100644",
+      "original_path": "business-form-builder.css"
+    },
+    {
+      "path": "source/business-form-builder.js",
+      "sha256": "c71344ad3709bb3ceabf78e779b6cb10f1b3d4ade7e660abae1f07acfc1f8712",
+      "git_blob": "2d354a86d55b37c266112f36ad323b1813f5f50d",
+      "bytes": 39610,
+      "mode": "100644",
+      "original_path": "business-form-builder.js"
+    },
+    {
+      "path": "source/business-presenter.css",
+      "sha256": "9b326627823071dedcd1222fa07d4f609e3c1667c5b4cca492c9d83c49bf33f1",
+      "git_blob": "202ab24d5e30ddac3dd727f81c2348489c33bfeb",
+      "bytes": 4919,
+      "mode": "100644",
+      "original_path": "business-presenter.css"
+    },
+    {
+      "path": "source/business-presenter.js",
+      "sha256": "42deefb01d7eb9eb6a7563590ef9cd84d07c5e7b5eeca943da1575839f7af5aa",
+      "git_blob": "fb34441a49de92926714b37245c5ba4760c75bdf",
+      "bytes": 27321,
+      "mode": "100644",
+      "original_path": "business-presenter.js"
+    },
+    {
+      "path": "source/business-schedule.css",
+      "sha256": "57f68345dae7748d59d5e0a2166c27e2a43eaaf80f82ed68921e9321a011dace",
+      "git_blob": "202a9b2b332634bbae4cc5360cd7b6119dfb24a7",
+      "bytes": 1578,
+      "mode": "100644",
+      "original_path": "business-schedule.css"
+    },
+    {
+      "path": "source/business-schedule.js",
+      "sha256": "47a538c63eef92f2c65754e917fb01fda8f7fae91eb809f563aa35fced9e983f",
+      "git_blob": "3057ee1b7b43b3d9b23e89125cd6c951b037da16",
+      "bytes": 14618,
+      "mode": "100644",
+      "original_path": "business-schedule.js"
+    },
+    {
+      "path": "source/business-workbench.css",
+      "sha256": "ae6b361371196bbf6733f3cda4f0465b3fc283ac2ba627965c4dd12bbb580aaa",
+      "git_blob": "e7cde3a58b80049d9d9b58d3dbe80d74d111a8bd",
+      "bytes": 2253,
+      "mode": "100644",
+      "original_path": "business-workbench.css"
+    },
+    {
+      "path": "source/business-workbench.js",
+      "sha256": "87d7bc6a2d04bac445406da1f735988a2cf47114b988a2a061adb0d2e6c0938b",
+      "git_blob": "bae2e366c40e03a9fe0b7881c281951367733494",
+      "bytes": 8456,
+      "mode": "100644",
+      "original_path": "business-workbench.js"
+    },
+    {
+      "path": "source/cli/README.md",
+      "sha256": "40c9c47c9bc55f8616c08504eff34518dfefbe074de7745bcae74cce6924febd",
+      "git_blob": "efb82d8885e6ca86586597f6be932280e49c59ca",
+      "bytes": 10288,
+      "mode": "100644",
+      "original_path": "cli/README.md"
+    },
+    {
+      "path": "source/cli/account-admin.cjs",
+      "sha256": "f6d8bf73a76a11e13c65c22eca39fe25bdf5686fb24c8383c2345b9dec84767b",
+      "git_blob": "00eeb7e292ed1c30551b0883f1f3e09d864ead6a",
+      "bytes": 6650,
+      "mode": "100644",
+      "original_path": "cli/account-admin.cjs"
+    },
+    {
+      "path": "source/cli/account-admin.test.cjs",
+      "sha256": "5d3142bf0b76ee252a669a584f46d35b40222e41c12e5677011b5babcb31b616",
+      "git_blob": "7eec1915c78e7913c2c4ceddb7a9499080f14b51",
+      "bytes": 13710,
+      "mode": "100644",
+      "original_path": "cli/account-admin.test.cjs"
+    },
+    {
+      "path": "source/cli/admin-service.cjs",
+      "sha256": "617b3c3beccee6666a89711904b0bdab22e498fd8c5e023b097d4beffaad5ff0",
+      "git_blob": "512fe167155971c39a2f2c132edf47ec02b9205c",
+      "bytes": 7556,
+      "mode": "100644",
+      "original_path": "cli/admin-service.cjs"
+    },
+    {
+      "path": "source/cli/admin-service.test.cjs",
+      "sha256": "02bd04bcade46854c88613d8770878f37f5113b9fc92f459a7c2c28e4ec0719f",
+      "git_blob": "2bc6afd1b9ec022286ac22ea492a7449b3a460ff",
+      "bytes": 10139,
+      "mode": "100644",
+      "original_path": "cli/admin-service.test.cjs"
+    },
+    {
+      "path": "source/cli/auth-client-isolation.test.cjs",
+      "sha256": "f8c07d246761e317fa4ee3584fcbd7f844a1941f5aa6b8d9c79bad9cd52b117e",
+      "git_blob": "994ef5972ab0450b4f2ea6b1279b2eccb00dabf4",
+      "bytes": 4724,
+      "mode": "100644",
+      "original_path": "cli/auth-client-isolation.test.cjs"
+    },
+    {
+      "path": "source/cli/auth-client.cjs",
+      "sha256": "f3b19b9f9dd1ae3580e19c731219482e0038bf014a49c804034d3c8333d1683c",
+      "git_blob": "cf3a7518c7ba9d3035936208e185099e22ce9e3c",
+      "bytes": 6831,
+      "mode": "100644",
+      "original_path": "cli/auth-client.cjs"
+    },
+    {
+      "path": "source/cli/auth.test.cjs",
+      "sha256": "04504c53e6505f954871c615d2b716cc0599d071fd93218176d8fec4581a5e5b",
+      "git_blob": "7364b4107f26d8cd50d4b2260410ca19f9eb26e6",
+      "bytes": 9120,
+      "mode": "100644",
+      "original_path": "cli/auth.test.cjs"
+    },
+    {
+      "path": "source/cli/business-client.cjs",
+      "sha256": "7bf76d714d2137445d85539d9555f57a9205dc6c8bbfd6649c06fd54607e04ba",
+      "git_blob": "66bb2dc47a66e5e999fbaef07d5e3da93c2f09f2",
+      "bytes": 2509,
+      "mode": "100644",
+      "original_path": "cli/business-client.cjs"
+    },
+    {
+      "path": "source/cli/lesson-consumption-simulation.cjs",
+      "sha256": "16fa34330323c262cd4e5968873f9aea3aeb3619834f59413d4ce55ff717e34a",
+      "git_blob": "1454ed8de7306cbaa12ebc1c3b17cdc9b79f5907",
+      "bytes": 9382,
+      "mode": "100644",
+      "original_path": "cli/lesson-consumption-simulation.cjs"
+    },
+    {
+      "path": "source/cli/operations.json",
+      "sha256": "6163fb0407a361e5a3d758463a38174c883e395d774f9cc73a7bc80570a41de0",
+      "git_blob": "e645884228e3763770fd86c9fa6575f2315a2474",
+      "bytes": 63965,
+      "mode": "100644",
+      "original_path": "cli/operations.json"
+    },
+    {
+      "path": "source/cli/population-integration.test.cjs",
+      "sha256": "377589155c4160dce8e1ff8e8de79792e155964d8bd0df3906a818b7c2d8dc0b",
+      "git_blob": "8cfb38ac3aeebc85f812fd77aebc6644d430afb4",
+      "bytes": 5331,
+      "mode": "100644",
+      "original_path": "cli/population-integration.test.cjs"
+    },
+    {
+      "path": "source/cli/query-client.cjs",
+      "sha256": "7ee881722be7e17ce39a9ef0b96497646f4ca5610156f56e43ab4687a11350b5",
+      "git_blob": "87fc348db7ef43520c3b27f638c839c0939dd117",
+      "bytes": 9441,
+      "mode": "100644",
+      "original_path": "cli/query-client.cjs"
+    },
+    {
+      "path": "source/cli/query-client.test.cjs",
+      "sha256": "b30362275c0ed910338e74e035ae6df529df56d2c1762274798107ed4852c86a",
+      "git_blob": "942f71b2b63a90bedc51d2bb88b33e2ebbfc5f7d",
+      "bytes": 9961,
+      "mode": "100644",
+      "original_path": "cli/query-client.test.cjs"
+    },
+    {
+      "path": "source/cli/quick-fill.cjs",
+      "sha256": "e980e5745cf13d8728f2636aa4ff656d6110ca96a51361b689a4a1061939c546",
+      "git_blob": "e54237b7f7e6cebb05aa0048ee47949128e81677",
+      "bytes": 22513,
+      "mode": "100644",
+      "original_path": "cli/quick-fill.cjs"
+    },
+    {
+      "path": "source/cli/quick-fill.test.cjs",
+      "sha256": "7417f42881f787f1b4ce81c4a9bea89ad12eedc7f48936b4b1157018a23a5193",
+      "git_blob": "b53f3dcb9a2e3d53fe6a9714ee14b7636ce41fb3",
+      "bytes": 15635,
+      "mode": "100644",
+      "original_path": "cli/quick-fill.test.cjs"
+    },
+    {
+      "path": "source/cli/report-queries.test.cjs",
+      "sha256": "a6e01ef15e45e46740a585eac0b987c4937ca73048bd1a4a3e95b5210823ad7d",
+      "git_blob": "e2cc956294adf8979b36caa0b1440d615b603022",
+      "bytes": 1620,
+      "mode": "100644",
+      "original_path": "cli/report-queries.test.cjs"
+    },
+    {
+      "path": "source/cli/report-query.cjs",
+      "sha256": "06fb7f55661e4272ac66724f5d4e3490ca87f38f1bea332872a893b04ffb071e",
+      "git_blob": "536c50609bfe0907bf9adc8b5b97ee50181a6ad6",
+      "bytes": 1696,
+      "mode": "100644",
+      "original_path": "cli/report-query.cjs"
+    },
+    {
+      "path": "source/cli/simulation-runtime.cjs",
+      "sha256": "7fe6403cc4ce1215220602e440a6f4d9067354ea76641fc70865d932b932af4e",
+      "git_blob": "d9501eed0516344a03b692f4632c72a4500fa08a",
+      "bytes": 2978,
+      "mode": "100644",
+      "original_path": "cli/simulation-runtime.cjs"
+    },
+    {
+      "path": "source/cli/simulation.test.cjs",
+      "sha256": "1fcc859c496198564b8271800ddb42c95284b8c399c3dd354cb5912d0b104ebf",
+      "git_blob": "99d251f942cbeba68ec9741e95012a28c533ccec",
+      "bytes": 3151,
+      "mode": "100644",
+      "original_path": "cli/simulation.test.cjs"
+    },
+    {
+      "path": "source/cli/siyue-cli.cjs",
+      "sha256": "cf91ac216ce0b68da43d7f6a35863a84615d98e78cb9a2baf8e0d996d986991a",
+      "git_blob": "756be9a9740ca46aa9f3db16035971dbbba8bd55",
+      "bytes": 11128,
+      "mode": "100644",
+      "original_path": "cli/siyue-cli.cjs"
+    },
+    {
+      "path": "source/command-search.js",
+      "sha256": "965e08b7898c0501b66065d38b8d3439e512aa96b0398c0b1b27a68e4474482b",
+      "git_blob": "c021d0e59f5825b0f14929ebe515de14f303b4db",
+      "bytes": 6481,
+      "mode": "100644",
+      "original_path": "command-search.js"
+    },
+    {
+      "path": "source/commerce-audit.css",
+      "sha256": "560fd893d7baf20c3e448642afdba34f8d23551aa8320610898c141befbdaf06",
+      "git_blob": "65c47e121e9eea89596cf15bcaef516886fd9435",
+      "bytes": 487,
+      "mode": "100644",
+      "original_path": "commerce-audit.css"
+    },
+    {
+      "path": "source/commerce-audit.js",
+      "sha256": "222d031e75c5c42cb121d0d64783a6dea88ecca2ae2a4ba97cca1c5b6df432cb",
+      "git_blob": "8739d78452b2d125f99cab5838ab5641ca416221",
+      "bytes": 38927,
+      "mode": "100644",
+      "original_path": "commerce-audit.js"
+    },
+    {
+      "path": "source/crm-audit.css",
+      "sha256": "409f30fc6e049d976cbbb0d4cd8b0402d0832d9fb0e6df594636c357b65ba621",
+      "git_blob": "7dd1dc98206ead223bd1d2e457029b249f2ea261",
+      "bytes": 1203,
+      "mode": "100644",
+      "original_path": "crm-audit.css"
+    },
+    {
+      "path": "source/crm-audit.js",
+      "sha256": "2650dce2bf9c7d012976d51d34a540dbcc2f75776ca56dbbf574e59e1c7d3d80",
+      "git_blob": "664272966bb14cea9b244c4a85ede32a482a20d9",
+      "bytes": 49741,
+      "mode": "100644",
+      "original_path": "crm-audit.js"
+    },
+    {
+      "path": "source/deploy/aliyun/README.md",
+      "sha256": "e01af657295a5b29c3c5594c9716b1de373784c9e1e23d740ffdf4af48655a9b",
+      "git_blob": "765d3cefe1ed73ce678f00c32cbe3b7110c6cc93",
+      "bytes": 12565,
+      "mode": "100644",
+      "original_path": "deploy/aliyun/README.md"
+    },
+    {
+      "path": "source/deploy/aliyun/activate-business.sh",
+      "sha256": "27421ac65ecd8f26be8d0274c8142c922e61531d947227fa213f9b281d6249e3",
+      "git_blob": "a734af5fa32729c760babc07eaf8043cfd339674",
+      "bytes": 4306,
+      "mode": "100644",
+      "original_path": "deploy/aliyun/activate-business.sh"
+    },
+    {
+      "path": "source/deploy/aliyun/activate-release.sh",
+      "sha256": "1f3194fbcbfe6829eb219507db1329f1d1b92c54aadb10fd26b7766807cbd1c2",
+      "git_blob": "87f5ac7dd3820b27b7c3d07b3029a15ebe09c70c",
+      "bytes": 2929,
+      "mode": "100644",
+      "original_path": "deploy/aliyun/activate-release.sh"
+    },
+    {
+      "path": "source/deploy/aliyun/auth-api.nginx.conf",
+      "sha256": "4117ceedcf0d21e67454138884e5acaeeae024b76d968d2f95d4d2e34e64f6ce",
+      "git_blob": "cec8862bb908d7705e8475ff4acdad1fd22f5b75",
+      "bytes": 524,
+      "mode": "100644",
+      "original_path": "deploy/aliyun/auth-api.nginx.conf"
+    },
+    {
+      "path": "source/deploy/aliyun/build-auth-release.cjs",
+      "sha256": "34daa04b662b31eb12d968cea01d19619439644858761dae8ff7feb5bf693064",
+      "git_blob": "088d6999d5a908fdff32a538cbda0e8787812a17",
+      "bytes": 2783,
+      "mode": "100644",
+      "original_path": "deploy/aliyun/build-auth-release.cjs"
+    },
+    {
+      "path": "source/deploy/aliyun/build-release.cjs",
+      "sha256": "b29dc77a74228e003753aeb2c4751696e4335554140a7e287fdd9dc58f62bbfc",
+      "git_blob": "0c3bdaa1eb463881f9ecc75f0d942fc85671ecb8",
+      "bytes": 4565,
+      "mode": "100644",
+      "original_path": "deploy/aliyun/build-release.cjs"
+    },
+    {
+      "path": "source/deploy/aliyun/nginx-candidate.cjs",
+      "sha256": "06cbb85f0bc675525b45642e6bb6e77f5df9b2e2e2320de1f4e5146f62e1e543",
+      "git_blob": "82d300b26b7052e3eea6a60963bf0548be161f3e",
+      "bytes": 1529,
+      "mode": "100644",
+      "original_path": "deploy/aliyun/nginx-candidate.cjs"
+    },
+    {
+      "path": "source/deploy/aliyun/public-files.json",
+      "sha256": "94ac451c5c9df5971ff4fee99ab0486e6a9c9d7f61bdd1337763d4f2bac8016d",
+      "git_blob": "f728837efa62117b92961ee97e06a26d592c9141",
+      "bytes": 2135,
+      "mode": "100644",
+      "original_path": "deploy/aliyun/public-files.json"
+    },
+    {
+      "path": "source/deploy/aliyun/siyue-crm-auth.service",
+      "sha256": "e960d78cea4ddaa5314f016b09ae556cdae9cb47044c7e89e4b043943cf95abc",
+      "git_blob": "be9d73e0c337c5f5b341cdaae2341579288684a2",
+      "bytes": 999,
+      "mode": "100644",
+      "original_path": "deploy/aliyun/siyue-crm-auth.service"
+    },
+    {
+      "path": "source/deploy/aliyun/siyue-crm-backup.service",
+      "sha256": "b15b7ae980871581169af02de7d6230fe84cb0c3d4eb3863b8a4c7836d19edc3",
+      "git_blob": "3ce80d31fb3d7ae29a5f098e5f2adbbf6f567a03",
+      "bytes": 567,
+      "mode": "100644",
+      "original_path": "deploy/aliyun/siyue-crm-backup.service"
+    },
+    {
+      "path": "source/deploy/aliyun/siyue-crm-backup.timer",
+      "sha256": "e8b4999bc8bfc0ef43242557f61f4c7a67ed102c510af6379891340daed48512",
+      "git_blob": "e793900aa992e67cf0228592545d2dec5529076c",
+      "bytes": 209,
+      "mode": "100644",
+      "original_path": "deploy/aliyun/siyue-crm-backup.timer"
+    },
+    {
+      "path": "source/deploy/aliyun/test.cjs",
+      "sha256": "8b37ce5855c5f5e66ca11eae85df9e40fd02308307285fc04626e7cc5072d3d5",
+      "git_blob": "e3eedea1fb9eec0570349a68272de70fa4321148",
+      "bytes": 3806,
+      "mode": "100644",
+      "original_path": "deploy/aliyun/test.cjs"
+    },
+    {
+      "path": "source/deploy/aliyun/verify-http.cjs",
+      "sha256": "31ac55b178d0b70ef478458ebc119d2115780b8aaebe0ce37e853751f7e26277",
+      "git_blob": "cb2c995266b20b6269953a11c424f80414c6b3f7",
+      "bytes": 2503,
+      "mode": "100644",
+      "original_path": "deploy/aliyun/verify-http.cjs"
+    },
+    {
+      "path": "source/deployment-config.js",
+      "sha256": "dd642378582b3e82043806159f2f24ce65f3881c91afd1ded4a5c425a2fec4d0",
+      "git_blob": "98e68a7e3eff65b2c334259c19c3c26a954ba56a",
+      "bytes": 817,
+      "mode": "100644",
+      "original_path": "deployment-config.js"
+    },
+    {
+      "path": "source/docs/academic-audit-2026-10-10.html",
+      "sha256": "1dedaae72b02bd7962bcad30cecdaa335bba5f66b54b8f4dd6344c74ec220e07",
+      "git_blob": "33407fb1440e11fa397498ba72c3727ef6715722",
+      "bytes": 12615,
+      "mode": "100644",
+      "original_path": "docs/academic-audit-2026-10-10.html"
+    },
+    {
+      "path": "source/docs/backend-deployment-2026-10-11.html",
+      "sha256": "f072e94fa3407644bde9681d5c07da45429bb372cbc8bdd468437223731df9c6",
+      "git_blob": "9db2ea687b3e4257a082e1db9feb22bfe04482e4",
+      "bytes": 18120,
+      "mode": "100644",
+      "original_path": "docs/backend-deployment-2026-10-11.html"
+    },
+    {
+      "path": "source/docs/permission-isolation-2026-10-12.md",
+      "sha256": "05c5067a4bab94900be2cfe9fe07710b2c811317c1d37bf3730a382bcb13e898",
+      "git_blob": "d5ab74f876b1ec078e5514bfb545140387c0e5bf",
+      "bytes": 3413,
+      "mode": "100644",
+      "original_path": "docs/permission-isolation-2026-10-12.md"
+    },
+    {
+      "path": "source/docs/platform-audit-2026-10-11.html",
+      "sha256": "4b3a850ede4a85ef4a2aeb78eea3a338009c24a8d37264608e3013f74db84228",
+      "git_blob": "ff134c95deed6b08fb2453cb9cd8571a033e8349",
+      "bytes": 18773,
+      "mode": "100644",
+      "original_path": "docs/platform-audit-2026-10-11.html"
+    },
+    {
+      "path": "source/docs/siyue-audit-2026-10-10.html",
+      "sha256": "01d2bc9968d35606bb8c03a76af20df10bfd4091a9ebddb09764224d50448ea9",
+      "git_blob": "7217c3d1e8fc7b698532dcbe6efb79580351b00a",
+      "bytes": 11823,
+      "mode": "100644",
+      "original_path": "docs/siyue-audit-2026-10-10.html"
+    },
+    {
+      "path": "source/docs/siyue-auth-2026-10-10.html",
+      "sha256": "4091048186190ee8e72810d30426c63f43334ef5cb6daac94cb8d2208809561c",
+      "git_blob": "c9f2bbab6aa74c9c2bb96969d8a87e017671b8b0",
+      "bytes": 5298,
+      "mode": "100644",
+      "original_path": "docs/siyue-auth-2026-10-10.html"
+    },
+    {
+      "path": "source/docs/siyue-cli-mcp.md",
+      "sha256": "808328e916b72e8f0ac8827e4cbeffbb4cc5708b969b470f36c2d582ebbf2e2d",
+      "git_blob": "5f113c47ad63b0af42a55854ee57a279dd401bf4",
+      "bytes": 12258,
+      "mode": "100644",
+      "original_path": "docs/siyue-cli-mcp.md"
+    },
+    {
+      "path": "source/docs/siyue-cli-quickfill.md",
+      "sha256": "a4a6b11da004eeeafc158f3581d04486d4ceb5778de3a2b3488a30c1aa1894ee",
+      "git_blob": "0ca5d707cef76b33aa2d21b68c79d84f1bd7e028",
+      "bytes": 11864,
+      "mode": "100644",
+      "original_path": "docs/siyue-cli-quickfill.md"
+    },
+    {
+      "path": "source/docs/siyue-daily-2026-10-10.html",
+      "sha256": "2b98e6055eb223e3395ff096660f94b32d47525fa53bdd86712e4d27ab26373d",
+      "git_blob": "c2a2e341608d0633faf0953a4b9ffcf5a641741e",
+      "bytes": 18508,
+      "mode": "100644",
+      "original_path": "docs/siyue-daily-2026-10-10.html"
+    },
+    {
+      "path": "source/docs/siyue-form-lead-workflow.md",
+      "sha256": "b84e5aaeb5d739178142b51c397a0fb18e690601ee8f705b510aea71349560b4",
+      "git_blob": "3730c8ac1f8c12696529261753651e8b02f24f49",
+      "bytes": 8747,
+      "mode": "100644",
+      "original_path": "docs/siyue-form-lead-workflow.md"
+    },
+    {
+      "path": "source/docs/siyue-operation-coverage.md",
+      "sha256": "db1c9493eb14764453de868757eff0cae332772496a196aa6e93e44e9aaed9e5",
+      "git_blob": "3c91ba521da38fe60b6e1bb9e01fc80171a438af",
+      "bytes": 13365,
+      "mode": "100644",
+      "original_path": "docs/siyue-operation-coverage.md"
+    },
+    {
+      "path": "source/docs/siyue-project-plan.html",
+      "sha256": "051cfac29914ba3194784414d1ade1550f5c2270595562eeec21447cdb8defd4",
+      "git_blob": "e401d728d92d5c60cd0b5ad0459ac4eec9515d85",
+      "bytes": 5211,
+      "mode": "100644",
+      "original_path": "docs/siyue-project-plan.html"
+    },
+    {
+      "path": "source/docs/siyue-prototype-revision-plan.html",
+      "sha256": "f77dfda376d2ee14f18d6fcb7375cb39c421bdeeca56b96a4da614a46d6a6982",
+      "git_blob": "c9273d5d4ab737b5206c2169bbb488c9a9ee73b1",
+      "bytes": 51668,
+      "mode": "100644",
+      "original_path": "docs/siyue-prototype-revision-plan.html"
+    },
+    {
+      "path": "source/docs/siyue-system-design.html",
+      "sha256": "fbf80c0a226a253995e987aecf70d22d72be7ca5a90c592814382873b849a90d",
+      "git_blob": "3d991cbe00ea2c1bf5221fdd36cd22f464a39d30",
+      "bytes": 204824,
+      "mode": "100644",
+      "original_path": "docs/siyue-system-design.html"
+    },
+    {
+      "path": "source/docs/siyue-teacher-academic-workflow.md",
+      "sha256": "206cc357b7fe5fedd9d71b1284849f5dfc61c2ed88cd63be318b29eeae161a62",
+      "git_blob": "e3059983af6fe7b170340f58402e8ea1badd2a11",
+      "bytes": 8114,
+      "mode": "100644",
+      "original_path": "docs/siyue-teacher-academic-workflow.md"
+    },
+    {
+      "path": "source/docs/siyue-update-2026-10-10.html",
+      "sha256": "001ce5c2fb11680a13aa96fca0e0e3481406dd7b8c041f9ea3c0b4732221e3d5",
+      "git_blob": "702ed3ebaa6940ab76049135e39f69c692fded74",
+      "bytes": 6668,
+      "mode": "100644",
+      "original_path": "docs/siyue-update-2026-10-10.html"
+    },
+    {
+      "path": "source/employee-auth.css",
+      "sha256": "cbb49f5c4b01d076f26d234e653484d4f2c2b67c7d6cbbbc6a4dd401cbc80a22",
+      "git_blob": "b409f824b3f91f2b8ddd6ec62358e1538396d800",
+      "bytes": 16133,
+      "mode": "100644",
+      "original_path": "employee-auth.css"
+    },
+    {
+      "path": "source/employee-auth.js",
+      "sha256": "671b2c0898a26364b26c72e57ffc89808fe51afac968c38254b9ec3f27b31719",
+      "git_blob": "7e5150cb723ff034ab83b05b8872b37b5b8787bd",
+      "bytes": 85309,
+      "mode": "100644",
+      "original_path": "employee-auth.js"
+    },
+    {
+      "path": "source/enhancements.js",
+      "sha256": "09ba813cd10c4c2398cfbf4fcfff2ff6d7f0e1a03525cc7b22da367a1987a369",
+      "git_blob": "edd5eeeb7b70eec970da42405b4f8622846c65ce",
+      "bytes": 94647,
+      "mode": "100644",
+      "original_path": "enhancements.js"
+    },
+    {
+      "path": "source/finance-audit.css",
+      "sha256": "06e7e91853e1f1fd671ade144a711e6c9531367b56fe599dd6685fc34076a7a0",
+      "git_blob": "fc8a49ac64bae27cd29f4fc34a7ce4c251e17b29",
+      "bytes": 593,
+      "mode": "100644",
+      "original_path": "finance-audit.css"
+    },
+    {
+      "path": "source/finance-audit.js",
+      "sha256": "ce6726de04142a53ebf41f6477bb37e244b03151effd6d09b574d37d4a345cce",
+      "git_blob": "ee76c3532520aefa32d255201263e19cacb89589",
+      "bytes": 17311,
+      "mode": "100644",
+      "original_path": "finance-audit.js"
+    },
+    {
+      "path": "source/finance-quick-actions.css",
+      "sha256": "e633f073717144df0dd7e83c388abadd2f5ca5cb53a81e8a5c3a280316c8fc9d",
+      "git_blob": "5afe605d33be5130053f7856808f1e11f00ef2a5",
+      "bytes": 2387,
+      "mode": "100644",
+      "original_path": "finance-quick-actions.css"
+    },
+    {
+      "path": "source/finance-quick-actions.js",
+      "sha256": "0396704f9e95c7fb2ccabc4262fa02f0a73d2cd06a2c0829ebf5b03e7b097810",
+      "git_blob": "64b792903615e650270a432135f983a61cbe87da",
+      "bytes": 13398,
+      "mode": "100644",
+      "original_path": "finance-quick-actions.js"
+    },
+    {
+      "path": "source/index.html",
+      "sha256": "8dc0855b8298708c922f800e561e96a1318896e5bdd55187d80cec75d19fe91c",
+      "git_blob": "6b43578f1a6c860d1ccfcdf7b482c1b8783525a4",
+      "bytes": 36330,
+      "mode": "100644",
+      "original_path": "index.html"
+    },
+    {
+      "path": "source/interface-polish.css",
+      "sha256": "a5f7c1ec51b26d7d8830a7a38f345a4f9574a09f540ddca63b9143d286954a9b",
+      "git_blob": "be816d87c874e3355945b3c3bd180a12614e6628",
+      "bytes": 8709,
+      "mode": "100644",
+      "original_path": "interface-polish.css"
+    },
+    {
+      "path": "source/interface-polish.js",
+      "sha256": "9918a1ce6a4a129cae1c71dfc8775bc06d19f2b9e745a0ba6e1bd9ed6c7a8ac4",
+      "git_blob": "7ed1874795593673c75c229fabd3a3c9dace56a9",
+      "bytes": 14696,
+      "mode": "100644",
+      "original_path": "interface-polish.js"
+    },
+    {
+      "path": "source/leads.css",
+      "sha256": "75be16b6a1de5d8b5d5bd040261db6d08b8d35189aeb5c7c07ffd3faf2ec2166",
+      "git_blob": "eaeebc13963b1832c2b7952e05724c5475dc9042",
+      "bytes": 4329,
+      "mode": "100644",
+      "original_path": "leads.css"
+    },
+    {
+      "path": "source/leads.js",
+      "sha256": "30612331f96a3b68d1963cf06cd9cd20eb344a7cb744152cc1c5eaea7a24634c",
+      "git_blob": "d945662eb2b971e7dbc666e6b9fd7a35cd62caf0",
+      "bytes": 34182,
+      "mode": "100644",
+      "original_path": "leads.js"
+    },
+    {
+      "path": "source/lesson-consumption-demo.js",
+      "sha256": "118b1368e3044fb2dd69bb9ab36774843d0393dd9505e744767d13af6f740e94",
+      "git_blob": "9a4c38f2327927c0aa540b563aa7bfee4ec3ccd1",
+      "bytes": 10836,
+      "mode": "100644",
+      "original_path": "lesson-consumption-demo.js"
+    },
+    {
+      "path": "source/lesson-consumption-example.js",
+      "sha256": "ca848b9ea946425c4acd12bd6dde1d5d0fe3bd31830457329b0ce6056d7e9659",
+      "git_blob": "b46f723c0cd350acf63aa3988fed17300de8d3da",
+      "bytes": 18524,
+      "mode": "100644",
+      "original_path": "lesson-consumption-example.js"
+    },
+    {
+      "path": "source/lesson-consumption.js",
+      "sha256": "52b3a89ded217d6d555dea7f06bd44511756ba9d2a0e6cd0c06c61f2f6824c29",
+      "git_blob": "7f2d3537a8b4c6fe825830f979d635ca569bf847",
+      "bytes": 7566,
+      "mode": "100644",
+      "original_path": "lesson-consumption.js"
+    },
+    {
+      "path": "source/mall-decor-editor.css",
+      "sha256": "8827d24665843aa6f7d0c97b04758d5f18e3d5916141f763eb04fae0d76b414b",
+      "git_blob": "430f36b00fbb0f3265fb771f1848f0f3303b0ea5",
+      "bytes": 4717,
+      "mode": "100644",
+      "original_path": "mall-decor-editor.css"
+    },
+    {
+      "path": "source/mall-decor-editor.js",
+      "sha256": "db17aa7fb17fb0d2e7e9091ef0062974e10d91f3b0027a6d9dbadde25f5972a3",
+      "git_blob": "3901fa5ea8962d6f98bf2187e0494f3dd8924e67",
+      "bytes": 15937,
+      "mode": "100644",
+      "original_path": "mall-decor-editor.js"
+    },
+    {
+      "path": "source/mall.css",
+      "sha256": "94ae2b82efb3639b82e9932dc7d910f17d886194b75f5d5c23d3b5cc1154a66d",
+      "git_blob": "a51050817ffd57e8688d901958ea7c02f0c403a0",
+      "bytes": 2705,
+      "mode": "100644",
+      "original_path": "mall.css"
+    },
+    {
+      "path": "source/mall.js",
+      "sha256": "f4822ed1f2d0806a83091e0de614a5db240987cd5cd78152eabd624a88622785",
+      "git_blob": "3cb0f3df020d388f0e15b73b225e638bc3478043",
+      "bytes": 25597,
+      "mode": "100644",
+      "original_path": "mall.js"
+    },
+    {
+      "path": "source/marketing-forms.css",
+      "sha256": "56bd8d7dd0fb4fdd460f383f9c7c347afbe539998da450d2703ddcca2bd0a075",
+      "git_blob": "3d559e83a6f8aaff642858fce61ac9154d65f2d1",
+      "bytes": 3478,
+      "mode": "100644",
+      "original_path": "marketing-forms.css"
+    },
+    {
+      "path": "source/marketing-forms.js",
+      "sha256": "b1c29c824d88d30e43a00cb588cf06279ac97f5cf5a3b2b67f128aace0f4d10a",
+      "git_blob": "66d4bcc69cf3bdf4f74d46a4a41849676d7694f8",
+      "bytes": 25781,
+      "mode": "100644",
+      "original_path": "marketing-forms.js"
+    },
+    {
+      "path": "source/mcp/bridge.cjs",
+      "sha256": "80a23b4916e67c4850febdc52dc6182ba23dd95527d273773de8859611f5950e",
+      "git_blob": "a98e2c87c743741d55930cdb5d2feffc452485d3",
+      "bytes": 8836,
+      "mode": "100644",
+      "original_path": "mcp/bridge.cjs"
+    },
+    {
+      "path": "source/mcp/config.example.json",
+      "sha256": "198962e45c0a778031b0ea6458bf8a694d433cf78f15b4340ec0d398d1a68f43",
+      "git_blob": "ca3828a989bae8c5e26226eccbb70d8447a8375a",
+      "bytes": 270,
+      "mode": "100644",
+      "original_path": "mcp/config.example.json"
+    },
+    {
+      "path": "source/mcp/server.cjs",
+      "sha256": "9207bd7c7e1e6a8f2464bfd88893a817d4d81effc17c3c5b7ef9bab6d93de472",
+      "git_blob": "6fc76e2a1f1acabc7f2c8a3cd15b9454add93a43",
+      "bytes": 4318,
+      "mode": "100644",
+      "original_path": "mcp/server.cjs"
+    },
+    {
+      "path": "source/mcp/server.test.cjs",
+      "sha256": "be91e790f2c7680159ae41fc0a621bcfc927b19a5fe32a1ff3499b2ff1594686",
+      "git_blob": "893271168f38cb65f14f8dd2b118dd586fb00352",
+      "bytes": 10892,
+      "mode": "100644",
+      "original_path": "mcp/server.test.cjs"
+    },
+    {
+      "path": "source/navigation.css",
+      "sha256": "0c2708827e98b332b5199476cd87472cac6105caaf41834781bf3e85bc675225",
+      "git_blob": "9be7256ed29e18341ca7becea2dcbf58953a5eeb",
+      "bytes": 1451,
+      "mode": "100644",
+      "original_path": "navigation.css"
+    },
+    {
+      "path": "source/operation-contract.js",
+      "sha256": "4807ab9c5527cd1838c1365bfb02edb8f7a5492b866281749290f9bf6fb30108",
+      "git_blob": "34abde6eaf4b87e9f69a09717b567213a8d28ba2",
+      "bytes": 7714,
+      "mode": "100644",
+      "original_path": "operation-contract.js"
+    },
+    {
+      "path": "source/operation-directory.css",
+      "sha256": "cb982ead37254eacdd8adb9c357289193ce2af822e7e6f743aeb41665935e311",
+      "git_blob": "00b5d247adaf1f6fd85a9afd92b2e1a313706f24",
+      "bytes": 676,
+      "mode": "100644",
+      "original_path": "operation-directory.css"
+    },
+    {
+      "path": "source/operation-directory.js",
+      "sha256": "5e7053ca5437172084698961f6a64efe9387a892d886ce2cee51199c1b40468a",
+      "git_blob": "d30abd2429a65ec24a79ed5eb60ec65a60a75393",
+      "bytes": 6597,
+      "mode": "100644",
+      "original_path": "operation-directory.js"
+    },
+    {
+      "path": "source/operation-journal.css",
+      "sha256": "496d5fd2bef6f7ffe79324530a28985dfce487bf5734b6c9fcaf027ea654e4c4",
+      "git_blob": "3d1ad20061b3fceff4b2e7bce299bb63b1aefda8",
+      "bytes": 645,
+      "mode": "100644",
+      "original_path": "operation-journal.css"
+    },
+    {
+      "path": "source/operation-journal.js",
+      "sha256": "e7391e45928b240f66ec900cc82d12570af4768744ef2d6e17fe02c2f8908a25",
+      "git_blob": "cc4e82e4bd706a63847be2edd3c7df31d668fc09",
+      "bytes": 19527,
+      "mode": "100644",
+      "original_path": "operation-journal.js"
+    },
+    {
+      "path": "source/package.json",
+      "sha256": "3b81d7436214d6cc1b39473803af3d79305cea0d9e64e619fcfad82af6cf17b1",
+      "git_blob": "cfa6ecab162749fe0494296b9f240599f94ecf9a",
+      "bytes": 756,
+      "mode": "100644",
+      "original_path": "package.json"
+    },
+    {
+      "path": "source/page-layouts.js",
+      "sha256": "c08b7ab5e4be292cb43ac6cc234e5366686955c3ed52cd48b9d8e7ccf26428f2",
+      "git_blob": "b6d1187b6691bd38a2f3acd54a9a817cef507861",
+      "bytes": 943,
+      "mode": "100644",
+      "original_path": "page-layouts.js"
+    },
+    {
+      "path": "source/permissions.css",
+      "sha256": "3b3eaaaae9ade8645d6120a6af1140d78d7ad65baf26a470671547c53b8bfb2a",
+      "git_blob": "28264dc797137aa6e24182276e903a53c06c5667",
+      "bytes": 1419,
+      "mode": "100644",
+      "original_path": "permissions.css"
+    },
+    {
+      "path": "source/permissions.js",
+      "sha256": "dd95fbc6142d221f90be6b2b2479ee9c8975f70baa4c25ec883c3667f5bc9874",
+      "git_blob": "6a43d65edbd36f856141f815e5f1524fd21c495b",
+      "bytes": 23354,
+      "mode": "100644",
+      "original_path": "permissions.js"
+    },
+    {
+      "path": "source/platform-audit.css",
+      "sha256": "ea31b28e819cd346d0ade9cb16fea904400bab9f07c23a575f8a3a95fd7dfb1d",
+      "git_blob": "5865b09b068ad99c541d0c031babf2d8892fd04f",
+      "bytes": 333,
+      "mode": "100644",
+      "original_path": "platform-audit.css"
+    },
+    {
+      "path": "source/platform-audit.js",
+      "sha256": "a57e00bf63ae13e2a1e16faa21eb0288e28ad94c26fe2d8a83c3d5dcd7bead57",
+      "git_blob": "9097a1dbaf4ee5903a4851d4100dd2befc8d86ed",
+      "bytes": 12401,
+      "mode": "100644",
+      "original_path": "platform-audit.js"
+    },
+    {
+      "path": "source/profile-quick-actions.css",
+      "sha256": "3cf2fdaaa8249f348d2508d118db640eee1f1840cb9e59287b1aef1e7d9dc100",
+      "git_blob": "2dd6335e8371af7206c2dade0c64ac38307d3180",
+      "bytes": 1239,
+      "mode": "100644",
+      "original_path": "profile-quick-actions.css"
+    },
+    {
+      "path": "source/profile-quick-actions.js",
+      "sha256": "aeb47754996d9b58633e728bfa87f2e502e31b0042d8fe846c4200bfdf3566c2",
+      "git_blob": "3bdd223ee6cf0ceb6315add0c265cc7040f81e0c",
+      "bytes": 26244,
+      "mode": "100644",
+      "original_path": "profile-quick-actions.js"
+    },
+    {
+      "path": "source/public-form.html",
+      "sha256": "8125f29bc3b68bfc64e16dff6c6f567744db23e5a7dadfc64b165874de263dd1",
+      "git_blob": "685cf5d70392bc8d5ff615b3f1f1a16312a2caf0",
+      "bytes": 2697,
+      "mode": "100644",
+      "original_path": "public-form.html"
+    },
+    {
+      "path": "source/public-form.js",
+      "sha256": "5fc1dc08ba861b63dd188318d86f1ee47ea2c4c3e31a3e9a096f2a4cf20b7c22",
+      "git_blob": "d69cc078da974c0c6b778d377e253bd5e08310d3",
+      "bytes": 10233,
+      "mode": "100644",
+      "original_path": "public-form.js"
+    },
+    {
+      "path": "source/qrcode-vendor.js",
+      "sha256": "374101309405d012e689046c7e0610bcfddfc1880504cfb268e48e967ae0863e",
+      "git_blob": "220a4ef8e97a9e08ae1956b16aa206d68d89cac2",
+      "bytes": 57822,
+      "mode": "100644",
+      "original_path": "qrcode-vendor.js"
+    },
+    {
+      "path": "source/sales-metrics.css",
+      "sha256": "640b4e0b29cfe5146e1c18f45880b21ec4462906b66f13aabb10d1f0d7d041fe",
+      "git_blob": "4741b19135f9115e2a9ef76ff57b704d80c3bbb6",
+      "bytes": 1767,
+      "mode": "100644",
+      "original_path": "sales-metrics.css"
+    },
+    {
+      "path": "source/sales-metrics.js",
+      "sha256": "01b7f07bfb54fa8ee933298354983de4f1105a2eb0cd1fa3c24030ab11fa8d34",
+      "git_blob": "4077176bf90d1888d1149e9f12f8e0627130f68a",
+      "bytes": 17669,
+      "mode": "100644",
+      "original_path": "sales-metrics.js"
+    },
+    {
+      "path": "source/schedule-caterpillar.css",
+      "sha256": "6980bb6779dc5323f908723e307a908a6aa0c4af129d60ea112151e4bbbf0dcd",
+      "git_blob": "9341b1b4cfe37744b1fb3d4c38766f30388743cc",
+      "bytes": 3206,
+      "mode": "100644",
+      "original_path": "schedule-caterpillar.css"
+    },
+    {
+      "path": "source/schedule-caterpillar.js",
+      "sha256": "3cef8dc22bbeb16738ae9dda84023ce2eb65e2ea5105082636a77e38ff77257f",
+      "git_blob": "63727cda958ac9532ad5f1ec828130c3b8812cec",
+      "bytes": 13335,
+      "mode": "100644",
+      "original_path": "schedule-caterpillar.js"
+    },
+    {
+      "path": "source/scripts/build-tools.cjs",
+      "sha256": "63b4cdbd48d3e0e9b7835fdee44c4bf57f4a3eb5f615372a8be3cfd40f7e50d9",
+      "git_blob": "cd8ac3e45f3b5fe744418328553c63e7e48a4f63",
+      "bytes": 7029,
+      "mode": "100644",
+      "original_path": "scripts/build-tools.cjs"
+    },
+    {
+      "path": "source/scripts/build-tools.test.cjs",
+      "sha256": "5d213861c7b8616406bf5359ab4946926151659d4b0b8f71a3ac97dc4b987d17",
+      "git_blob": "a091287c12e0d27d076cf2ebe484adf94f47e9f1",
+      "bytes": 6105,
+      "mode": "100644",
+      "original_path": "scripts/build-tools.test.cjs"
+    },
+    {
+      "path": "source/shortcuts.css",
+      "sha256": "de712b7b53dbe1bd5c9f5782d3a5f810c79dd71f43b0ec6f61a12a8e33d3c214",
+      "git_blob": "0c22156c7087c2d90abbc3e4362d4fe0170d959e",
+      "bytes": 7135,
+      "mode": "100644",
+      "original_path": "shortcuts.css"
+    },
+    {
+      "path": "source/shortcuts.js",
+      "sha256": "735e2aec46b9f47e39d1c431bd8494dafbf2b41a5741dc9f2df15dbf33e517c1",
+      "git_blob": "099bd032c453c1c4a55db34a624b2c57b8fc41c9",
+      "bytes": 12737,
+      "mode": "100644",
+      "original_path": "shortcuts.js"
+    },
+    {
+      "path": "source/structure.css",
+      "sha256": "d69a6a3942226f2714c6b3677816dc5487da23e04e6c07498a9a7e8bd4d5ad14",
+      "git_blob": "08e0e554e4a929922551605d493a392de43244aa",
+      "bytes": 400,
+      "mode": "100644",
+      "original_path": "structure.css"
+    },
+    {
+      "path": "source/structure.js",
+      "sha256": "45177fb013e235bd14286e4526fc6b2fbf43a95d35ff5047b5a2d0a149b5410f",
+      "git_blob": "29644d8d8c962fb4de16bf18dd7f184b43213936",
+      "bytes": 5137,
+      "mode": "100644",
+      "original_path": "structure.js"
+    },
+    {
+      "path": "source/system-settings.css",
+      "sha256": "9f213c4c80ca5952cb4a82f5c9c0ba559bff5e945dd35fd6c285e0d00cfa5871",
+      "git_blob": "4edfec550fbc73a85cfd72b210ca1c92d7229707",
+      "bytes": 1090,
+      "mode": "100644",
+      "original_path": "system-settings.css"
+    },
+    {
+      "path": "source/system-settings.js",
+      "sha256": "31026891a747188cd9911f9469774832d08b444e9f930a207d8f79407e04054b",
+      "git_blob": "a18d3d83946a02aa9567293ff0169ab36fd03fd2",
+      "bytes": 8904,
+      "mode": "100644",
+      "original_path": "system-settings.js"
+    },
+    {
+      "path": "source/tests/academic-class-audit.cjs",
+      "sha256": "dbc6d47f0bcdae349e48ce55dab1b97d423696a26340ac28903d6f0b3d925514",
+      "git_blob": "8a67aea1f2777ac105ade7955903a7dda2669cbd",
+      "bytes": 21116,
+      "mode": "100644",
+      "original_path": "tests/academic-class-audit.cjs"
+    },
+    {
+      "path": "source/tests/academic-planner.cjs",
+      "sha256": "1d75a3e553f6972661ed9cfef7db1cae1bcc8632d715ca25c655fb2aeafddf9b",
+      "git_blob": "d2e211619ad0acc194cf19f07d31b74c5c46cdbc",
+      "bytes": 7000,
+      "mode": "100644",
+      "original_path": "tests/academic-planner.cjs"
+    },
+    {
+      "path": "source/tests/academic-schedule-audit.cjs",
+      "sha256": "792812302394532af3b95fde7a66d9e0b8546fe510ee76161bc5c25a3dabcb6b",
+      "git_blob": "3d63a884dfef83e1a53d23be60a538dc2e7b8fbf",
+      "bytes": 11094,
+      "mode": "100644",
+      "original_path": "tests/academic-schedule-audit.cjs"
+    },
+    {
+      "path": "source/tests/academic-scheduling-flow.cjs",
+      "sha256": "7a1dbfb1c506bdd9c3ad29e801feff3a81f4c64fd37cce94b043b940cc963996",
+      "git_blob": "e0a19a8124538e1ca1fc783d1ba4b21ae5163e07",
+      "bytes": 18060,
+      "mode": "100644",
+      "original_path": "tests/academic-scheduling-flow.cjs"
+    },
+    {
+      "path": "source/tests/academic-session-audit.cjs",
+      "sha256": "0820078b2f0d3f11b4649713ac295bbd9ad13282b66dd2b9ca8ed61e29c1a00f",
+      "git_blob": "13f4f71e8cbf798ce5e01274dec53ff326feedb6",
+      "bytes": 11066,
+      "mode": "100644",
+      "original_path": "tests/academic-session-audit.cjs"
+    },
+    {
+      "path": "source/tests/academic.cjs",
+      "sha256": "3faed9e5cf1387499cc5f0f94b866cff00d5710a900312273c106999db95486d",
+      "git_blob": "59440e17b323588dd713c2f7fcd6a05ab677f6c2",
+      "bytes": 11729,
+      "mode": "100644",
+      "original_path": "tests/academic.cjs"
+    },
+    {
+      "path": "source/tests/account-search.cjs",
+      "sha256": "bc1dbe57bdb29a34eafb887ff5b7252e08f809fe597f23f11d761bce03eba2e5",
+      "git_blob": "8a3266b0a2f41baed69ee060d26546fcf2caa203",
+      "bytes": 5955,
+      "mode": "100644",
+      "original_path": "tests/account-search.cjs"
+    },
+    {
+      "path": "source/tests/audit.cjs",
+      "sha256": "649d1ea18280954054745fc453686d91c19caa3ff2a7feae7a71f00b2869d46f",
+      "git_blob": "38279d96d3dfe88bf6f300d096f86e8b66ef512f",
+      "bytes": 6120,
+      "mode": "100644",
+      "original_path": "tests/audit.cjs"
+    },
+    {
+      "path": "source/tests/batch-enrollment-corrections.cjs",
+      "sha256": "7179ed2a3f94ce6bb658c0d526689014549c3ba0d9be5a721a8cb3711f048824",
+      "git_blob": "1b747623fd507614721a47bd7b0bbcc80df85d86",
+      "bytes": 12544,
+      "mode": "100644",
+      "original_path": "tests/batch-enrollment-corrections.cjs"
+    },
+    {
+      "path": "source/tests/business-api.cjs",
+      "sha256": "6f72b308d092ffc2ce857cbeaf315a7a7546b8901409f715c49148c2a999ff77",
+      "git_blob": "d35e4ddba1ee848ecde7875442640b25d95d4d4a",
+      "bytes": 114421,
+      "mode": "100644",
+      "original_path": "tests/business-api.cjs"
+    },
+    {
+      "path": "source/tests/business-decor.cjs",
+      "sha256": "d763715e606f54e74fb0e953dfa9ecc8840dae697ffbf375fc1912ae032fcab8",
+      "git_blob": "8bc58705514da7010df3c81d22f9fcd1dede6951",
+      "bytes": 12701,
+      "mode": "100644",
+      "original_path": "tests/business-decor.cjs"
+    },
+    {
+      "path": "source/tests/business-enrollment.cjs",
+      "sha256": "18d9de11765e562760176d96c184b2d0b1d9948ffe8d16ace57e61abd6420c3f",
+      "git_blob": "3bce1eda9ef130b5410d305b91712493fa6ac035",
+      "bytes": 17147,
+      "mode": "100644",
+      "original_path": "tests/business-enrollment.cjs"
+    },
+    {
+      "path": "source/tests/business-form-builder.cjs",
+      "sha256": "de53dc53067c80f333c6c448c7eea49a55e84bdcb50b4cdb1d9a40b79f6aec75",
+      "git_blob": "17f1c25faace325028ec2c40e43ca399931905a1",
+      "bytes": 17166,
+      "mode": "100644",
+      "original_path": "tests/business-form-builder.cjs"
+    },
+    {
+      "path": "source/tests/business-presenter.cjs",
+      "sha256": "1a8da9857ee252c767f616f6bf7a57e3495ff72ad5f8fd5186592b2a6bf65f2c",
+      "git_blob": "f4eb950484c0f71cb8e3a9c6105ed25e740019d6",
+      "bytes": 15834,
+      "mode": "100644",
+      "original_path": "tests/business-presenter.cjs"
+    },
+    {
+      "path": "source/tests/business-schedule.cjs",
+      "sha256": "0a83363ed5d5d4c712a89bdf0e09d02a52eca6bf2d0f21245d563ea053fdb81e",
+      "git_blob": "7bc3cf9a7d14b0019ca115abc1f2988dbe5cce1b",
+      "bytes": 12155,
+      "mode": "100644",
+      "original_path": "tests/business-schedule.cjs"
+    },
+    {
+      "path": "source/tests/business-workbench.cjs",
+      "sha256": "e5bb4efd14170a922f53975ad2c84e4f66991605d5db1aca7a1c8ef9f2a93aa0",
+      "git_blob": "2a14454c9e5828181f476a33a510f485173db902",
+      "bytes": 5450,
+      "mode": "100644",
+      "original_path": "tests/business-workbench.cjs"
+    },
+    {
+      "path": "source/tests/commerce-audit.cjs",
+      "sha256": "687660cc4d87bc6cc634faa39f3989a79a0d412fa02af4173468d735617b164b",
+      "git_blob": "3352866d96e24816ac16f9f8840666438f54609d",
+      "bytes": 21529,
+      "mode": "100644",
+      "original_path": "tests/commerce-audit.cjs"
+    },
+    {
+      "path": "source/tests/crm-audit.cjs",
+      "sha256": "fb5d7cee834272cb91756650452557b82ca826181df1b0dcf124abcabffe6ff1",
+      "git_blob": "b47c0122a1642e0a9b17489d0d7490390c208742",
+      "bytes": 22825,
+      "mode": "100644",
+      "original_path": "tests/crm-audit.cjs"
+    },
+    {
+      "path": "source/tests/crm-import.cjs",
+      "sha256": "3f8128749cd86c0de2a82130d2df727e310495e6fe346c4f97b1c77eadb8914b",
+      "git_blob": "c6bef67099641946ffb6aa1bd9ccfc970312a995",
+      "bytes": 10337,
+      "mode": "100644",
+      "original_path": "tests/crm-import.cjs"
+    },
+    {
+      "path": "source/tests/crm.cjs",
+      "sha256": "ef11f356ac7611e9c395641d59d4bb07bcb8633d5a491814dcbbb699eec7f866",
+      "git_blob": "5243a92beea77c0eff5b1f92b7051e01609051a1",
+      "bytes": 5788,
+      "mode": "100644",
+      "original_path": "tests/crm.cjs"
+    },
+    {
+      "path": "source/tests/employee-auth.cjs",
+      "sha256": "aac0bee83da2d43f568b37defc92f1fb09425a585a5aa51f2220ba3fde983260",
+      "git_blob": "25def38cb8154bc8b713b43d8f1c1ad0d48f703c",
+      "bytes": 62123,
+      "mode": "100644",
+      "original_path": "tests/employee-auth.cjs"
+    },
+    {
+      "path": "source/tests/finance-audit.cjs",
+      "sha256": "c20f26ec693fac08b90149ea941d6417cbc9048c4c23f1bd7da7c0ed9c8bc39d",
+      "git_blob": "e03259c4f4bdbd36b4b4aa57238dbeb782d60e80",
+      "bytes": 18721,
+      "mode": "100644",
+      "original_path": "tests/finance-audit.cjs"
+    },
+    {
+      "path": "source/tests/finance-quick-actions.cjs",
+      "sha256": "c0c5f677b665a5531d64a53fcb32a13a5be6194fbbb923891789a352ceb0819e",
+      "git_blob": "c5b7da7217e6ceff008e61a24baf79bdbc0087f1",
+      "bytes": 10635,
+      "mode": "100644",
+      "original_path": "tests/finance-quick-actions.cjs"
+    },
+    {
+      "path": "source/tests/full-smoke.cjs",
+      "sha256": "ac1394142e1e8e94abc7497896cf967129a1911ac66c3c6d8b0492e06e2acc50",
+      "git_blob": "2b1988d2be0e9d61be8a7591973c45d04522c63f",
+      "bytes": 16730,
+      "mode": "100644",
+      "original_path": "tests/full-smoke.cjs"
+    },
+    {
+      "path": "source/tests/lesson-consumption.cjs",
+      "sha256": "a9fbee2f7418d0788913c3eec5068e5b243445787f1eac5cf0d528468babcb1f",
+      "git_blob": "1cb153c5f96d14ca58f252610bca0f3589b43453",
+      "bytes": 10453,
+      "mode": "100644",
+      "original_path": "tests/lesson-consumption.cjs"
+    },
+    {
+      "path": "source/tests/mall.cjs",
+      "sha256": "8bac9efbec5ce8d072d14e29d9e19263683afe10983a26c78786ff2013965310",
+      "git_blob": "0b04bcb60cd2b467508a954d7a3c0c9ad45e4df8",
+      "bytes": 13388,
+      "mode": "100644",
+      "original_path": "tests/mall.cjs"
+    },
+    {
+      "path": "source/tests/operation-journal.cjs",
+      "sha256": "453ece0d5e6d7a951d29e7ef4086475c46e606dc605659f5a5843fdde7798477",
+      "git_blob": "4189237ec5d95c279a4b597d02235b18f83e1b7e",
+      "bytes": 5544,
+      "mode": "100644",
+      "original_path": "tests/operation-journal.cjs"
+    },
+    {
+      "path": "source/tests/platform-audit.cjs",
+      "sha256": "492983b5b06c24e200fa38e4854173b499b61580d9347956ee41cccc7661db96",
+      "git_blob": "0151d582774b3511e6334154cbdf006e9e54644b",
+      "bytes": 4581,
+      "mode": "100644",
+      "original_path": "tests/platform-audit.cjs"
+    },
+    {
+      "path": "source/tests/profile-quick-actions.cjs",
+      "sha256": "b0b592720cd5285222a4c8f3f6138b5975e0cc8a5ddc25a75a92f46f1ecdbee2",
+      "git_blob": "3575746f3faa0115a2d1552d88239e47654e8661",
+      "bytes": 11833,
+      "mode": "100644",
+      "original_path": "tests/profile-quick-actions.cjs"
+    },
+    {
+      "path": "source/tests/public-form.cjs",
+      "sha256": "a50768c21a8651f6c3a410918b7c515867871a5af2e5d12e34b70193676e937e",
+      "git_blob": "4c89901d74bdf709a010451ec10b92feb7cd27ee",
+      "bytes": 10030,
+      "mode": "100644",
+      "original_path": "tests/public-form.cjs"
+    },
+    {
+      "path": "source/tests/run.cjs",
+      "sha256": "07c2dd64a8df442198520a5b29551198d1c686a1a860506bc46d46a8274757a2",
+      "git_blob": "58d5fb314b9882db5c13c371fc79d40df7841cb0",
+      "bytes": 1641,
+      "mode": "100644",
+      "original_path": "tests/run.cjs"
+    },
+    {
+      "path": "source/tests/runtime.cjs",
+      "sha256": "9543d00636bf74333d661697745a1dff7c8a86a38f46fe53cd62c8461e7f9031",
+      "git_blob": "77f98acce6dd2fd1c79a24e645f2993f5a20d0ff",
+      "bytes": 2172,
+      "mode": "100644",
+      "original_path": "tests/runtime.cjs"
+    },
+    {
+      "path": "source/tests/sales-followup.cjs",
+      "sha256": "baf2d7b4e893d057b3e8422f3ccf3379b3de0a1249b73ab93b594be9fd7c42d9",
+      "git_blob": "e495e3a6dbbf39e1a5b52fa4da08195fdd424ec2",
+      "bytes": 14136,
+      "mode": "100644",
+      "original_path": "tests/sales-followup.cjs"
+    },
+    {
+      "path": "source/tests/sales-metrics.cjs",
+      "sha256": "5ce5183c383136ddf4a202c471368f5c363843208855911c709db50f528aa95a",
+      "git_blob": "3e1d7d6481e5688c0425457603bbe639ea6ee1bd",
+      "bytes": 9719,
+      "mode": "100644",
+      "original_path": "tests/sales-metrics.cjs"
+    },
+    {
+      "path": "source/tests/temp-transfer-eligibility.cjs",
+      "sha256": "9ea766e8f9cb31d21423cc760885e55e03e7de8888704bc1c3b8d2fcd538bce3",
+      "git_blob": "374301bd9562e99b72db109a89c8116bff121622",
+      "bytes": 8129,
+      "mode": "100644",
+      "original_path": "tests/temp-transfer-eligibility.cjs"
+    },
+    {
+      "path": "source/tests/withdrawal.cjs",
+      "sha256": "b5a04c92979490338d96cd7c9e7b9f6dbebef3da38622fdcbd051d6daab9b798",
+      "git_blob": "e88d221c7cdcbbd311d77ae30ba927da12fecce4",
+      "bytes": 14089,
+      "mode": "100644",
+      "original_path": "tests/withdrawal.cjs"
+    },
+    {
+      "path": "source/tests/workspace-navigation.cjs",
+      "sha256": "d3c5bf27cd00c6b4bc06aaf5561f8a78e28a90dd7ef3f99359a89690bafcdd0c",
+      "git_blob": "c5ec8e4d1e4d33c67ecf644e0cdf065121f67547",
+      "bytes": 6268,
+      "mode": "100644",
+      "original_path": "tests/workspace-navigation.cjs"
+    },
+    {
+      "path": "source/unified-controls.css",
+      "sha256": "68cea4a9df5496df38ccaa45ea192da280dacba9f2ffb74ca3ac4d4382700eed",
+      "git_blob": "dc36e67ea73bc0561318cebde59b4d982af1ffeb",
+      "bytes": 6749,
+      "mode": "100644",
+      "original_path": "unified-controls.css"
+    },
+    {
+      "path": "source/withdrawal.js",
+      "sha256": "36b4fc51b20741b84b245c63d0eb29e1ee02bb662e829bacd97d80d9c808f12b",
+      "git_blob": "929cc5d79309ad7aec35ed1f46a4e964c3339ed1",
+      "bytes": 18497,
+      "mode": "100644",
+      "original_path": "withdrawal.js"
+    },
+    {
+      "path": "source/workspace-navigation.css",
+      "sha256": "43e6cb50766a594c7e5dab7bcbbeb0e3d9c6aa72f446155ee2f00418095e3983",
+      "git_blob": "83b8c0b4c2c3d36dcb9ab77a8d32a4879c83431d",
+      "bytes": 1651,
+      "mode": "100644",
+      "original_path": "workspace-navigation.css"
+    },
+    {
+      "path": "source/workspace-navigation.js",
+      "sha256": "6a9c755901f5bd395e9c94ee40c3b8c4e4670f8bff534ed7d427f828f90c9743",
+      "git_blob": "3a117eabdb9bfb90d887cfca7aff4c63481423e8",
+      "bytes": 23018,
+      "mode": "100644",
+      "original_path": "workspace-navigation.js"
+    },
+    {
+      "path": "source/使用说明.txt",
+      "sha256": "16460c99ed30e73b213146e71ff7d0dd038e3aa93867b4e82912d3495a153963",
+      "git_blob": "9c39c37290a4113681005f9e8328efb4d0c41ff5",
+      "bytes": 866,
+      "mode": "100644",
+      "original_path": "使用说明.txt"
+    },
+    {
+      "path": "source/打开原型.cmd",
+      "sha256": "0edbd8f5b22789c3f11971244871f1b36e23f9e710fdc8b25ca6429165ec81be",
+      "git_blob": "39739361e8a480e8798c7ce901439daff32ae7bb",
+      "bytes": 39,
+      "mode": "100644",
+      "original_path": "打开原型.cmd"
+    }
+  ],
+  "excluded_counts": {
+    "binary-data-or-rebuildable-artifact": 1
+  },
+  "history": {
+    "available": true,
+    "refs": [
+      "844d59ae8923fad2b0cd055706ce9240854e96a3 refs/heads/backup/academic-audit-before-api-sync",
+      "2c5909933301103315422c3af73ccede662408d4 refs/heads/backup/authentication-before-api-sync",
+      "bad28db52c36466095abf7f41ccad248e9ece89f refs/heads/backup/authentication-handoff-before-api-sync",
+      "a9e40d8ffe65834a1ae9db81579209fab2b43acd refs/heads/backup/back-arrow-before-api-sync",
+      "fdb17bae04a4985f12fdedb192d41b2b4babf2ad refs/heads/backup/deployment-report-before-api-sync",
+      "862e2ceb0f915e51e8054ffd0dfd3d122ba742da refs/heads/backup/inline-workflows-before-api-sync",
+      "7eaef709c92c238a4a900a8eab6b965b0a936177 refs/heads/backup/lesson-consumption-before-api-sync",
+      "3b318101dbb89a19b0a865454c53d8a398b7231a refs/heads/backup/platform-audit-before-api-sync",
+      "ccd93bc2a03d7cbf0ec819d864db10b16b4e6958 refs/heads/backup/platform-report-before-api-sync",
+      "8c849d5f4efd921da40b81526dd422bcd5c35dc2 refs/heads/backup/quick-actions-before-api-sync",
+      "3a5f4d5dd9f7b67b608284a38b28662581c08ef5 refs/heads/backup/withdrawal-before-api-sync",
+      "225171342c63c2627a6c87a00c4b4321bb42e87e refs/heads/main",
+      "051e6dc13388b7b80f077d5228fe29cc099fbce7 refs/local-backup-reflog/000000",
+      "05b4b73824c10f1ebddc11d1b2b85eeec8b71177 refs/local-backup-reflog/000001",
+      "0ac5261795b9de6b0c18963a15057a59a2196576 refs/local-backup-reflog/000002",
+      "125d6fd2f7ef8803de5ccb7aef1208ac0421517c refs/local-backup-reflog/000003",
+      "1f0f826f238468312a9cc387844f29b3ddfc415c refs/local-backup-reflog/000004",
+      "225171342c63c2627a6c87a00c4b4321bb42e87e refs/local-backup-reflog/000005",
+      "2c5909933301103315422c3af73ccede662408d4 refs/local-backup-reflog/000006",
+      "34031f27710597f22025e99063da9ba0d5e3a32b refs/local-backup-reflog/000007",
+      "36b491e69bf5332cd5c802946e85e4c6ccdeb5f9 refs/local-backup-reflog/000008",
+      "39237589cf8f9fb3cfd763fa3ee81db7887febfd refs/local-backup-reflog/000009",
+      "3a5f4d5dd9f7b67b608284a38b28662581c08ef5 refs/local-backup-reflog/000010",
+      "3b318101dbb89a19b0a865454c53d8a398b7231a refs/local-backup-reflog/000011",
+      "42df89d00ab77cf987aaf1b5a362240f76853737 refs/local-backup-reflog/000012",
+      "5d55db20ba85397ca97c6e7b17f018f981d58503 refs/local-backup-reflog/000013",
+      "646e08f1c35a72a1fc117be01f72b1db1217ae3b refs/local-backup-reflog/000014",
+      "70eac76bb530c826adc3523c49f3745d6460ed76 refs/local-backup-reflog/000015",
+      "71d517f502c1f40e33f1b584a74453b0d561fde9 refs/local-backup-reflog/000016",
+      "7a225f8997d9cbc2f68fbf1495777388c7015e11 refs/local-backup-reflog/000017",
+      "7cf2e27fb1b0bff6245f8856defac2bc7e9ac249 refs/local-backup-reflog/000018",
+      "7e5b414ff8079f89907a3825946bd69799e67aee refs/local-backup-reflog/000019",
+      "7eaef709c92c238a4a900a8eab6b965b0a936177 refs/local-backup-reflog/000020",
+      "7f1c746137d63f4e8c4f34199e402f91cedff788 refs/local-backup-reflog/000021",
+      "844d59ae8923fad2b0cd055706ce9240854e96a3 refs/local-backup-reflog/000022",
+      "862e2ceb0f915e51e8054ffd0dfd3d122ba742da refs/local-backup-reflog/000023",
+      "87967b3395853054f2e359d19d09e189e60ac1cf refs/local-backup-reflog/000024",
+      "8abb443c9886f730ccf38acb612fe67313437eda refs/local-backup-reflog/000025",
+      "8b4041cdde6b8e9774d5b4dc58aee3143875b7fd refs/local-backup-reflog/000026",
+      "8c849d5f4efd921da40b81526dd422bcd5c35dc2 refs/local-backup-reflog/000027",
+      "9104eda71ee41f18e821624cf72d23158aad250d refs/local-backup-reflog/000028",
+      "945a750018bb0a61e9dcd0a0c1f4c2199e419850 refs/local-backup-reflog/000029",
+      "9800408ae94af2c4fceca37e9ebe03086631bcce refs/local-backup-reflog/000030",
+      "9980dc436a094e39a735f075742673e93c2bd0ba refs/local-backup-reflog/000031",
+      "a5c7b7095d2538b3f024c74a9543a34960da6631 refs/local-backup-reflog/000032",
+      "a9e40d8ffe65834a1ae9db81579209fab2b43acd refs/local-backup-reflog/000033",
+      "ab984bb3aac97a3ee812e777afca24103014a28d refs/local-backup-reflog/000034",
+      "b08ec01437f74f7f3eea8884e8f2dbfe37b60f28 refs/local-backup-reflog/000035",
+      "b7828a5c9982b8171ed343862a299e8b64be4305 refs/local-backup-reflog/000036",
+      "b904e7371d559cb50aeba054a450975a03be8d7e refs/local-backup-reflog/000037",
+      "bad28db52c36466095abf7f41ccad248e9ece89f refs/local-backup-reflog/000038",
+      "bae8a79fac82ee147f6e45c95f5832320b5319cd refs/local-backup-reflog/000039",
+      "bd875f6314218fbd79b3ab70ecce7cae58c4e7e0 refs/local-backup-reflog/000040",
+      "bf0d3b3cd2111eafbf1e3ec6812c7ac755fa8252 refs/local-backup-reflog/000041",
+      "c1a90cb510e98acbaca16aeb6958da2fb4338374 refs/local-backup-reflog/000042",
+      "c35b49e65411490038d8964384d7996fea380de4 refs/local-backup-reflog/000043",
+      "c9c6c0c3c3f2aba5bc11e881be24db1c90d942b8 refs/local-backup-reflog/000044",
+      "cb2b79564d8579ab244a0e708420159f3f544ef5 refs/local-backup-reflog/000045",
+      "ccd93bc2a03d7cbf0ec819d864db10b16b4e6958 refs/local-backup-reflog/000046",
+      "d0ddc0d7ac141ba2e46a4925841e9c19fe8cebbc refs/local-backup-reflog/000047",
+      "d3fceb47bdd9606ac2d805efb2af2e6d32b793f9 refs/local-backup-reflog/000048",
+      "d4c6073a9491c5d63ed940f0413f1992453c2b96 refs/local-backup-reflog/000049",
+      "e20c03d3f9025c0b46447c583a697f3ef1596bd1 refs/local-backup-reflog/000050",
+      "e5b5ab3e2ddb11cb30ee798bb1398ed885cc7bbf refs/local-backup-reflog/000051",
+      "e64003787da5ace11176740ddb4016a97246ecb9 refs/local-backup-reflog/000052",
+      "e7eb6c7a711ff4096ad4697c102f0ae8a05c4f85 refs/local-backup-reflog/000053",
+      "ec7b283e30039a59c86ee33a999f6c4930a6a5db refs/local-backup-reflog/000054",
+      "fdb17bae04a4985f12fdedb192d41b2b4babf2ad refs/local-backup-reflog/000055",
+      "cb2b79564d8579ab244a0e708420159f3f544ef5 refs/remotes/origin/main",
+      "225171342c63c2627a6c87a00c4b4321bb42e87e HEAD"
+    ],
+    "reflog_commit_count": 56
+  },
+  "history_parts": [
+    {
+      "path": "history/history.bundle.part0000",
+      "sha256": "0f96015d5586094e41074ee5449fbfe5b0ce5988c53c4593a27d4f8bcb31fe5f",
+      "git_blob": "6cf11de5d9f90e54a352bf3c7f7e73c1609805e1",
+      "bytes": 1396112
+    }
+  ]
+}

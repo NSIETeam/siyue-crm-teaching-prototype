@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="deployment-config.js"></script>
+  <title>教培 CRM 与教务系统 · 第一批原型</title>
+  <style>
+    :root{font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;color:#243149;background:#f4f7fb;font-size:14px}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.45}.app{display:flex;min-height:100vh}.sidebar{width:238px;background:#172945;color:#c2d0e4;flex-shrink:0;padding:24px 12px}.brand{font-size:18px;font-weight:700;color:white;padding:0 14px 26px;letter-spacing:.5px}.brand small{display:block;color:#7f98b9;font-size:11px;font-weight:500;margin-top:5px;letter-spacing:1px}.menu-title{font-size:11px;color:#7490b2;margin:18px 12px 8px}.menu-item{display:block;width:100%;border:0;background:transparent;color:#b5c5da;text-align:left;padding:11px 14px;border-radius:8px;margin:2px 0}.menu-item:hover{background:#24405f}.menu-item.active{background:#315deb;color:white;font-weight:600}.menu-item.muted{opacity:.6}.main{min-width:0;flex:1}.topbar{height:64px;background:#fff;border-bottom:1px solid #e7edf5;display:flex;align-items:center;justify-content:space-between;padding:0 34px}.topbar .crumb{font-size:13px;color:#7b8ba2}.topbar .user{display:flex;align-items:center;gap:10px;color:#63738a}.avatar{width:30px;height:30px;border-radius:50%;background:#dfe8ff;color:#315deb;display:grid;place-items:center;font-weight:700}.content{padding:28px 34px 60px;max-width:1600px;margin:auto}.heading{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}.heading h1{font-size:24px;margin:0 0 7px}.subtitle{color:#8090a6;margin:0}.card{background:white;border:1px solid #e7edf5;border-radius:12px;box-shadow:0 3px 15px #1c385006}.pad{padding:24px}.tabs{display:flex;gap:32px;border-bottom:1px solid #e8edf4;padding:0 24px}.tab{border:0;background:transparent;color:#7b8ba2;padding:19px 2px 16px;border-bottom:3px solid transparent;font-weight:600}.tab.active{color:#315deb;border-color:#315deb}.tab:disabled{color:#b9c3cf}.section-title{font-size:17px;font-weight:700;margin:0 0 20px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.toolbar-left,.toolbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.btn{border:1px solid #d9e2ef;background:#fff;color:#315deb;border-radius:7px;padding:9px 17px;font-weight:600;min-height:38px}.btn:hover{background:#f6f8ff}.btn.primary{background:#315deb;border-color:#315deb;color:#fff}.btn.primary:hover{background:#244ed5}.btn.danger{color:#d84b56}.btn.small{padding:6px 10px;min-height:30px}.count{color:#8090a6}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:760px}.table th{text-align:left;color:#8796aa;background:#f8fafe;font-weight:600;padding:16px;border-bottom:1px solid #e7edf5}.table td{padding:17px 16px;border-bottom:1px solid #edf1f6;vertical-align:middle}.table tr:last-child td{border-bottom:0}.table a,.link{color:#315deb;text-decoration:none;cursor:pointer}.badge{display:inline-block;border-radius:99px;padding:4px 10px;background:#e9f8f0;color:#16915c;font-size:12px}.badge.off{background:#f0f2f5;color:#8792a1}.actions{display:flex;gap:12px;white-space:nowrap}.filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}.input,.select,.textarea{width:100%;border:1px solid #dce4ef;background:#fff;border-radius:7px;min-height:40px;padding:9px 12px;color:#27364b;outline:none}.input:focus,.select:focus,.textarea:focus{border-color:#315deb;box-shadow:0 0 0 3px #315deb19}.textarea{min-height:85px;resize:vertical}.filters .input{width:250px}.filters .select{width:155px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 28px;max-width:900px}.field label{display:block;color:#56677f;margin-bottom:8px}.required:before{content:"* ";color:#ef6972}.help{font-size:12px;color:#96a3b4;margin-top:7px}.full{grid-column:1/-1}.inline{display:flex;gap:10px}.inline>*{flex:1}.form-actions{display:flex;gap:10px;margin-top:26px}.divider{border:0;border-top:1px solid #edf1f6;margin:28px 0}.subcard{border:1px solid #e7edf5;border-radius:9px;padding:20px;margin-top:20px}.subcard-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.subcard h3{margin:0;font-size:15px}.muted{color:#8b9aac}.empty{padding:38px;text-align:center;color:#9aa8b8;background:#fbfcfe;border:1px dashed #dce4ef;border-radius:8px}.config-table{width:100%;border-collapse:collapse;max-width:920px}.config-table th,.config-table td{padding:14px 12px;text-align:left;border-bottom:1px solid #edf1f6}.config-table th{background:#f8fafe;color:#8190a3}.switch{position:relative;display:inline-block;width:40px;height:23px;vertical-align:middle}.switch input{opacity:0;width:0;height:0}.switch span{position:absolute;inset:0;background:#bbc4d1;border-radius:99px;transition:.2s}.switch span:before{content:"";position:absolute;left:3px;top:3px;width:17px;height:17px;border-radius:50%;background:white;transition:.2s}.switch input:checked+span{background:#315deb}.switch input:checked+span:before{transform:translateX(17px)}.notice{background:#eff5ff;border:1px solid #d9e8ff;color:#52729e;padding:12px 14px;border-radius:7px;margin:0 0 20px}.pill{display:inline-block;color:#7290bd;background:#f1f5fc;padding:6px 10px;border-radius:6px;margin:4px 6px 4px 0}.checkrow{display:flex;flex-wrap:wrap;gap:14px 22px;margin:12px 0 24px}.checkrow label{color:#5a6b82;white-space:nowrap}.checkrow input{accent-color:#315deb}.permission-block{border-top:1px solid #edf1f6;padding:20px 0}.permission-block:first-of-type{border-top:0}.permission-block h3{margin:0;font-size:15px}.toast{position:fixed;right:28px;bottom:26px;background:#20324b;color:white;padding:12px 18px;border-radius:8px;box-shadow:0 8px 22px #10233d30;display:none}.toast.show{display:block}@media(max-width:900px){.sidebar{width:190px}.content{padding:20px}.form-grid{grid-template-columns:1fr}.topbar{padding:0 20px}}@media(max-width:680px){.app{display:block}.sidebar{width:100%;height:auto;padding:10px;display:flex;overflow:auto;align-items:center}.brand{font-size:14px;padding:8px;white-space:nowrap}.brand small,.menu-title{display:none}.menu-item{width:auto;white-space:nowrap}.topbar{display:none}.content{padding:18px}.tabs{gap:18px;overflow:auto;white-space:nowrap}}
+  </style>
+  <link rel="stylesheet" href="academic.css">
+  <link rel="stylesheet" href="navigation.css">
+  <link rel="stylesheet" href="leads.css">
+  <link rel="stylesheet" href="shortcuts.css">
+  <link rel="stylesheet" href="mall.css">
+  <link rel="stylesheet" href="structure.css">
+  <link rel="stylesheet" href="permissions.css">
+<link rel="stylesheet" href="marketing-forms.css">
+<link rel="stylesheet" href="interface-polish.css">
+<link rel="stylesheet" href="schedule-caterpillar.css">
+<link rel="stylesheet" href="batch-operations.css">
+<link rel="stylesheet" href="system-settings.css">
+<link rel="stylesheet" href="operation-directory.css">
+<link rel="stylesheet" href="account-settings.css">
+<link rel="stylesheet" href="mall-decor-editor.css">
+<link rel="stylesheet" href="unified-controls.css">
+<link rel="stylesheet" href="finance-quick-actions.css">
+<link rel="stylesheet" href="profile-quick-actions.css">
+<link rel="stylesheet" href="operation-journal.css">
+<link rel="stylesheet" href="workspace-navigation.css">
+<link rel="stylesheet" href="sales-metrics.css">
+<link rel="stylesheet" href="employee-auth.css">
+<link rel="stylesheet" href="academic-class-audit.css">
+<link rel="stylesheet" href="commerce-audit.css">
+<link rel="stylesheet" href="crm-audit.css">
+<link rel="stylesheet" href="finance-audit.css">
+<link rel="stylesheet" href="platform-audit.css">
+<link rel="stylesheet" href="business-decor.css">
+<link rel="stylesheet" href="business-enrollment.css">
+<link rel="stylesheet" href="business-schedule.css">
+<link rel="stylesheet" href="business-api.css">
+<link rel="stylesheet" href="business-presenter.css">
+<link rel="stylesheet" href="business-form-builder.css">
+<link rel="stylesheet" href="business-workbench.css">
+<link rel="stylesheet" href="academic-planner.css">
+</head>
+<body>
+<svg class="ui-icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" width="0" height="0"><defs><symbol id="ui-back-arrow" viewBox="0 0 24 24"><path d="M21 12H3M12 3l-9 9 9 9"/></symbol></defs></svg>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand brand-logo"><svg viewBox="289 1157 5328 1229" role="img" aria-label="思跃培优" xmlns="http://www.w3.org/2000/svg"><title>思跃培优</title><defs><filter id="brand-white" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/></filter></defs><image href="assets/siyue-peiyou-logo.png" width="5906" height="3543" filter="url(#brand-white)"/></svg></div>
+    <button class="menu-item nav-level-1 workspace-entry" data-page="home">工作台</button>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="leads" aria-expanded="true" aria-controls="nav-leads">线索 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
+    <div class="nav-children" id="nav-leads">
+      <button class="menu-item nav-level-2" data-page="quickRegister">线索登记</button>
+      <button class="menu-item nav-level-2" data-page="leadTodo">今日待办</button>
+      <button class="menu-item nav-level-2" data-page="myLeads">我的线索</button>
+      <button class="menu-item nav-level-2" data-page="leadManage">线索管理</button>
+      <button class="menu-item nav-level-2" data-page="salesMetrics">销售统计</button>
+    </div>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="forms" aria-expanded="true" aria-controls="nav-forms">表单 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
+    <div class="nav-children" id="nav-forms">
+      <button class="menu-item nav-level-2" data-page="marketingForms">表单管理</button>
+      <button class="menu-item nav-level-2" data-page="formSubmissions">提交审核</button>
+    </div>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="academic" aria-expanded="true" aria-controls="nav-academic">教务 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
+    <div class="nav-children" id="nav-academic">
+      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="teaching" aria-expanded="true" aria-controls="nav-teaching">教学管理 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
+      <div class="nav-children" id="nav-teaching">
+        <button class="menu-item nav-level-3" data-page="course">课程管理</button>
+        <button class="menu-item nav-level-3" data-page="classes">班级管理</button>
+        <button class="menu-item nav-level-3" data-page="students">学生管理</button>
+        <button class="menu-item nav-level-3" data-page="attendance">考勤</button>
+        <button class="menu-item nav-level-3" data-page="makeup">补课</button>
+        <button class="menu-item nav-level-3" data-page="schedule">课表</button>
+        <button class="menu-item nav-level-3" data-page="teacherCourses">我的课程</button>
+        <button class="menu-item nav-level-3" data-page="rescheduleRequests">调课申请</button>
+        <button class="menu-item nav-level-3" data-page="rescheduleApprovals">调课审批</button>
+        <button class="menu-item nav-level-3" data-page="teacherMetrics">教师统计</button>
+      </div>
+      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="business" aria-expanded="true" aria-controls="nav-business">业务办理 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
+      <div class="nav-children" id="nav-business">
+        <button class="menu-item nav-level-3" data-page="enroll">报名</button>
+        <button class="menu-item nav-level-3" data-page="tempMove">临时调班</button>
+        <button class="menu-item nav-level-3" data-page="transfer">转课／班</button>
+        <button class="menu-item nav-level-3" data-page="withdraw">退课／退班</button>
+        <button class="menu-item nav-level-3" data-page="supplement">补费</button>
+      </div>
+    </div>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="learning" aria-expanded="true" aria-controls="nav-learning">教学 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
+    <div class="nav-children" id="nav-learning">
+      <button class="menu-item nav-level-2" data-page="learningActive">在读学生</button>
+      <button class="menu-item nav-level-2" data-page="learningHistory">历史学生</button>
+      <button class="menu-item nav-level-2" data-page="learningData">数据管理</button>
+    </div>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="mall" aria-expanded="true" aria-controls="nav-mall">商城工具 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
+    <div class="nav-children" id="nav-mall">
+      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="courseMall" aria-expanded="true" aria-controls="nav-course-mall">课程商城 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
+      <div class="nav-children" id="nav-course-mall">
+        <button class="menu-item nav-level-3" data-page="mallDecor">商城装修</button>
+        <button class="menu-item nav-level-3" data-page="mallShelf">课程上架</button>
+      </div>
+      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="marketing" aria-expanded="true" aria-controls="nav-marketing">营销工具 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
+      <div class="nav-children" id="nav-marketing">
+        <button class="menu-item nav-level-3" data-page="mallGroup">拼团</button>
+        <button class="menu-item nav-level-3" data-page="mallJoint">联报</button>
+        <button class="menu-item nav-level-3" data-page="mallCoupon">优惠券</button>
+      </div>
+    </div>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="finance" aria-expanded="true" aria-controls="nav-finance">财务中心 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
+    <div class="nav-children" id="nav-finance">
+      <button class="menu-item nav-level-2" data-page="orders">收费订单</button>
+      <button class="menu-item nav-level-2" data-page="financeRefunds">退转记录</button>
+      <button class="menu-item nav-level-2" data-page="financeArrears">欠费记录</button>
+      <button class="menu-item nav-level-2" data-page="financeConsumption">课消记录</button>
+      <button class="menu-item nav-level-2" data-page="financeReceipts">收款设置</button>
+    </div>
+    <button class="nav-toggle nav-level-1" type="button" data-nav-toggle="basicSettings" aria-expanded="true" aria-controls="nav-basic-settings">基础设置 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
+    <div class="nav-children" id="nav-basic-settings">
+      <button class="menu-item nav-level-2" data-page="system">系统配置</button>
+      <button class="menu-item nav-level-2" data-page="campus">校区配置</button>
+      <button class="menu-item nav-level-2" data-page="teaching">教学配置</button>
+      <button class="nav-toggle nav-level-2" type="button" data-nav-toggle="staffManage" aria-expanded="true" aria-controls="nav-staff-manage">员工管理 <span class="nav-chevron" aria-hidden="true"><svg class="nav-icon-expand" viewBox="0 0 24 24"><path d="M5 19 19 5M7 5h12v12"/></svg><svg class="nav-icon-collapse" viewBox="0 0 24 24"><path d="m5 5 14 14M7 19h12V7"/></svg></span></button>
+      <div class="nav-children" id="nav-staff-manage">
+        <button class="menu-item nav-level-3" data-page="staff">员工列表</button>
+        <button class="menu-item nav-level-3" data-page="positions">职位管理</button>
+        <button class="menu-item nav-level-3" data-page="permissions">权限管理</button>
+        <button class="menu-item nav-level-3" data-page="permissionLogs">操作日志</button>
+      </div>
+    </div>
+  </aside>
+  <main class="main"><header class="topbar"><div class="crumb"><button id="workspace-back" type="button" onclick="workspaceBack()" aria-label="返回上一页" title="返回上一页" disabled><svg class="back-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#ui-back-arrow"></use></svg></button><span id="crumb">基础设置</span></div><div class="user"><button type="button" class="avatar account-trigger" onclick="accountOpen()" aria-label="设置和账号管理" aria-haspopup="dialog" title="设置和账号管理"><span class="avatar-letter">管</span><svg class="avatar-gear" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3-.5 2-2 1L4.5 6 3 9l1.5 1.5v3L3 15l1.5 3 2-.1 2 1L9 21h6l.5-2 2-1 2 .1 1.5-3-1.5-1.5v-3L21 9l-1.5-3-2 .1-2-1L15 3Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></header><div id="view" class="content"></div></main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const state={page:'system',mode:'list',tab:'机构信息',editing:false,campusEdit:null,staffEdit:null,campuses:[{name:'城中校区',rooms:8,seats:180,active:true,address:'江苏省 苏州市 姑苏区 人民路18号',merchant:'苏州思跃教育科技有限公司'},{name:'园区校区',rooms:5,seats:120,active:true,address:'江苏省 苏州市 工业园区 星湖街66号',merchant:'苏州思跃教育科技有限公司'},{name:'新区校区',rooms:3,seats:75,active:false,address:'江苏省 苏州市 虎丘区 长江路28号',merchant:'未绑定'}],staff:[{name:'袁老师',phone:'130****3533',gender:'男',campus:'城中校区',roles:'前台、教务、面授主讲',active:true},{name:'陈老师',phone:'138****6281',gender:'女',campus:'园区校区',roles:'校区主管、招生',active:true}],config:{学科:[['语文',false,'语文'],['数学',true,'数学'],['英语',false,'英语'],['物理',true,'物理'],['化学',false,'化学'],['生物',false,'生物']],学期:[['春季',true,'春季'],['暑期',true,'暑期'],['秋季',true,'秋季'],['寒假',true,'寒假'],['全季',true,'全季']],年级:[['1年级',false,'1年级'],['2年级',false,'2年级'],['3年级',true,'3年级'],['4年级',true,'4年级'],['5年级',true,'5年级'],['6年级',true,'6年级']],班型:[['创新班',true,'大伟长班'],['尖子班',true,'校内拔高'],['提高班',true,'刷题班'],['X班',true,'S+班'],['Y班',true,'S班'],['Z班',true,'培优班']]}};
+const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// The top navigation identifies the page; content begins with the task itself.
+function heading(title,sub){return ['暂无自定义职位','未找到表单','请先新建表单'].includes(sub)?`<div class="card pad"><div class="empty">${esc(sub)}</div></div>`:''}
+function toast(msg){const e=$('#toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2600)}
+function render(){document.querySelectorAll('.menu-item').forEach(e=>e.classList.toggle('active',e.dataset.page===state.page));$('#crumb').textContent=({system:'系统配置',campus:'校区配置',teaching:'教学配置',staff:'员工管理'})[state.page]||'待设计';let html='';if(state.page==='system')html=systemPage();else if(state.page==='campus')html=campusPage();else if(state.page==='teaching')html=teachingPage();else if(state.page==='staff')html=staffPage();else html=heading('待设计页面','该模块已列入功能清单，等待详细业务规则和参考图。')+`<div class="card pad"><div class="empty">下一批原型将在这里展开</div></div>`;$('#view').innerHTML=html}
+function systemPage(){return heading('系统配置','配置机构资料及业务规则')+`<div class="card"><div class="tabs"><button class="tab active">机构信息</button>${['考勤配置','调课配置','转班配置','进班配置'].map(x=>`<button class="tab" disabled title="功能清单标注为暂未开发">${x}</button>`).join('')}</div><div class="pad"><p class="notice">文档注明其余配置标签暂未开发，原型中以禁用状态展示。</p><h2 class="section-title">机构信息</h2><div class="form-grid"><div class="field"><label class="required">机构名称</label><input class="input" id="org-name" value="苏州思跃培优"></div><div class="field full"><label class="required">机构地址</label><div class="inline"><select class="select"><option>中国大陆</option></select><select class="select"><option>江苏省</option></select><select class="select"><option>苏州市</option></select><select class="select"><option>姑苏区</option></select></div></div><div class="field full"><label>详细地址</label><input class="input" value="人民路18号"></div></div><div class="form-actions"><button class="btn primary" onclick="toast('机构信息已保存（原型演示）')">保存修改</button></div></div></div>`}
+function campusPage(){if(state.mode==='form')return campusForm();return heading('校区管理','管理校区、教室和坐席容量')+`<div class="card pad"><div class="toolbar"><div class="toolbar-left"><button class="btn primary" onclick="state.mode='form';state.campusEdit=null;render()">+ 创建校区</button><span class="count">校区总数：${state.campuses.length}</span></div></div><div class="table-wrap"><table class="table"><thead><tr><th>校区名称</th><th>教室总数</th><th>坐席总数</th><th>状态</th><th>操作</th></tr></thead><tbody>${state.campuses.map((c,i)=>`<tr><td><strong>${esc(c.name)}</strong></td><td>${c.rooms}</td><td>${c.seats}</td><td><span class="badge ${c.active?'':'off'}">${c.active?'已启用':'已停用'}</span></td><td><div class="actions"><a onclick="state.campusEdit=${i};state.mode='form';render()">编辑</a><a onclick="state.campuses[${i}].active=!state.campuses[${i}].active;render();toast('状态已更新')">${c.active?'停用':'启用'}</a></div></td></tr>`).join('')}</tbody></table></div></div>`}
+function campusForm(){let c=state.campusEdit===null?null:state.campuses[state.campusEdit];return heading(c?'编辑校区':'创建校区','校区信息与教室信息')+`<div class="card pad"><h2 class="section-title">校区信息</h2><div class="form-grid"><div class="field"><label class="required">校区名称</label><input id="campus-name" class="input" maxlength="20" placeholder="请输入校区名称" value="${esc(c?.name||'')}"></div><div class="field full"><label class="required">校区地址</label><div class="inline"><select class="select"><option>江苏省</option></select><select class="select"><option>苏州市</option></select><select class="select"><option>姑苏区</option><option>工业园区</option><option>虎丘区</option></select></div></div><div class="field full"><input id="campus-address" class="input" placeholder="请输入详细地址" value="${esc(c?.address?.split(' ').slice(-1)[0]||'')}"></div><div class="field full"><label class="required">收款设置</label><select id="campus-merchant" class="select" style="max-width:430px"><option>苏州思跃教育科技有限公司</option><option>未绑定</option></select><div class="help">未绑定时，请前往“财务中心－收款设置”完成绑定。</div></div></div><div class="form-actions"><button class="btn" onclick="state.mode='list';render()">取消</button><button class="btn primary" onclick="saveCampus()">${c?'保存':'创建'}</button></div><hr class="divider"><div class="subcard-head"><h2 class="section-title" style="margin:0">教室信息</h2><button class="btn" onclick="addRoom()">+ 添加教室</button></div><div id="room-list">${c?`<div class="pill">现有教室 ${c.rooms} 间，坐席 ${c.seats} 个</div>`:'<div class="empty">尚未添加教室</div>'}</div></div>`}
+function addRoom(){let list=$('#room-list');if(list.querySelector('.empty'))list.innerHTML='';let n=list.querySelectorAll('.subcard').length+1;const tip='教室里大概能临时添置几个小椅子';list.insertAdjacentHTML('beforeend',`<div class="subcard room"><div class="subcard-head"><h3>新教室</h3><button class="btn small danger" onclick="this.closest('.room').remove()">移除</button></div><div class="form-grid"><div class="field"><label class="required">教室名称</label><input class="input room-name" placeholder="例如：A101"></div><div class="field"><label class="required">最大容量（人）</label><input class="input room-capacity" type="number" min="1" max="10000" step="1" placeholder="可容纳人数"></div><div class="field"><label>虚拟座位 <span class="room-virtual-help-icon" role="img" tabindex="0" title="${tip}" aria-label="${tip}"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.2"/><path d="M10 6v6M10 15h.01"/></svg></span></label><input class="input room-virtual-seats" type="number" min="0" max="10000" step="1" value="0"></div><div class="field full"><label>教室地址</label><input class="input" placeholder="默认同校区地址，可修改"></div><div class="field full"><label>备注</label><textarea class="textarea" placeholder="选填"></textarea></div></div></div>`)}
+function saveCampus(){const name=$('#campus-name').value.trim(),address=$('#campus-address').value.trim();if(!name||!address){toast('请填写校区名称和详细地址');return}let c=state.campusEdit===null?{name,rooms:0,seats:0,active:true}:{...state.campuses[state.campusEdit],name};c.address='江苏省 苏州市 姑苏区 '+address;c.merchant=$('#campus-merchant').value;document.querySelectorAll('.room').forEach(r=>{if(r.querySelector('.room-name').value.trim()){c.rooms++;c.seats+=Number(r.querySelector('.room-capacity').value)||0}});if(state.campusEdit===null)state.campuses.push(c);else state.campuses[state.campusEdit]=c;state.mode='list';render();toast('校区已保存')}
+function teachingPage(){const tabs=['学科','难度','学期','年级','班型'];if(!tabs.includes(state.tab))state.tab='学科';let rows=state.config[state.tab]||[];return heading('教学配置','配置课程和班级使用的基础字典')+`<div class="card"><div class="tabs">${tabs.map(t=>`<button class="tab ${state.tab===t?'active':''}" onclick="state.tab='${t}';state.editing=false;render()">${t}配置</button>`).join('')}</div><div class="pad">${state.tab==='难度'?`<p class="notice">参考截图展示了“难度配置”标签，但功能清单尚未给出字段和选项。</p><div class="empty">等待难度配置规则</div>`:`<div class="toolbar"><div class="toolbar-left"><button class="btn primary" onclick="state.editing=!state.editing;render()">${state.editing?'完成编辑':'修改配置'}</button></div><span class="count">${rows.length} 项</span></div><table class="config-table"><thead><tr><th>${state.tab}</th>${state.editing?'<th>是否展示</th>':''}<th>对外展示内容</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${esc(r[0])}</td>${state.editing?`<td><label class="switch"><input type="checkbox" ${r[1]?'checked':''} onchange="state.config['${state.tab}'][${i}][1]=this.checked"><span></span></label></td>`:''}<td>${state.editing?`<input class="input" style="max-width:300px" value="${esc(r[2])}" oninput="state.config['${state.tab}'][${i}][2]=this.value" ${r[1]?'':'disabled'}>`:r[1]?esc(r[2]):'<span class="muted">不展示</span>'}</td></tr>`).join('')}</tbody></table></div>`}</div>`}
+function staffPage(){if(state.mode==='form')return staffForm();return heading('员工管理','管理员工资料、管辖校区与模块权限')+`<div class="card pad"><div class="toolbar"><div class="toolbar-left"><button class="btn primary" onclick="state.mode='form';state.staffEdit=null;render()">+ 创建员工</button></div><div class="toolbar-right"><button class="btn" onclick="toast('导入模板待业务确认')">导入员工</button><button class="btn" onclick="toast('导出功能待业务确认')">导出</button></div></div><div class="filters"><select class="select"><option>全部校区</option><option>城中校区</option><option>园区校区</option></select><select class="select"><option>全部职位</option><option>教务</option><option>招生</option></select><input class="input" placeholder="搜索姓名、电话或邮箱"><select class="select"><option>已启用</option><option>全部状态</option><option>已禁用</option></select></div><div class="table-wrap"><table class="table"><thead><tr><th>姓名</th><th>联系电话</th><th>性别</th><th>所属校区</th><th>用户职位</th><th>状态</th><th>操作</th></tr></thead><tbody>${state.staff.map((s,i)=>`<tr><td>${esc(s.name)}</td><td>${esc(s.phone)}</td><td>${esc(s.gender)}</td><td>${esc(s.campus)}</td><td>${esc(s.roles)}</td><td><span class="badge ${s.active?'':'off'}">${s.active?'已启用':'已禁用'}</span></td><td><div class="actions"><a onclick="state.staffEdit=${i};state.mode='form';render()">详情 / 编辑</a><a onclick="state.staff[${i}].active=!state.staff[${i}].active;render()">${s.active?'禁用':'启用'}</a></div></td></tr>`).join('')}</tbody></table></div></div>`}
+function staffForm(){let s=state.staffEdit===null?null:state.staff[state.staffEdit];return heading(s?'编辑员工':'创建员工','填写基本信息并配置校区、职位与权限')+`<div class="card pad"><h2 class="section-title">基本信息</h2><div class="form-grid"><div class="field"><label class="required">姓名</label><input id="staff-name" class="input" placeholder="请输入姓名" value="${esc(s?.name||'')}"></div><div class="field"><label class="required">手机号（用于登录）</label><input id="staff-phone" class="input" placeholder="请输入手机号码" value="${esc(s?.phone||'')}"><div class="help">手机号将作为登录账号。</div></div><div class="field"><label>性别</label><select id="staff-gender" class="select"><option>男</option><option ${s?.gender==='女'?'selected':''}>女</option></select></div><div class="field"><label>员工头像</label><input type="file" accept="image/png,image/jpeg" class="input"><div class="help">支持 JPG、PNG，文件不超过 2MB。</div></div></div><hr class="divider"><h2 class="section-title">管辖校区</h2><div class="checkrow"><label><input type="radio" name="campus-scope" checked> 全部校区</label><label><input type="radio" name="campus-scope"> 指定校区</label></div><h2 class="section-title">职位管理</h2><div class="checkrow">${['校区主管','财务','教务','前台','招生','学管师','课程顾问','教学管理','面授（直播）主讲'].map(x=>`<label><input type="checkbox" class="role" value="${x}" ${s?.roles?.includes(x)?'checked':''}> ${x}</label>`).join('')}</div><h2 class="section-title">模块权限</h2>${[['线索与业务','线索查看','线索分配','报名','转课/班','退课/班'],['教务中心','学生管理','课程管理','班级管理','课表','考勤','补课管理'],['财务中心','收费订单','欠费记录','退转记录','收款设置'],['基础设置','校区配置','教学配置','员工管理']].map(g=>`<div class="permission-block"><h3>${g[0]}</h3><div class="checkrow">${g.slice(1).map(x=>`<label><input type="checkbox"> ${x}</label>`).join('')}</div></div>`).join('')}<div class="form-actions"><button class="btn" onclick="state.mode='list';render()">取消</button><button class="btn primary" onclick="saveStaff()">${s?'保存':'创建'}</button></div></div>`}
+function saveStaff(){let name=$('#staff-name').value.trim(),phone=$('#staff-phone').value.trim();if(!name||!phone){toast('请填写姓名和手机号');return}let roles=[...document.querySelectorAll('.role:checked')].map(x=>x.value).join('、')||'未配置';let s={name,phone,gender:$('#staff-gender').value,campus:'全部校区',roles,active:true};if(state.staffEdit===null)state.staff.push(s);else state.staff[state.staffEdit]={...state.staff[state.staffEdit],...s};state.mode='list';render();toast('员工信息已保存')}
+document.querySelectorAll('.menu-item').forEach(e=>e.addEventListener('click',()=>{state.mode='list';state.editing=false;nav(e.dataset.page)}));render();
+</script>
+<script src="page-layouts.js"></script>
+<script src="academic.js"></script>
+<script src="leads.js"></script>
+<script src="shortcuts.js"></script>
+<script src="mall.js"></script>
+<script src="structure.js"></script>
+<script src="marketing-forms.js"></script>
+<script src="permissions.js"></script>
+<script src="enhancements.js"></script>
+<script src="interface-polish.js"></script>
+<script src="schedule-caterpillar.js"></script>
+<script src="command-search.js"></script>
+<script src="batch-operations.js"></script>
+<script src="system-settings.js"></script>
+<script src="operation-directory.js"></script>
+<script src="account-settings.js"></script>
+<script src="mall-decor-editor.js"></script>
+<script src="operation-contract.js"></script>
+<script src="academic-repairs.js"></script>
+<script src="lesson-consumption.js"></script>
+<script src="withdrawal.js"></script>
+<script src="audit-repairs.js"></script>
+<script src="finance-quick-actions.js"></script>
+<script src="profile-quick-actions.js"></script>
+<script src="workspace-navigation.js"></script>
+<script src="lesson-consumption-example.js"></script>
+<script src="lesson-consumption-demo.js"></script>
+<script src="sales-metrics.js"></script>
+<script src="academic-class-audit.js"></script>
+<script src="academic-scheduling.js"></script>
+<script src="academic-session-audit.js"></script>
+<script src="commerce-audit.js"></script>
+<script src="crm-audit.js"></script>
+<script src="finance-audit.js"></script>
+<script src="platform-audit.js"></script>
+<script src="operation-journal.js"></script>
+<script src="employee-auth.js"></script>
+<script src="academic-dictionary.js"></script>
+<script src="academic-planner.js"></script>
+<script src="qrcode-vendor.js"></script>
+<script src="business-presenter.js"></script>
+<script src="business-form-builder.js"></script>
+<script src="business-workbench.js"></script>
+<script src="business-decor.js"></script>
+<script src="business-enrollment.js"></script>
+<script src="business-schedule.js"></script>
+<script src="business-api.js"></script>
+</body>
+</html>

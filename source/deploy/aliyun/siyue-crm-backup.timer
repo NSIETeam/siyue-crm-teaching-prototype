@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Siyue private database snapshot
+
+[Timer]
+OnCalendar=*-*-* 03:20:00 Asia/Shanghai
+Persistent=true
+RandomizedDelaySec=120
+Unit=siyue-crm-backup.service
+
+[Install]
+WantedBy=timers.target

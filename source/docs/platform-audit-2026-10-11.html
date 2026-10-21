@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>全平台专项审核与修复记录｜2026-10-11</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{font:16px/1.8 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;color:#243149;background:#f4f7fb;margin:0}main{max-width:1080px;margin:32px auto;padding:36px;background:#fff;border:1px solid #e1e8f2;border-radius:16px}h1{font-size:30px;line-height:1.4;margin:10px 0 18px}h2{font-size:22px;margin-top:32px;border-bottom:1px solid #e7edf4;padding-bottom:10px}a{color:#315deb;text-underline-offset:3px}nav{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px}.meta{color:#74859b}.note{background:#f1f5fd;border-left:4px solid #315deb;padding:14px 18px}.pending{background:#fff9ec;border:1px solid #eeddb9;padding:12px 16px;border-radius:6px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px}td,th{border:1px solid #e3eaf2;text-align:left;vertical-align:top;padding:11px 12px}th{background:#f6f8fc;white-space:nowrap}td:first-child{min-width:116px}td:last-child{min-width:135px}.status{color:#148554;font-weight:600}ol,ul{padding-left:24px}li{margin:8px 0}code{font:12px/1.6 ui-monospace,SFMono-Regular,monospace;overflow-wrap:anywhere;background:#f3f5f9;padding:2px 5px}.flow{display:flex;flex-wrap:wrap;gap:7px;align-items:center}.flow span{padding:6px 10px;background:#f2f5fb;border:1px solid #e2e9f3;border-radius:4px}.flow b{font-weight:400;color:#71839c}@media(max-width:700px){main{margin:0;padding:20px;border:0;border-radius:0}h1{font-size:25px}table{min-width:700px}}@media print{body{background:white}main{margin:0;padding:0;border:0}nav{display:none}h2{break-after:avoid}tr{break-inside:avoid}a{color:inherit}.table-wrap{overflow:visible}}
+</style>
+</head>
+<body><main>
+<p class="meta">思跃 CRM 与教务系统 · 2026-10-11 · 分模块功能复核</p>
+<h1>全平台专项审核与修复记录</h1>
+<nav aria-label="相关项目文档"><a href="siyue-project-plan.html">项目计划与逻辑图</a><a href="siyue-daily-2026-10-10.html">前一日日报</a><a href="academic-audit-2026-10-10.html">教务专项验收</a><a href="siyue-auth-2026-10-10.html">账号认证记录</a><a href="https://www.siyuejn.com/crm/">员工入口</a></nav>
+<p class="note">本轮按业务入口检查线索、报名、收退款、商城营销、账号权限、系统配置和操作检索，修复数据关联、错误纠正、重复提交、金额计算与保存失败等问题，并回归已完成的多讲排课。报告区分源码修复、隔离自动化和 Safari 实际操作；不将这些结果扩大为所有生产功能已接通。</p>
+<p class="pending" id="platform-audit-release-status"><strong>发布状态：</strong>已同步 GitHub，并部署至阿里云与 GitHub Pages。实现版本 <code>36b491e69bf5</code>；阿里云静态版本 <code>20261010161525-36b491e69bf5</code>。两个站点的 66 个公开前端文件均已逐项核对一致；认证代码 11 个文件已校验，原员工账号库保留。认证健康检查通过，未登录访问身份和操作目录仍返回 401；原站点及相关服务正常。GitHub 自动检查与 Pages 构建成功，Safari 已验证线上搜索和导入页面。</p>
+<p class="note" id="platform-audit-test-status"><strong>最终测试：</strong>前端、业务与 CLI 共 422 项通过（398 个业务检查分组、17 项前端账号测试、7 项 CLI 测试）；后端认证及契约单独 26 项通过，均无失败。发布打包另外 4 项通过，合计 452 项顶层检查；均使用隔离数据。</p>
+
+<h2>已复核的办理链路</h2>
+<div class="flow" aria-label="本轮核心办理链路"><span>线索登记 / 纠错导入</span><b>→</b><span>归属与跟进</span><b>→</b><span>报名与优惠核价</span><b>→</b><span>订单 / 欠费</span><b>→</b><span>模拟到账与权益</span><b>→</b><span>课消 / 退课 / 模拟退款</span></div>
+<p>同一业务资料通过稳定编号关联到相关页面。姓名、课程名称变化不应错配订单；取消订单不应继续阻止报名；重复确认不应增加订单、课消或退款。当前业务数据同步指同一浏览器内的页面共享与保存，不代表多台设备已共享业务数据库。</p>
+
+<h2>分模块修复与检查清单</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>模块 / 项目</th><th>本轮修复及确认行为</th><th>验证与边界</th></tr></thead><tbody>
+<tr><td>CRM 登记与档案</td><td>统一姓名、手机号和线索编号；阻止同一孩子与电话重复登记，允许同一家庭的不同孩子。来源必填；修改联系方式同步关联档案及报名草稿，保留首次来源、原登记人和历史快照。</td><td>CRM 专项；Safari 创建线索。歧义关联拒绝覆盖，不依赖同名猜测。</td></tr>
+<tr><td>线索归属与流转</td><td>负责人使用员工编号；转交前复核在职状态与权限。释放到公海清除原负责人和提醒，保留登记归因；归档、恢复和已付费线索使用各自规则，避免静默回到获客池。</td><td>CRM 专项覆盖同名员工、无效负责人、权限变化、重复操作。</td></tr>
+<tr><td>跟进与保留策略</td><td>授权范围待处理与本人登记分别统计，同一线索的多个待办只计一次；校验下次跟进时间，替换重复提醒；今日待办排除未来及已关闭线索。保留与回收策略区分编辑、试运行和发布；试运行不改变归属，保存失败保留原发布规则。</td><td>自动化覆盖日期、保护记录与回滚；后台定时执行仍待接入。</td></tr>
+<tr><td>线索批量导入</td><td>提供 CSV / TSV 字段映射、逐行预览与原行纠错。错误行阻止所选整批提交；复核重名重复、手机号、来源、原日期、校区及负责人。保存失败整批回滚，重复提交不重复创建。</td><td>导入专项；Safari 两行含坏手机号被阻断，纠正后两条保存且保留原日期。当前为浏览器内导入。</td></tr>
+<tr><td>单个与批量报名</td><td>按唯一学生、班级和课程编号核价；拒绝停用班级、歧义档案、容量不足及后续课次时间冲突。已取消旧订单不再阻止重新报名。批量报名复用同一校验与报价规则，并支持在原列表纠正错误。</td><td>财务、批量报名纠错及完整流程回归；报价变化需重新核对后提交。</td></tr>
+<tr><td>价格与优惠</td><td>金额按分校验；报名保留价格、优惠和讲次快照。优惠检查发布状态、有效日期、课程范围、门槛、领取与每人限制；同批报名共同占用额度，不超发。缺少转介绍、成团等可信依据时不自动折扣。</td><td>优惠专项及财务专项；Safari 满 1000 减 100，报名应收 900。拼团和联报规则不等于自动完成联合结算。</td></tr>
+<tr><td>欠费、订单与到账</td><td>欠费行内展开查看演示二维码、核对并模拟到账；订单页也可进入核对。部分付款继续显示待收，零元报名单独确认。付款前再次核对班级、容量、冲突及数据权限，成功后同步订单和报名权益。</td><td>财务快捷操作及财务专项；Safari 确认模拟 900 后权益生效。二维码明确不能真实收款。</td></tr>
+<tr><td>退课与退款</td><td>退课与财务退款分开记录；资料不足可人工核定，须填写金额与原因。自动可退额基于已确认实收、已退款及课消；重复订单编号不能抬高退款上限。实收不明的多单退款须逐单核定且总额一致。</td><td>退课及财务专项覆盖重复确认、超额、历史累计、分摊与失败回滚。人工核定额外检查退款核准权限。</td></tr>
+<tr><td>金额与历史一致性</td><td>退款累计到各原订单；没有原订单的核定款单独标明，不虚造实收。三讲订单 100.01 元按分分摊，已消与可退合计一致。退课仅撤销相应班级的未来待办，保留过去及同日已过去课次。</td><td>财务与课消专项；稳定课次编号保留。原始金额无效的订单显示待核对，不混入可收欠费。</td></tr>
+<tr><td>补费与财务范围</td><td>补费页面可办理已有欠费；额外收费未接入时明确显示，不生成虚构收费单。按校区、学生负责人或原线索归属限制查看与操作；缺少授权关联时拒绝办理。</td><td>财务专项覆盖范围变更后的再次确认。服务端业务数据隔离尚待接通。</td></tr>
+<tr><td>商城装修与上架</td><td>模块独立编辑、保存和恢复；草稿与发布快照分离，课程改名或编辑不会偷偷改变已发布内容。上架检查价格和状态，隐藏商品不进入公开预览；公开课程快照排除内部教学资料。</td><td>商城专项覆盖重载、批量失效、快照、保存回滚。当前预览与发布记录仍存于本浏览器。</td></tr>
+<tr><td>营销活动与优惠券</td><td>活动和课程用稳定编号关联；校验日期、金额、人数、课程组合及总量。编辑已发布优惠回到草稿；已过期不能再次发布。筛选与批量选择范围一致，编辑权限与发布权限分别检查。</td><td>商城营销专项。拼团成团、跨课程结算及外部用户领取并发尚未接入。</td></tr>
+<tr><td>营销表单</td><td>字段使用独立编号，改名不丢失历史答案；检查必填、多选上下限、重复参与、有效期和数量。表单与线索保存共同回滚；无身份字段的普通反馈不伪造线索。停止活动后拒绝提交。</td><td>商城表单专项覆盖重复标题、历史编辑、权限和失败恢复。Safari 完成本机发布、试填和搜索新线索；公开获客链接、共享提交后台及上传服务仍待接通。</td></tr>
+<tr><td>真实账号与权限</td><td>登录和账号管理使用已有认证服务；首登改密、撤销会话、禁用与重置、最后一个超级管理员保护纳入回归。页面与操作读取具体授权；账号切换、过期和延迟响应不能恢复旧权限或旧管理资料。</td><td>网页、CLI 与后端认证测试。并发撤权和密码重置后的旧请求重新校验；真实认证不等于业务后端已完成。</td></tr>
+<tr><td>系统配置与员工</td><td>字典使用可取消草稿，保存前不改变现行配置；对外名称仅影响显示，内部值继续用于同学科与同年级判断；重复值和失败保存可纠正。启用班级仍引用的校区不能停用；员工编辑回填真实校区并检查重复电话；内置管理员角色受到保护。</td><td>配置专项；Safari 实测字典修改并保存。带未保存草稿切换栏目不会静默丢失。</td></tr>
+<tr><td>搜索与操作目录</td><td>补全配置、校区教室、备份、报名等操作登记，所有公开浏览器操作声明所需权限。搜索只返回当前可用操作；打开搜索结果不会直接执行业务写入。完整备份限制为足够的数据范围。</td><td>配置、CRM、账号和命令契约回归；仍按现有注册目录覆盖，不声称任何未来操作自动出现。</td></tr>
+<tr><td>CLI 与日志</td><td>CLI 可真实登录、读取本人、按授权检索和规划操作；业务写入仍返回未接通状态。独立课消模拟执行实际页面处理函数，生成限定模拟编号的数据与报告；手动预览后才可导入。认证日志支持权限、时间及分页检索。</td><td>CLI 认证、模拟、操作日志与后端审计回归。浏览器业务日志尚不是全员共享、不可篡改的中央审计库。</td></tr>
+<tr><td>教务兼容回归</td><td>继续检查课程、单个与批量建班、多讲排期、资源冲突、同日多讲点名、临时转班、补课、老师代课、课消、旧课次迁移和转校区历史地点，避免本轮财务与课程关联修复破坏既有流程。</td><td>教务四项专项及临转、课消回归。上一轮 Safari 排课实测详见独立教务报告，不重复列为本轮新实测。</td></tr>
+</tbody></table></div>
+
+<h2>本轮 Safari 实际操作</h2>
+<p>以下为真实 Safari 页面中的验收记录。其余错误注入、权限组合、并发变更、存储失败和重复提交边界主要由隔离自动化验证，不写成浏览器已逐项点击完成。另已在 Safari Web Inspector 读取控制台：刷新及线索页面切换后未出现错误输出。此结果仅对应这些实际路径。</p>
+<div class="table-wrap"><table><thead><tr><th>路径</th><th>实际操作</th><th>观察结果</th></tr></thead><tbody>
+<tr><td>系统配置</td><td>打开字典编辑，修改后保存。</td><td class="status">修改成功保存。</td></tr>
+<tr><td>线索登记</td><td>通过登记流程创建线索。</td><td class="status">线索创建成功。</td></tr>
+<tr><td>优惠 → 报名</td><td>创建并发布满 1000 减 100 的优惠，选择对应报名课程。</td><td class="status">报名金额为 900 元。</td></tr>
+<tr><td>欠费 → 权益</td><td>点击欠费记录展开行内操作，核对并确认模拟到账 900 元。</td><td class="status">订单到账状态与报名权益同步，权益生效。</td></tr>
+<tr><td>导入 → 纠错</td><td>导入两行 CSV，其中一行手机号错误；提交受阻后在原行修正，再次校验提交。</td><td class="status">错误时未部分写入；修正后两条成功保存，原登记日期保留。</td></tr>
+<tr><td>重新加载</td><td>完成导入与模拟到账后刷新页面，再查看对应资料。</td><td class="status">导入的两条线索和模拟 900 元收款仍保留。</td></tr>
+<tr><td>营销表单 → 线索</td><td>编辑表单名称与说明，增加姓名、手机号字段；保存草稿、进入下一步并在本机发布，完成试填；用全局搜索查看新线索。</td><td class="status">试填成功，新线索显示原表单来源，归属为未分配公海；日志时间按北京时间显示。</td></tr>
+</tbody></table></div>
+<p class="meta">以上付款为演示确认，未调用支付渠道，也未发生真实扣款或退款。CSV 路径属于线索批量导入；批量报名另由专项自动化验证，不混为同一项浏览器验收。</p>
+
+<h2>自动化依据</h2>
+<p>浏览器业务测试按实际页面脚本顺序加载，使用隔离存储执行处理函数；验证保存结果、失败时无部分修改及重新加载结果。认证测试另起隔离服务并检查真实 HTTP 行为。下列为覆盖清单，运行统计见页首；顶层测试与内部模拟场景分别统计。</p>
+<div class="table-wrap"><table><thead><tr><th>套件</th><th>检查重点</th></tr></thead><tbody>
+<tr><td><code>crm-audit.cjs</code>、<code>crm-import.cjs</code>、<code>crm.cjs</code></td><td>归属、登记、流转、提醒、导入纠错、时间、重复和保存回滚。</td></tr>
+<tr><td><code>finance-audit.cjs</code>、<code>finance-quick-actions.cjs</code>、<code>withdrawal.cjs</code>、<code>batch-enrollment-corrections.cjs</code></td><td>核价、优惠、容量、欠费、模拟到账、退课、退款上限、逐单分摊、数据范围与批量纠错。</td></tr>
+<tr><td><code>commerce-audit.cjs</code>、<code>mall.cjs</code>、<code>sales-metrics.cjs</code></td><td>装修草稿、课程上架快照、活动发布、优惠与表单校验、统计口径。</td></tr>
+<tr><td><code>platform-audit.cjs</code>、<code>employee-auth.cjs</code>、<code>operation-journal.cjs</code></td><td>配置、操作权限、账号变更、页面日志和数据导出范围。</td></tr>
+<tr><td><code>academic-class-audit.cjs</code>、<code>academic-schedule-audit.cjs</code>、<code>academic-scheduling-flow.cjs</code>、<code>academic-session-audit.cjs</code></td><td>既有教务四项专项；关联临时转班、课消与完整业务流程回归。</td></tr>
+<tr><td><code>workspace-navigation.cjs</code>、<code>full-smoke.cjs</code>、<code>audit.cjs</code></td><td>页面切换、返回、搜索、主要操作与跨模块保存。</td></tr>
+<tr><td><code>cli/simulation.test.cjs</code>、<code>cli/auth.test.cjs</code>、后端认证及契约测试</td><td>员工登录、授权操作目录、规划不写入、隔离课消模拟、会话撤销与日志检索。模拟的 10 个内部场景不重复计入顶层测试总数。</td></tr>
+<tr><td>脚本语法与差异检查</td><td>脚本可解析、文件差异格式正确；不代替真实交互验收。</td></tr>
+</tbody></table></div>
+
+<p>CLI 课消模拟另在独立工作目录实际运行，10 个内部场景通过；生成 2 条课消、课消金额 600 元、模拟收款 2700 元、可退 2100 元。模拟执行未触及线上数据，10 个场景不另叠加到上述顶层测试总数。</p>
+
+<h2>仍需接通的能力</h2>
+<ul>
+<li><strong>共享业务后端：</strong>课程、线索、学生、订单及营销资料目前仍使用当前浏览器存储。后续需服务端业务权限、校区与负责人隔离、幂等和版本检查、事务、多人并发及跨设备同步。</li>
+<li><strong>真实收付款：</strong>演示二维码、模拟到账和模拟退款不连接支付渠道。真实支付订单、回调验签、退款执行、对账与异常重试尚待实现。</li>
+<li><strong>公共商城与获客：</strong>公开预览及本地发布快照不等于公网顾客提交已接入。共享表单、真实上传、库存与领取额度并发、拼团成团和跨课程结算仍需后台支持。</li>
+<li><strong>自动任务：</strong>线索策略预览、规则发布及本地提醒已可检查；跨员工定时提醒、自动回收和可靠通知调度尚待接通。</li>
+<li><strong>全员业务审计：</strong>服务端认证与账号事件已有审计；各浏览器业务操作还需集中写入受保护日志，才能按人员、对象、时间完整回溯全平台业务。</li>
+<li><strong>额外收费与推广证明：</strong>补费当前处理已有欠费；新增加收、可信转介绍证明、外部渠道优惠核销等尚无完整依据与流程，不自动构造费用或折扣。</li>
+</ul>
+<p class="note">本轮没有执行真实支付、退款或生产教学业务修改。已通过的专项为当前原型的具体行为提供证据；全部角色组合、长期多人并发、所有浏览器尺寸与外部服务故障仍需在相应能力接通后另行验收。</p>
+<p class="meta">本页记录 2026-10-11 的专项修复、验证及发布，保留此前计划和历史验收报告。文档更新不改变上述已部署的前端与认证代码。</p>
+</main></body></html>

@@ -1,0 +1,18 @@
+.crm-policy-fields{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:16px;margin-bottom:16px;overflow-x:auto}
+.crm-policy-fields label{display:grid;gap:8px;white-space:nowrap}
+.workflow-policy-settings .actions{display:flex;gap:12px;flex-wrap:wrap}
+.workflow-policy-settings #workflow-policy-preview{overflow-x:auto}
+.crm-import-page{min-width:0}
+.crm-import-page h2{margin:0;font-size:20px}
+.crm-import-page>label,.crm-import-mapping label,.crm-import-assignment label{display:grid;gap:8px}
+.crm-import-page textarea{width:100%;min-height:180px}
+.crm-import-upload,.crm-import-assignment{display:flex;align-items:end;gap:16px;flex-wrap:wrap;margin:16px 0}
+.crm-import-upload label{display:grid;gap:8px}
+.crm-import-assignment .select{min-width:210px}
+.crm-import-mapping{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:20px 0}
+.crm-import-table{overflow-x:auto;margin-top:16px}
+.crm-import-table table{min-width:1880px}
+.crm-import-table td{min-width:144px;vertical-align:top}
+.crm-import-table td:first-child{min-width:90px}
+.crm-import-table td:last-child{min-width:230px;white-space:normal}
+.crm-import-table .input{width:100%;min-width:140px}

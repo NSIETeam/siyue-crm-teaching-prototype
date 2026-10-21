@@ -1,0 +1,6 @@
+.finance-invalid-records{margin:0 0 16px;padding:12px 16px;border:1px solid #f1d6a8;border-radius:10px;background:#fffaf1;color:#80531d;line-height:1.6}
+.withdrawal-allocation{display:grid;gap:8px;min-width:230px;margin:8px 0}
+.withdrawal-allocation label{display:flex;align-items:center;justify-content:space-between;gap:12px;white-space:nowrap}
+.withdrawal-allocation .input{width:112px;min-width:0;height:36px}
+.withdrawal-allocation small{max-width:320px;line-height:1.5;color:#7e8b9f}
+.finance-refund-allocation{display:block;max-width:320px;margin-top:6px;line-height:1.6;color:#75869b}

@@ -1,0 +1,2529 @@
+{
+  "version": "0.1.0",
+  "operations": [
+    {
+      "id": "action.classes.schedule",
+      "label": "班级排课",
+      "aliases": [
+        "排课",
+        "课程排期",
+        "批量排课",
+        "每周排课",
+        "调整上课日期"
+      ],
+      "page": "classes",
+      "permission": {
+        "page": "classes",
+        "action": "classes",
+        "required": "class.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.classes.3d6367f0",
+      "label": "批量班级转校区",
+      "aliases": [
+        "批量班级转校区",
+        "批量转校区",
+        "批量搬迁班级"
+      ],
+      "page": "classes",
+      "permission": {
+        "page": "classes",
+        "action": "classes",
+        "required": "class.relocate"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.transfer.aacdf591",
+      "label": "批量学生转班",
+      "aliases": [
+        "批量转移班级",
+        "批量转班",
+        "批量学生转班",
+        "整班学生转班"
+      ],
+      "page": "transfer",
+      "permission": {
+        "page": "transfer",
+        "action": "transfer",
+        "required": "enrollment.batchTransfer"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.enroll.7989793",
+      "label": "批量报名",
+      "aliases": [
+        "批量报名",
+        "批量报课"
+      ],
+      "page": "enroll",
+      "permission": {
+        "page": "enroll",
+        "action": "enroll",
+        "required": "enrollment.batchCreate"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.classes.ae5dc30c",
+      "label": "批量创建班级",
+      "aliases": [
+        "批量创建班级",
+        "批量建班"
+      ],
+      "page": "classes",
+      "permission": {
+        "page": "classes",
+        "action": "classes",
+        "required": "class.batchCreate"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.enroll.f10f7210",
+      "label": "为学生报名",
+      "aliases": [
+        "报名",
+        "报课",
+        "新生报名",
+        "缴费报名",
+        "办理报名"
+      ],
+      "page": "enroll",
+      "permission": {
+        "page": "enroll",
+        "action": "enroll",
+        "required": "enrollment.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.schedule.39f66947",
+      "label": "临时调课／调班",
+      "aliases": [
+        "临时调课",
+        "临时调班",
+        "调课",
+        "调班",
+        "换班",
+        "单次调班"
+      ],
+      "page": "tempMove",
+      "permission": {
+        "page": "tempMove",
+        "action": "academic",
+        "required": "session.move"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.transfer.26747ab",
+      "label": "转课／转班",
+      "aliases": [
+        "转课",
+        "转班",
+        "长期调班",
+        "正式调班"
+      ],
+      "page": "transfer",
+      "permission": {
+        "page": "transfer",
+        "action": "transfer",
+        "required": "enrollment.transfer"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.schedule.21b713e",
+      "label": "安排代课老师",
+      "aliases": [
+        "代课",
+        "换老师",
+        "替课",
+        "老师请假"
+      ],
+      "page": "schedule",
+      "permission": {
+        "page": "schedule",
+        "action": "academic",
+        "required": "session.substitute"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.withdraw.2a2e2d00",
+      "label": "为学生退课",
+      "aliases": [
+        "退课",
+        "退班",
+        "退费",
+        "退款"
+      ],
+      "page": "withdraw",
+      "permission": {
+        "page": "withdraw",
+        "action": "withdraw",
+        "required": "enrollment.withdraw"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.supplement.4f06949b",
+      "label": "办理补费",
+      "aliases": [
+        "补费",
+        "补缴",
+        "补交学费"
+      ],
+      "page": "supplement",
+      "permission": {
+        "page": "supplement",
+        "action": "supplement",
+        "required": "order.paymentLink"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.schedule.a3c3b028",
+      "label": "课次点名／考勤",
+      "aliases": [
+        "点名",
+        "考勤",
+        "签到",
+        "课消"
+      ],
+      "page": "schedule",
+      "permission": {
+        "page": "schedule",
+        "action": "academic",
+        "required": "session.attendance"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.schedule.acade710",
+      "label": "填写授课记录",
+      "aliases": [
+        "授课记录",
+        "课堂记录",
+        "课后记录"
+      ],
+      "page": "schedule",
+      "permission": {
+        "page": "schedule",
+        "action": "academic",
+        "required": "session.record"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.quickRegister.f299e5f6",
+      "label": "新建线索",
+      "aliases": [
+        "新建线索",
+        "创建线索",
+        "登记线索",
+        "线索登记",
+        "录入客户"
+      ],
+      "page": "quickRegister",
+      "permission": {
+        "page": "quickRegister",
+        "action": "lead",
+        "required": "lead.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.myLeads.dbf51d4d",
+      "label": "转移线索",
+      "aliases": [
+        "转移线索",
+        "转交线索",
+        "转交客户",
+        "转移客户",
+        "改负责人",
+        "改派线索"
+      ],
+      "page": "myLeads",
+      "permission": {
+        "page": "myLeads",
+        "action": "lead",
+        "required": "lead.transfer"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.leadManage.ff46b2a1",
+      "label": "分配线索",
+      "aliases": [
+        "分配线索",
+        "线索分配",
+        "派发线索",
+        "分配客户"
+      ],
+      "page": "leadManage",
+      "permission": {
+        "page": "leadManage",
+        "action": "assign",
+        "required": "lead.assign"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.myLeads.758e04a9",
+      "label": "释放线索到公海",
+      "aliases": [
+        "释放线索",
+        "释放公海",
+        "放弃保留",
+        "退回公海",
+        "回收线索"
+      ],
+      "page": "myLeads",
+      "permission": {
+        "page": "myLeads",
+        "action": "lead",
+        "required": "lead.release"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.myLeads.b7fe9ead",
+      "label": "添加线索跟进",
+      "aliases": [
+        "跟进线索",
+        "客户跟进",
+        "沟通记录",
+        "下次跟进"
+      ],
+      "page": "myLeads",
+      "permission": {
+        "page": "myLeads",
+        "action": "lead",
+        "required": "lead.follow"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.course.151aed83",
+      "label": "创建课程",
+      "aliases": [
+        "新建课程",
+        "创建课程",
+        "添加课程"
+      ],
+      "page": "course",
+      "permission": {
+        "page": "course",
+        "action": "course",
+        "required": "course.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.classes.7a1e490",
+      "label": "创建班级",
+      "aliases": [
+        "建班",
+        "新建班级",
+        "创建班级",
+        "开班"
+      ],
+      "page": "classes",
+      "permission": {
+        "page": "classes",
+        "action": "classes",
+        "required": "class.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.students.8fa829ca",
+      "label": "录入新学生",
+      "aliases": [
+        "新生录入",
+        "添加学生",
+        "新建学生"
+      ],
+      "page": "students",
+      "permission": {
+        "page": "students",
+        "action": "academic",
+        "required": "student.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.mallCoupon.910e7a9d",
+      "label": "创建优惠策略",
+      "aliases": [
+        "创建优惠",
+        "优惠策略",
+        "营销策略",
+        "优惠券",
+        "老带新优惠",
+        "续费优惠",
+        "新建优惠券"
+      ],
+      "page": "mallCoupon",
+      "permission": {
+        "page": "mallCoupon",
+        "action": "mallCoupon",
+        "required": "promotion.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.staff.7a742317",
+      "label": "创建员工",
+      "aliases": [
+        "创建员工",
+        "新增员工",
+        "添加员工"
+      ],
+      "page": "staff",
+      "permission": {
+        "page": "staff",
+        "action": "staff",
+        "required": "employee.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.leadManage.9abcab89",
+      "label": "线索保留与回收策略设置",
+      "aliases": [
+        "线索保留",
+        "回收策略",
+        "保留策略",
+        "公海规则",
+        "回收规则",
+        "线索回收设置",
+        "个人保留天数",
+        "首次跟进时限"
+      ],
+      "page": "leadManage",
+      "permission": {
+        "page": "leadManage",
+        "action": "policy",
+        "required": "leadPolicy.preview"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.system.abbbfa2b",
+      "label": "机构信息设置",
+      "aliases": [
+        "机构信息",
+        "机构名称",
+        "机构地址"
+      ],
+      "page": "system",
+      "permission": {
+        "page": "system",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.system.42d38d81",
+      "label": "考勤配置设置",
+      "aliases": [
+        "考勤配置",
+        "请假消课",
+        "旷课消课",
+        "考勤修改期限"
+      ],
+      "page": "system",
+      "permission": {
+        "page": "system",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.system.2a88a047",
+      "label": "调课配置设置",
+      "aliases": [
+        "调课配置",
+        "调课提前时间",
+        "跨校区调课设置"
+      ],
+      "page": "system",
+      "permission": {
+        "page": "system",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.system.18b77191",
+      "label": "转班配置设置",
+      "aliases": [
+        "转班配置",
+        "跨校区转班设置",
+        "转班开关"
+      ],
+      "page": "system",
+      "permission": {
+        "page": "system",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.system.17bd13be",
+      "label": "进班配置设置",
+      "aliases": [
+        "进班配置",
+        "中途插班",
+        "新报名开关"
+      ],
+      "page": "system",
+      "permission": {
+        "page": "system",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.schedule.d696bc7a",
+      "label": "老师课表",
+      "aliases": [
+        "教师课表",
+        "老师排课",
+        "毛毛虫课表"
+      ],
+      "page": "schedule",
+      "permission": {
+        "page": "schedule",
+        "action": null,
+        "required": "schedule.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.schedule.c8064664",
+      "label": "学生课表",
+      "aliases": [
+        "个人课表",
+        "学生毛毛虫"
+      ],
+      "page": "schedule",
+      "permission": {
+        "page": "schedule",
+        "action": null,
+        "required": "schedule.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.schedule.f226cce6",
+      "label": "教室课表",
+      "aliases": [
+        "教室占用",
+        "空闲教室"
+      ],
+      "page": "schedule",
+      "permission": {
+        "page": "schedule",
+        "action": null,
+        "required": "schedule.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.schedule.ce2dd034",
+      "label": "校区课表",
+      "aliases": [
+        "校区排课"
+      ],
+      "page": "schedule",
+      "permission": {
+        "page": "schedule",
+        "action": null,
+        "required": "schedule.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.campus.363707eb",
+      "label": "创建校区",
+      "aliases": [
+        "新增校区",
+        "添加校区"
+      ],
+      "page": "campus",
+      "permission": {
+        "page": "campus",
+        "action": "campus",
+        "required": "settings.update"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.teaching.23ab47b3",
+      "label": "学科配置",
+      "aliases": [
+        "学科设置",
+        "学科字典"
+      ],
+      "page": "teaching",
+      "permission": {
+        "page": "teaching",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.teaching.8120abf9",
+      "label": "学期配置",
+      "aliases": [
+        "学期设置",
+        "学期字典"
+      ],
+      "page": "teaching",
+      "permission": {
+        "page": "teaching",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.teaching.792b047",
+      "label": "年级配置",
+      "aliases": [
+        "年级设置",
+        "年级字典"
+      ],
+      "page": "teaching",
+      "permission": {
+        "page": "teaching",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.teaching.ff186b46",
+      "label": "班型配置",
+      "aliases": [
+        "班型设置",
+        "班型字典"
+      ],
+      "page": "teaching",
+      "permission": {
+        "page": "teaching",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.marketingForms.762ade7e",
+      "label": "创建营销表单",
+      "aliases": [
+        "新建表单",
+        "获客表单",
+        "扫码填表",
+        "线索采集表"
+      ],
+      "page": "marketingForms",
+      "permission": {
+        "page": "marketingForms",
+        "action": "marketingForms",
+        "required": "lead.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.marketingForms.9f661af8",
+      "label": "创建资料领取表单",
+      "aliases": [
+        "资料下载",
+        "资料领取",
+        "下载登记"
+      ],
+      "page": "marketingForms",
+      "permission": {
+        "page": "marketingForms",
+        "action": "marketingForms",
+        "required": "lead.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.mallGroup.6c88d849",
+      "label": "创建拼团活动",
+      "aliases": [
+        "双人同行",
+        "拼团优惠",
+        "新建拼团"
+      ],
+      "page": "mallGroup",
+      "permission": {
+        "page": "mallGroup",
+        "action": "mallGroup",
+        "required": "promotion.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.mallJoint.9ddb2118",
+      "label": "创建联报活动",
+      "aliases": [
+        "多科联报",
+        "联报优惠",
+        "新建联报"
+      ],
+      "page": "mallJoint",
+      "permission": {
+        "page": "mallJoint",
+        "action": "mallJoint",
+        "required": "promotion.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.mallShelf.1f3625ea",
+      "label": "课程上下架管理",
+      "aliases": [
+        "上架课程",
+        "下架课程",
+        "发布商品",
+        "商品管理"
+      ],
+      "page": "mallShelf",
+      "permission": {
+        "page": "mallShelf",
+        "action": "mallShelf",
+        "required": "product.publish"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.orders.f6c2ad49",
+      "label": "查看待收款订单",
+      "aliases": [
+        "收款确认",
+        "到账确认",
+        "扫码收款",
+        "支付订单"
+      ],
+      "page": "orders",
+      "permission": {
+        "page": "orders",
+        "action": null,
+        "required": "order.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.financeRefunds.f1681cad",
+      "label": "查看待退款记录",
+      "aliases": [
+        "退款确认",
+        "财务退款",
+        "退费记录"
+      ],
+      "page": "financeRefunds",
+      "permission": {
+        "page": "financeRefunds",
+        "action": null,
+        "required": "refund.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.financeArrears.dc64979d",
+      "label": "查看欠费记录",
+      "aliases": [
+        "催缴",
+        "欠款",
+        "未缴费",
+        "待收学费"
+      ],
+      "page": "financeArrears",
+      "permission": {
+        "page": "financeArrears",
+        "action": null,
+        "required": "order.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.positions.ab59c503",
+      "label": "员工身份与职位设置",
+      "aliases": [
+        "员工身份",
+        "身份设置",
+        "职位授权",
+        "角色设置"
+      ],
+      "page": "positions",
+      "permission": {
+        "page": "positions",
+        "action": null,
+        "required": "role.grant"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.permissionLogs.6fdcc7d0",
+      "label": "查看操作日志",
+      "aliases": [
+        "操作记录",
+        "分类检索",
+        "操作回溯",
+        "审计日志",
+        "权限日志",
+        "操作人",
+        "业务日志"
+      ],
+      "page": "permissionLogs",
+      "permission": {
+        "page": "permissionLogs",
+        "action": null,
+        "required": "audit.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.home.70621ede",
+      "label": "设置与账号",
+      "aliases": [
+        "个人设置",
+        "演示身份",
+        "切换身份",
+        "账号设置"
+      ],
+      "page": "home",
+      "permission": {
+        "page": "home",
+        "action": null,
+        "required": "self"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.staff.ac9f0235",
+      "label": "账号管理",
+      "aliases": [
+        "员工账号",
+        "账号权限",
+        "管理账号"
+      ],
+      "page": "staff",
+      "permission": {
+        "page": "staff",
+        "action": null,
+        "required": "account.update"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.permissions.ce5f92b2",
+      "label": "角色与权限",
+      "aliases": [
+        "角色权限",
+        "授权",
+        "权限管理"
+      ],
+      "page": "permissions",
+      "permission": {
+        "page": "permissions",
+        "action": null,
+        "required": "role.grant"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.course.cfe334b",
+      "label": "编辑课程",
+      "aliases": [
+        "修改课程",
+        "课程价格",
+        "课程资料",
+        "课程章节"
+      ],
+      "page": "course",
+      "permission": {
+        "page": "course",
+        "action": "course",
+        "required": "course.update"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.classes.c6e2a128",
+      "label": "编辑班级",
+      "aliases": [
+        "修改班级",
+        "班级老师",
+        "班级时间"
+      ],
+      "page": "classes",
+      "permission": {
+        "page": "classes",
+        "action": "classes",
+        "required": "class.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.studentArchives.464c401d",
+      "label": "查看学生档案",
+      "aliases": [
+        "学生档案",
+        "学员详情"
+      ],
+      "page": "studentArchives",
+      "permission": {
+        "page": "studentArchives",
+        "action": null,
+        "required": "student.archive"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.staff.6b40e914",
+      "label": "编辑员工账号",
+      "aliases": [
+        "修改账号",
+        "修改员工",
+        "分配角色"
+      ],
+      "page": "staff",
+      "permission": {
+        "page": "staff",
+        "action": "staff",
+        "required": "account.update"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.mallDecor.29342ebb",
+      "label": "编辑商城页面",
+      "aliases": [
+        "商城装修",
+        "修改轮播图",
+        "首页模块",
+        "网校设置"
+      ],
+      "page": "mallDecor",
+      "permission": {
+        "page": "mallDecor",
+        "action": "mallDecor",
+        "required": "store.design"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.positions.10454412",
+      "label": "添加角色",
+      "aliases": [
+        "新建职位",
+        "创建角色",
+        "新增角色"
+      ],
+      "page": "positions",
+      "permission": {
+        "page": "positions",
+        "action": "positions",
+        "required": "role.grant"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.teacherArchives.142b533b",
+      "label": "查看老师档案",
+      "aliases": [
+        "教师档案",
+        "老师资料",
+        "授课老师档案"
+      ],
+      "page": "teacherArchives",
+      "permission": {
+        "page": "teacherArchives",
+        "action": null,
+        "required": "teacher.archive"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "action.staffArchives.cd79c6d5",
+      "label": "查看职工档案",
+      "aliases": [
+        "员工档案",
+        "员工资料",
+        "职工资料"
+      ],
+      "page": "staffArchives",
+      "permission": {
+        "page": "staffArchives",
+        "action": null,
+        "required": "staff.archive"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "demo.lesson-consumption",
+      "label": "导入 CLI 课消演示",
+      "aliases": [
+        "模拟课消",
+        "课消测试",
+        "siyue-cli",
+        "课消演示"
+      ],
+      "page": "learningData",
+      "permission": {
+        "page": "learningData",
+        "action": null,
+        "required": "session.attendance"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "sales.metrics.view",
+      "label": "查看销售转化率",
+      "aliases": [
+        "我的转化率",
+        "销售业绩",
+        "转化数据",
+        "转化率",
+        "样本不足"
+      ],
+      "page": "home",
+      "permission": {
+        "page": "home",
+        "action": null,
+        "required": "lead.conversion.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "crm.archive",
+      "label": "归档线索",
+      "aliases": [
+        "关闭线索",
+        "归档客户",
+        "归档线索"
+      ],
+      "page": "myLeads",
+      "permission": {
+        "page": "myLeads",
+        "action": null,
+        "required": "lead.follow"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "crm.restore",
+      "label": "重新激活线索",
+      "aliases": [
+        "恢复线索",
+        "重新激活",
+        "取消归档"
+      ],
+      "page": "leadManage",
+      "permission": {
+        "page": "leadManage",
+        "action": null,
+        "required": "lead.assign"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "crm.remind",
+      "label": "线索跟进提醒",
+      "aliases": [
+        "一键提醒",
+        "跟进预警",
+        "超时线索"
+      ],
+      "page": "leadManage",
+      "permission": {
+        "page": "leadManage",
+        "action": null,
+        "required": "lead.assign"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "crm.policy.preview",
+      "label": "试运行线索回收策略",
+      "aliases": [
+        "策略试跑",
+        "试运行",
+        "预览回收"
+      ],
+      "page": "leadManage",
+      "permission": {
+        "page": "leadManage",
+        "action": null,
+        "required": "leadPolicy.preview"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "crm.policy.publish",
+      "label": "发布线索回收策略",
+      "aliases": [
+        "发布回收策略",
+        "保存保留策略"
+      ],
+      "page": "leadManage",
+      "permission": {
+        "page": "leadManage",
+        "action": null,
+        "required": "leadPolicy.publish"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "crm.import",
+      "label": "批量导入线索",
+      "aliases": [
+        "导入线索",
+        "批量登记",
+        "CSV线索",
+        "粘贴线索"
+      ],
+      "page": "quickRegister",
+      "permission": {
+        "page": "quickRegister",
+        "action": null,
+        "required": "lead.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "settings.campus",
+      "label": "管理校区与教室",
+      "aliases": [
+        "校区启用",
+        "校区停用",
+        "教室配置",
+        "编辑校区"
+      ],
+      "page": "campus",
+      "permission": {
+        "page": "campus",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "settings.dictionary",
+      "label": "教学字典配置",
+      "aliases": [
+        "学科",
+        "难度",
+        "学期",
+        "年级",
+        "班型"
+      ],
+      "page": "teaching",
+      "permission": {
+        "page": "teaching",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "settings.receipts",
+      "label": "收款渠道设置",
+      "aliases": [
+        "收款主体",
+        "微信支付",
+        "支付宝",
+        "银行转账"
+      ],
+      "page": "financeReceipts",
+      "permission": {
+        "page": "financeReceipts",
+        "action": null,
+        "required": "settings.update"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "data.export",
+      "label": "导出教学数据备份",
+      "aliases": [
+        "备份数据",
+        "下载数据",
+        "导出JSON"
+      ],
+      "page": "learningData",
+      "permission": {
+        "page": "learningData",
+        "action": null,
+        "required": "report.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.quickRegister",
+      "label": "打开线索登记",
+      "aliases": [
+        "线索登记"
+      ],
+      "page": "quickRegister",
+      "permission": {
+        "page": "quickRegister",
+        "action": null,
+        "required": "lead.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.quickEnroll",
+      "label": "打开报名",
+      "aliases": [
+        "报名"
+      ],
+      "page": "quickEnroll",
+      "permission": {
+        "page": "quickEnroll",
+        "action": null,
+        "required": "enrollment.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.leadTodo",
+      "label": "打开今日待办",
+      "aliases": [
+        "今日待办"
+      ],
+      "page": "leadTodo",
+      "permission": {
+        "page": "leadTodo",
+        "action": null,
+        "required": "lead.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.myLeads",
+      "label": "打开我的线索",
+      "aliases": [
+        "我的线索"
+      ],
+      "page": "myLeads",
+      "permission": {
+        "page": "myLeads",
+        "action": null,
+        "required": "lead.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.leadManage",
+      "label": "打开线索管理",
+      "aliases": [
+        "线索管理"
+      ],
+      "page": "leadManage",
+      "permission": {
+        "page": "leadManage",
+        "action": null,
+        "required": "lead.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.course",
+      "label": "打开课程管理",
+      "aliases": [
+        "课程管理"
+      ],
+      "page": "course",
+      "permission": {
+        "page": "course",
+        "action": null,
+        "required": "course.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.classes",
+      "label": "打开班级管理",
+      "aliases": [
+        "班级管理"
+      ],
+      "page": "classes",
+      "permission": {
+        "page": "classes",
+        "action": null,
+        "required": "class.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.students",
+      "label": "打开学生管理",
+      "aliases": [
+        "学生管理"
+      ],
+      "page": "students",
+      "permission": {
+        "page": "students",
+        "action": null,
+        "required": "student.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.attendance",
+      "label": "打开考勤",
+      "aliases": [
+        "考勤"
+      ],
+      "page": "attendance",
+      "permission": {
+        "page": "attendance",
+        "action": null,
+        "required": "session.attendance"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.makeup",
+      "label": "打开补课",
+      "aliases": [
+        "补课"
+      ],
+      "page": "makeup",
+      "permission": {
+        "page": "makeup",
+        "action": null,
+        "required": "session.move"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.schedule",
+      "label": "打开课表",
+      "aliases": [
+        "课表"
+      ],
+      "page": "schedule",
+      "permission": {
+        "page": "schedule",
+        "action": null,
+        "required": "schedule.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.enroll",
+      "label": "打开报名",
+      "aliases": [
+        "报名"
+      ],
+      "page": "enroll",
+      "permission": {
+        "page": "enroll",
+        "action": null,
+        "required": "enrollment.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.tempMove",
+      "label": "打开临时调班",
+      "aliases": [
+        "临时调班"
+      ],
+      "page": "tempMove",
+      "permission": {
+        "page": "tempMove",
+        "action": null,
+        "required": "session.move"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.transfer",
+      "label": "打开转课／班",
+      "aliases": [
+        "转课／班"
+      ],
+      "page": "transfer",
+      "permission": {
+        "page": "transfer",
+        "action": null,
+        "required": "enrollment.transfer"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.withdraw",
+      "label": "打开退课／退班",
+      "aliases": [
+        "退课／退班"
+      ],
+      "page": "withdraw",
+      "permission": {
+        "page": "withdraw",
+        "action": null,
+        "required": "enrollment.withdraw"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.supplement",
+      "label": "打开补费",
+      "aliases": [
+        "补费"
+      ],
+      "page": "supplement",
+      "permission": {
+        "page": "supplement",
+        "action": null,
+        "required": "order.paymentLink"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.learningActive",
+      "label": "打开在读学生",
+      "aliases": [
+        "在读学生"
+      ],
+      "page": "learningActive",
+      "permission": {
+        "page": "learningActive",
+        "action": null,
+        "required": "student.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.learningHistory",
+      "label": "打开历史学生",
+      "aliases": [
+        "历史学生"
+      ],
+      "page": "learningHistory",
+      "permission": {
+        "page": "learningHistory",
+        "action": null,
+        "required": "student.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.learningData",
+      "label": "打开数据管理",
+      "aliases": [
+        "数据管理"
+      ],
+      "page": "learningData",
+      "permission": {
+        "page": "learningData",
+        "action": null,
+        "required": "report.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.mallDecor",
+      "label": "打开商城装修",
+      "aliases": [
+        "商城装修"
+      ],
+      "page": "mallDecor",
+      "permission": {
+        "page": "mallDecor",
+        "action": null,
+        "required": "store.design"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.mallShelf",
+      "label": "打开课程上架",
+      "aliases": [
+        "课程上架"
+      ],
+      "page": "mallShelf",
+      "permission": {
+        "page": "mallShelf",
+        "action": null,
+        "required": "store.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.mallGroup",
+      "label": "打开拼团",
+      "aliases": [
+        "拼团"
+      ],
+      "page": "mallGroup",
+      "permission": {
+        "page": "mallGroup",
+        "action": null,
+        "required": null,
+        "anyOf": [
+          "promotion.create",
+          "promotion.publish"
+        ]
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.mallJoint",
+      "label": "打开联报",
+      "aliases": [
+        "联报"
+      ],
+      "page": "mallJoint",
+      "permission": {
+        "page": "mallJoint",
+        "action": null,
+        "required": null,
+        "anyOf": [
+          "promotion.create",
+          "promotion.publish"
+        ]
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.mallCoupon",
+      "label": "打开优惠券",
+      "aliases": [
+        "优惠券"
+      ],
+      "page": "mallCoupon",
+      "permission": {
+        "page": "mallCoupon",
+        "action": null,
+        "required": null,
+        "anyOf": [
+          "promotion.create",
+          "promotion.publish"
+        ]
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.marketingForms",
+      "label": "打开表单",
+      "aliases": [
+        "表单"
+      ],
+      "page": "marketingForms",
+      "permission": {
+        "page": "marketingForms",
+        "action": null,
+        "required": "lead.create"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.orders",
+      "label": "打开收费订单",
+      "aliases": [
+        "收费订单"
+      ],
+      "page": "orders",
+      "permission": {
+        "page": "orders",
+        "action": null,
+        "required": "order.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.financeRefunds",
+      "label": "打开退转记录",
+      "aliases": [
+        "退转记录"
+      ],
+      "page": "financeRefunds",
+      "permission": {
+        "page": "financeRefunds",
+        "action": null,
+        "required": "refund.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.financeArrears",
+      "label": "打开欠费记录",
+      "aliases": [
+        "欠费记录"
+      ],
+      "page": "financeArrears",
+      "permission": {
+        "page": "financeArrears",
+        "action": null,
+        "required": "order.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.financeConsumption",
+      "label": "打开课消记录",
+      "aliases": [
+        "课消记录"
+      ],
+      "page": "financeConsumption",
+      "permission": {
+        "page": "financeConsumption",
+        "action": null,
+        "required": "consumption.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.financeReceipts",
+      "label": "打开收款设置",
+      "aliases": [
+        "收款设置"
+      ],
+      "page": "financeReceipts",
+      "permission": {
+        "page": "financeReceipts",
+        "action": null,
+        "required": "settings.update"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.system",
+      "label": "打开系统配置",
+      "aliases": [
+        "系统配置"
+      ],
+      "page": "system",
+      "permission": {
+        "page": "system",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.campus",
+      "label": "打开校区配置",
+      "aliases": [
+        "校区配置"
+      ],
+      "page": "campus",
+      "permission": {
+        "page": "campus",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.teaching",
+      "label": "打开教学配置",
+      "aliases": [
+        "教学配置"
+      ],
+      "page": "teaching",
+      "permission": {
+        "page": "teaching",
+        "action": null,
+        "required": "settings.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.staff",
+      "label": "打开员工列表",
+      "aliases": [
+        "员工列表"
+      ],
+      "page": "staff",
+      "permission": {
+        "page": "staff",
+        "action": null,
+        "required": "account.update"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.positions",
+      "label": "打开职位管理",
+      "aliases": [
+        "职位管理"
+      ],
+      "page": "positions",
+      "permission": {
+        "page": "positions",
+        "action": null,
+        "required": "role.grant"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.permissions",
+      "label": "打开权限管理",
+      "aliases": [
+        "权限管理"
+      ],
+      "page": "permissions",
+      "permission": {
+        "page": "permissions",
+        "action": null,
+        "required": "role.grant"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.permissionLogs",
+      "label": "打开操作日志",
+      "aliases": [
+        "操作日志"
+      ],
+      "page": "permissionLogs",
+      "permission": {
+        "page": "permissionLogs",
+        "action": null,
+        "required": "audit.read"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.studentArchives",
+      "label": "打开查看学生档案",
+      "aliases": [
+        "查看学生档案"
+      ],
+      "page": "studentArchives",
+      "permission": {
+        "page": "studentArchives",
+        "action": null,
+        "required": "student.archive"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.teacherArchives",
+      "label": "打开查看老师档案",
+      "aliases": [
+        "查看老师档案"
+      ],
+      "page": "teacherArchives",
+      "permission": {
+        "page": "teacherArchives",
+        "action": null,
+        "required": "teacher.archive"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    },
+    {
+      "id": "page.staffArchives",
+      "label": "打开查看职工档案",
+      "aliases": [
+        "查看职工档案"
+      ],
+      "page": "staffArchives",
+      "permission": {
+        "page": "staffArchives",
+        "action": null,
+        "required": "staff.archive"
+      },
+      "mode": "open-form",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "sideEffects": "打开现有办理界面；不自动提交",
+      "execution": "browser-only"
+    }
+  ]
+}

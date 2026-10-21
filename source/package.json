@@ -1,0 +1,29 @@
+{
+  "name": "siyue-platform-tools",
+  "version": "1.1.0",
+  "description": "思跃教务平台员工命令行及 MCP 工具",
+  "private": true,
+  "engines": { "node": ">=24.20.0" },
+  "bin": {
+    "siyue-cli": "cli/siyue-cli.cjs",
+    "siyue-mcp": "mcp/server.cjs"
+  },
+  "files": [
+    "cli/siyue-cli.cjs",
+    "cli/auth-client.cjs",
+    "cli/business-client.cjs",
+    "cli/quick-fill.cjs",
+    "cli/account-admin.cjs",
+    "cli/admin-service.cjs",
+    "cli/query-client.cjs",
+    "cli/report-query.cjs",
+    "mcp/server.cjs",
+    "mcp/bridge.cjs",
+    "mcp/config.example.json",
+    "docs/siyue-cli-mcp.md"
+  ],
+  "scripts": {
+    "build:tools": "node scripts/build-tools.cjs",
+    "test:tools-package": "node --test scripts/build-tools.test.cjs"
+  }
+}
