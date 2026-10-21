@@ -1,0 +1,180 @@
+{
+  "format": 1,
+  "date": "2026-10-21",
+  "project": "prototype-build",
+  "repository": "NSIETeam/siyue-crm-teaching-prototype",
+  "original_head": "ee9a52153e273ef67537f8927ac1e1f7b0355d6d",
+  "original_branch": "main",
+  "source_files": [
+    {
+      "path": "source/academic.css",
+      "sha256": "bbc5ed4d1766b7a4dbe0547df65ffa0a19dbe229a4536bb2fcf9dc9e89894c88",
+      "git_blob": "a5ee436bc9310c1a7d63fb35856441a3d229c090",
+      "bytes": 4384,
+      "mode": "100644",
+      "original_path": "academic.css"
+    },
+    {
+      "path": "source/academic.js",
+      "sha256": "12d89fd50ab718cd9922dd9b1566a1a2ff1883f923029940ceb139d95eadb1cf",
+      "git_blob": "51e94427c0a0bf46bb92bbbdd20d8e3a9a672213",
+      "bytes": 39005,
+      "mode": "100644",
+      "original_path": "academic.js"
+    },
+    {
+      "path": "source/enhancements.js",
+      "sha256": "28a2e099aed53722fce97948c6661025409b9de31b4026eb90b0eb3a13d9d791",
+      "git_blob": "f8bd4a074732a692fbf1dc609f557c41130dda26",
+      "bytes": 93821,
+      "mode": "100644",
+      "original_path": "enhancements.js"
+    },
+    {
+      "path": "source/index.html",
+      "sha256": "3bf7bf21dbe40ffa20c6e0ccf867531b25ae62b6017b6173985198e63671b27e",
+      "git_blob": "e5365e1d91288457ef46ecc07e278e9761cd2926",
+      "bytes": 28747,
+      "mode": "100644",
+      "original_path": "index.html"
+    },
+    {
+      "path": "source/leads.css",
+      "sha256": "75be16b6a1de5d8b5d5bd040261db6d08b8d35189aeb5c7c07ffd3faf2ec2166",
+      "git_blob": "eaeebc13963b1832c2b7952e05724c5475dc9042",
+      "bytes": 4329,
+      "mode": "100644",
+      "original_path": "leads.css"
+    },
+    {
+      "path": "source/leads.js",
+      "sha256": "f7953a098280292d1c4979be3d578a0f6f02910940f8aa57d867f29c67def9b1",
+      "git_blob": "1bb262f550f7f084c9b2f9f9756268a28a88721c",
+      "bytes": 31602,
+      "mode": "100644",
+      "original_path": "leads.js"
+    },
+    {
+      "path": "source/mall.css",
+      "sha256": "94ae2b82efb3639b82e9932dc7d910f17d886194b75f5d5c23d3b5cc1154a66d",
+      "git_blob": "a51050817ffd57e8688d901958ea7c02f0c403a0",
+      "bytes": 2705,
+      "mode": "100644",
+      "original_path": "mall.css"
+    },
+    {
+      "path": "source/mall.js",
+      "sha256": "bfaae8c317f3f039dde64f84fd6dd8910b3fa0cd03d2ccc871716a7d4c7fd8f0",
+      "git_blob": "5f1ee1093492d494d7fc4183613219d6243b47fb",
+      "bytes": 21020,
+      "mode": "100644",
+      "original_path": "mall.js"
+    },
+    {
+      "path": "source/marketing-forms.css",
+      "sha256": "56bd8d7dd0fb4fdd460f383f9c7c347afbe539998da450d2703ddcca2bd0a075",
+      "git_blob": "3d559e83a6f8aaff642858fce61ac9154d65f2d1",
+      "bytes": 3478,
+      "mode": "100644",
+      "original_path": "marketing-forms.css"
+    },
+    {
+      "path": "source/marketing-forms.js",
+      "sha256": "ecd284d7e0359126564ab1c2e80210d5bab2dd321213c146bb43ec0a9d411132",
+      "git_blob": "254f143a6315124165bb42bbb5a7a767a6fcde5b",
+      "bytes": 23994,
+      "mode": "100644",
+      "original_path": "marketing-forms.js"
+    },
+    {
+      "path": "source/navigation.css",
+      "sha256": "4cdba56b2e64a99894e5190b991e843fcd231a28aafb22326027e6c1904ba845",
+      "git_blob": "7a84425a8b2c232d463c9a8967af630c20286374",
+      "bytes": 951,
+      "mode": "100644",
+      "original_path": "navigation.css"
+    },
+    {
+      "path": "source/permissions.css",
+      "sha256": "3b3eaaaae9ade8645d6120a6af1140d78d7ad65baf26a470671547c53b8bfb2a",
+      "git_blob": "28264dc797137aa6e24182276e903a53c06c5667",
+      "bytes": 1419,
+      "mode": "100644",
+      "original_path": "permissions.css"
+    },
+    {
+      "path": "source/permissions.js",
+      "sha256": "38cb5121a83af841fb70b8310d0d3d78d6f55d2a5e44e3e869369e08a9f88422",
+      "git_blob": "10ad849268631bd9baa2c2c2f3f611a398c674fd",
+      "bytes": 21038,
+      "mode": "100644",
+      "original_path": "permissions.js"
+    },
+    {
+      "path": "source/shortcuts.css",
+      "sha256": "cecf772cc788820e78168c8f5f48a06b94bbd9f1df3b58cdc066768a10f9df48",
+      "git_blob": "19fea80029b421867b42662f7b1e78cbb63167ee",
+      "bytes": 1918,
+      "mode": "100644",
+      "original_path": "shortcuts.css"
+    },
+    {
+      "path": "source/shortcuts.js",
+      "sha256": "66bdaec85f4931fb7fb2d83a2b3bf900b73fdcfe05eaba989b875f220ab8c1da",
+      "git_blob": "c248d8f9848bcf04b9bd5b61f1fc24a4dbb99d5c",
+      "bytes": 9762,
+      "mode": "100644",
+      "original_path": "shortcuts.js"
+    },
+    {
+      "path": "source/structure.css",
+      "sha256": "d69a6a3942226f2714c6b3677816dc5487da23e04e6c07498a9a7e8bd4d5ad14",
+      "git_blob": "08e0e554e4a929922551605d493a392de43244aa",
+      "bytes": 400,
+      "mode": "100644",
+      "original_path": "structure.css"
+    },
+    {
+      "path": "source/structure.js",
+      "sha256": "f1b9044509618fc38cff412c32fe724f573da318f23d853f3e20bf1491f1dbfa",
+      "git_blob": "1e8cf2a21b50c195f468c1a3e6e450b1fd445052",
+      "bytes": 5145,
+      "mode": "100644",
+      "original_path": "structure.js"
+    },
+    {
+      "path": "source/使用说明.txt",
+      "sha256": "16460c99ed30e73b213146e71ff7d0dd038e3aa93867b4e82912d3495a153963",
+      "git_blob": "9c39c37290a4113681005f9e8328efb4d0c41ff5",
+      "bytes": 866,
+      "mode": "100644",
+      "original_path": "使用说明.txt"
+    },
+    {
+      "path": "source/打开原型.cmd",
+      "sha256": "0edbd8f5b22789c3f11971244871f1b36e23f9e710fdc8b25ca6429165ec81be",
+      "git_blob": "39739361e8a480e8798c7ce901439daff32ae7bb",
+      "bytes": 39,
+      "mode": "100644",
+      "original_path": "打开原型.cmd"
+    }
+  ],
+  "excluded_counts": {},
+  "history": {
+    "available": true,
+    "refs": [
+      "ee9a52153e273ef67537f8927ac1e1f7b0355d6d refs/heads/main",
+      "ee9a52153e273ef67537f8927ac1e1f7b0355d6d refs/local-backup-reflog/000000",
+      "ee9a52153e273ef67537f8927ac1e1f7b0355d6d HEAD"
+    ],
+    "reflog_commit_count": 1
+  },
+  "history_parts": [
+    {
+      "path": "history/history.bundle.part0000",
+      "sha256": "58f480ea2ef2f7a8a3b80c2a0492762f2815ae3ed81194e0f41d3311883fb66c",
+      "git_blob": "332400d208ae3e4f657b68b768af8fd29323752b",
+      "bytes": 70995
+    }
+  ]
+}
